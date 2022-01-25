@@ -4,11 +4,15 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.PneumaticSubsystem;
+import frc.robot.subsystems.TestSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -25,12 +29,14 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  */
 public class RobotContainer {
   // Subsystems
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  // private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
+  // private final PneumaticSubsystem pneumaticSubsystem = new PneumaticSubsystem();
   // private final TestSubsystem testSubsystem = new TestSubsystem();
 
   // Commands
-  private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
+  // private final ExampleCommand m_autoCommand = new
+  // ExampleCommand(m_exampleSubsystem);
 
   // Controllers
   public final XboxController driver = new XboxController(0);
@@ -53,7 +59,7 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
   }
-
+//ayaan is stupid
   /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by
@@ -66,15 +72,22 @@ public class RobotContainer {
     // new JoystickButton(driver, Constants.Control.kAButton)
     // .whileHeld(new InstantCommand(
     // () -> testSubsystem.set(1.0), testSubsystem));
-    new JoystickButton(driver, Constants.Control.kAButton)
-        .whenPressed(new InstantCommand(
-            () -> driveSubsystem.switchMode(), driveSubsystem));
-    // new JoystickButton(driver, Constants.Control.kBButton)
-    //     .whileHeld(new InstantCommand(
-    //         () -> driveSubsystem.drive(1.0, 1.0, 0), driveSubsystem));
+
+    // new JoystickButton(driver, Constants.Control.kAButton)
+    //     .whenPressed(new InstantCommand(
+    //         () -> driveSubsystem.switchMode(), driveSubsystem));
+
+    // new JoystickButton(driver, Constants.Control.kXButton)
+    //     .whenPressed(new InstantCommand(
+    //         () -> pneumaticSubsystem.forward(), pneumaticSubsystem));
+
     // new JoystickButton(driver, Constants.Control.kYButton)
-    //     .whileHeld(new InstantCommand(
-    //         () -> driveSubsystem.drive(-1.0, -1.0, 0), driveSubsystem));
+    //     .whenPressed(new InstantCommand(
+    //         () -> pneumaticSubsystem.reverse(), pneumaticSubsystem));
+
+    // new JoystickButton(driver, Constants.Control.kBButton)
+    //     .whenPressed(new InstantCommand(
+    //         () -> pneumaticSubsystem.off(), pneumaticSubsystem));
   }
 
   /**
@@ -82,8 +95,8 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return m_autoCommand;
-  }
+  // public Command getAutonomousCommand() {
+  // // An ExampleCommand will run in autonomous
+  // return m_autoCommand;
+  // }
 }
