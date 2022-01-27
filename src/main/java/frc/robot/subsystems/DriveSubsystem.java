@@ -9,30 +9,43 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class DriveSubsystem extends SubsystemBase {
   private DifferentialDrive driveBase;
 
-  private WPI_TalonFX[] motors = {
-      new WPI_TalonFX(0), // Left Front
-      new WPI_TalonFX(1), // Left Back
-      new WPI_TalonFX(2), // Right Front
-      new WPI_TalonFX(3) // Right Back
-  };
+  private WPI_TalonFX[] motors = new WPI_TalonFX[4];
+  // new WPI_TalonFX(0), // Left Front
+  // new WPI_TalonFX(1), // Left Back
+  // new WPI_TalonFX(2), // Right Front
+  // new WPI_TalonFX(3) // Right Back
 
-  private MotorControllerGroup leftDrive = new MotorControllerGroup(motors[0], motors[1]);
-  private MotorControllerGroup rightDrive = new MotorControllerGroup(motors[2], motors[3]);
+  private MotorControllerGroup leftDrive;
+  private MotorControllerGroup rightDrive;
+
   private int mode = 1;
 
   public DriveSubsystem() {
+    for (int i = 0; i < 4; i++) {
+      motors[i] = new WPI_TalonFX(i);
+    }
+
+    for (WPI_TalonFX motor : motors) {
+      motor.configOpenloopRamp(0.8);
+    }
+
+    leftDrive = new MotorControllerGroup(motors[0], motors[1]);
+    rightDrive = new MotorControllerGroup(motors[2], motors[3]);
+
     leftDrive.setInverted(true);
     rightDrive.setInverted(false);
+
     driveBase = new DifferentialDrive(leftDrive, rightDrive);
   }
 
-  public void drive(double leftY, double rightY, double rightX) {
-    // if (rightX < 0.1 && rightX > -0.1)
-    // rightX = 0;
+  public void drive(double leftY, double rightY, double rightX) {    
+    if (rightX < 0.1 && rightX > -0.1)
+      rightX = 0;
 
-    // rightX = Math.pow(rightX, 3);
-    // rightX *= 1.25;
-    rightX = Math.pow(rightX, 5) / Math.abs(Math.pow(rightX, 3));
+    double steeringSensitivity = 1.25;
+    rightX = Math.pow(rightX, 3) * steeringSensitivity;
+
+    // rightX = Math.pow(rightX, 5) / Math.abs(Math.pow(rightX, 3));
 
     double leftSpeed = mode == 0 ? leftY : leftY - rightX;
     double rightSpeed = mode == 0 ? rightY : leftY + rightX;
@@ -46,10 +59,10 @@ public class DriveSubsystem extends SubsystemBase {
     if (rightSpeed < -1.0)
       rightSpeed = -1.0;
 
-    System.out.println(leftSpeed);
-    System.out.println(rightSpeed);
+    // System.out.println(leftSpeed);
+    // System.out.println(rightSpeed);
 
-    driveBase.tankDrive(leftSpeed * 2.0 / 3.0, rightSpeed * 2.0 / 3.0);
+    driveBase.tankDrive(leftSpeed, rightSpeed);
   }
 
   public void switchMode() {

@@ -1,21 +1,17 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TestSubsystem extends SubsystemBase {
-    // private TalonFX motor = new TalonFX(0);
-    
-
-    // public TestSubsystem(PWMSparkMax motor) {
-    //     this.motor = motor;
-    // }
+    // private WPI_TalonFX leftLaunch = new WPI_TalonFX(4);
+    // private WPI_TalonFX rightLaunch = new WPI_TalonFX(5);
 
     // public void set(double power) {
     //     // System.out.println(power);
-    //     motor.set(ControlMode.PercentOutput, power);
+    //     leftLaunch.set(power);
+    //     rightLaunch.set(-power);
     // }
 
     // @Override

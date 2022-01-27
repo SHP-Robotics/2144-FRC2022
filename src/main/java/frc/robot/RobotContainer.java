@@ -31,7 +31,8 @@ public class RobotContainer {
   // Subsystems
   // private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
-  // private final PneumaticSubsystem pneumaticSubsystem = new PneumaticSubsystem();
+  // private final PneumaticSubsystem pneumaticSubsystem = new
+  // PneumaticSubsystem();
   // private final TestSubsystem testSubsystem = new TestSubsystem();
 
   // Commands
@@ -59,7 +60,7 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
   }
-//ayaan is stupid
+
   /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by
@@ -71,23 +72,26 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // new JoystickButton(driver, Constants.Control.kAButton)
     // .whileHeld(new InstantCommand(
-    // () -> testSubsystem.set(1.0), testSubsystem));
+    // () -> testSubsystem.set(driver.getRightTriggerAxis()), testSubsystem));
+    // new JoystickButton(driver, Constants.Control.kBButton)
+    // .whileHeld(new InstantCommand(
+    // () -> testSubsystem.set(-driver.getRightTriggerAxis()), testSubsystem));
 
-    // new JoystickButton(driver, Constants.Control.kAButton)
-    //     .whenPressed(new InstantCommand(
-    //         () -> driveSubsystem.switchMode(), driveSubsystem));
+    new JoystickButton(driver, Constants.Control.kAButton)
+    .whenPressed(new InstantCommand(
+    () -> driveSubsystem.switchMode(), driveSubsystem));
 
     // new JoystickButton(driver, Constants.Control.kXButton)
-    //     .whenPressed(new InstantCommand(
-    //         () -> pneumaticSubsystem.forward(), pneumaticSubsystem));
+    // .whenPressed(new InstantCommand(
+    // () -> pneumaticSubsystem.forward(), pneumaticSubsystem));
 
     // new JoystickButton(driver, Constants.Control.kYButton)
-    //     .whenPressed(new InstantCommand(
-    //         () -> pneumaticSubsystem.reverse(), pneumaticSubsystem));
+    // .whenPressed(new InstantCommand(
+    // () -> pneumaticSubsystem.reverse(), pneumaticSubsystem));
 
     // new JoystickButton(driver, Constants.Control.kBButton)
-    //     .whenPressed(new InstantCommand(
-    //         () -> pneumaticSubsystem.off(), pneumaticSubsystem));
+    // .whenPressed(new InstantCommand(
+    // () -> pneumaticSubsystem.off(), pneumaticSubsystem));
   }
 
   /**
