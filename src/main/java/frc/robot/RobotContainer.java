@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.FlywheelSubsystem;
+import frc.robot.subsystems.LauncherSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
 import frc.robot.subsystems.TestSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -31,9 +33,11 @@ public class RobotContainer {
   // Subsystems
   // private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
+  // private final FlywheelSubsystem flywheelSubsystem = new FlywheelSubsystem();
   // private final PneumaticSubsystem pneumaticSubsystem = new
   // PneumaticSubsystem();
   // private final TestSubsystem testSubsystem = new TestSubsystem();
+  // private final LauncherSubsystem launcherSubsystem = new LauncherSubsystem();
 
   // Commands
   // private final ExampleCommand m_autoCommand = new
@@ -53,9 +57,22 @@ public class RobotContainer {
                 driver.getRightY(), driver.getRightX()),
             driveSubsystem));
 
+    // flywheelSubsystem.setDefaultCommand(
+    //     new RunCommand(
+    //         () -> flywheelSubsystem.setVelocityRotationsPerSecond(
+    //             (driver.getRightTriggerAxis() - driver.getLeftTriggerAxis())
+    //                 * Constants.FlywheelConstants.kFlywheelMaxSpeedRotationsPerSecond),
+    //         flywheelSubsystem));
+
     // testSubsystem.setDefaultCommand(new RunCommand(() -> {
-    // testSubsystem.set(0.0);
+    // testSubsystem.set(driver.getRightTriggerAxis() -
+    // driver.getLeftTriggerAxis());
     // }, testSubsystem));
+
+    // launcherSubsystem.setDefaultCommand(new RunCommand(() -> {
+    // launcherSubsystem.set((driver.getRightTriggerAxis() -
+    // driver.getLeftTriggerAxis()) * 1.0);
+    // }, launcherSubsystem));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -70,16 +87,9 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // new JoystickButton(driver, Constants.Control.kAButton)
-    // .whileHeld(new InstantCommand(
-    // () -> testSubsystem.set(driver.getRightTriggerAxis()), testSubsystem));
-    // new JoystickButton(driver, Constants.Control.kBButton)
-    // .whileHeld(new InstantCommand(
-    // () -> testSubsystem.set(-driver.getRightTriggerAxis()), testSubsystem));
-
     new JoystickButton(driver, Constants.Control.kAButton)
-    .whenPressed(new InstantCommand(
-    () -> driveSubsystem.switchMode(), driveSubsystem));
+        .whenPressed(new InstantCommand(
+            () -> driveSubsystem.switchMode(), driveSubsystem));
 
     // new JoystickButton(driver, Constants.Control.kXButton)
     // .whenPressed(new InstantCommand(

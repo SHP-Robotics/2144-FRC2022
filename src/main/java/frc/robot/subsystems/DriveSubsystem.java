@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -27,6 +28,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     for (WPI_TalonFX motor : motors) {
       motor.configOpenloopRamp(0.8);
+      motor.setNeutralMode(NeutralMode.Brake);
     }
 
     leftDrive = new MotorControllerGroup(motors[0], motors[1]);
