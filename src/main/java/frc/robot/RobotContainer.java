@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -13,6 +14,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.FlywheelSubsystem;
 import frc.robot.subsystems.LauncherSubsystem;
+import frc.robot.subsystems.MusicSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
 import frc.robot.subsystems.TestSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -33,11 +35,13 @@ public class RobotContainer {
   // Subsystems
   // private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
-  // private final FlywheelSubsystem flywheelSubsystem = new FlywheelSubsystem();
+  private final FlywheelSubsystem flywheelSubsystem = new FlywheelSubsystem();
   // private final PneumaticSubsystem pneumaticSubsystem = new
   // PneumaticSubsystem();
   // private final TestSubsystem testSubsystem = new TestSubsystem();
   // private final LauncherSubsystem launcherSubsystem = new LauncherSubsystem();
+  // private final MusicSubsystem musicSubsystem = new MusicSubsystem(new
+  // TalonFX(0));
 
   // Commands
   // private final ExampleCommand m_autoCommand = new
@@ -52,17 +56,17 @@ public class RobotContainer {
   public RobotContainer() {
     // Drive Command
     driveSubsystem.setDefaultCommand(
-        new RunCommand(
-            () -> driveSubsystem.drive(driver.getLeftY(),
-                driver.getRightY(), driver.getRightX()),
-            driveSubsystem));
+    new RunCommand(
+    () -> driveSubsystem.drive(driver.getLeftY(),
+    driver.getRightY(), -driver.getRightX()),
+    driveSubsystem));
 
-    // flywheelSubsystem.setDefaultCommand(
-    //     new RunCommand(
-    //         () -> flywheelSubsystem.setVelocityRotationsPerSecond(
-    //             (driver.getRightTriggerAxis() - driver.getLeftTriggerAxis())
-    //                 * Constants.FlywheelConstants.kFlywheelMaxSpeedRotationsPerSecond),
-    //         flywheelSubsystem));
+    flywheelSubsystem.setDefaultCommand(
+        new RunCommand(
+            () -> flywheelSubsystem.setVelocityRotationsPerSecond(
+                (driver.getRightTriggerAxis() - driver.getLeftTriggerAxis())
+                    * Constants.FlywheelConstants.kFlywheelMaxSpeedRotationsPerSecond),
+            flywheelSubsystem));
 
     // testSubsystem.setDefaultCommand(new RunCommand(() -> {
     // testSubsystem.set(driver.getRightTriggerAxis() -
@@ -71,7 +75,7 @@ public class RobotContainer {
 
     // launcherSubsystem.setDefaultCommand(new RunCommand(() -> {
     // launcherSubsystem.set((driver.getRightTriggerAxis() -
-    // driver.getLeftTriggerAxis()) * 1.0);
+    // driver.getLeftTriggerAxis()) * 0.8);
     // }, launcherSubsystem));
 
     // Configure the button bindings
@@ -88,8 +92,8 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     new JoystickButton(driver, Constants.Control.kAButton)
-        .whenPressed(new InstantCommand(
-            () -> driveSubsystem.switchMode(), driveSubsystem));
+    .whenPressed(new InstantCommand(
+    () -> driveSubsystem.switchMode(), driveSubsystem));
 
     // new JoystickButton(driver, Constants.Control.kXButton)
     // .whenPressed(new InstantCommand(
@@ -102,6 +106,10 @@ public class RobotContainer {
     // new JoystickButton(driver, Constants.Control.kBButton)
     // .whenPressed(new InstantCommand(
     // () -> pneumaticSubsystem.off(), pneumaticSubsystem));
+
+    // new JoystickButton(driver, Constants.Control.kBButton)
+    // .whenPressed(new InstantCommand(
+    // () -> musicSubsystem.play(), musicSubsystem));
   }
 
   /**

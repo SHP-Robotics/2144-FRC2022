@@ -45,14 +45,14 @@ public final class Constants {
 
         public static final double kFlywheelMaxSpeedRotationsPerSecond = 30;
 
-        // shooter wood prototype gains
-        public static final double kS = 0.65884;
-        public static final double kV = 0.11065;
-        public static final double kA = 0.023167;
+        // shooter gains
+        public static final double kS = 0.59083;
+        public static final double kV = 0.50399;
+        public static final double kA = 0.013781;
 
         // currently unused
-        public static final double kP = 1;
-        public static final double kD = 0;
+        // public static final double kP = 1;
+        // public static final double kD = 0;
 
         public static final double kVelocityTolerance = 0.5;
     }

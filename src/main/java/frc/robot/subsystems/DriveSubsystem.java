@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class DriveSubsystem extends SubsystemBase {
   private DifferentialDrive driveBase;
 
-  private WPI_TalonFX[] motors = new WPI_TalonFX[4];
+  public WPI_TalonFX[] motors = new WPI_TalonFX[4];
   // new WPI_TalonFX(0), // Left Front
   // new WPI_TalonFX(1), // Left Back
   // new WPI_TalonFX(2), // Right Front
@@ -34,8 +34,8 @@ public class DriveSubsystem extends SubsystemBase {
     leftDrive = new MotorControllerGroup(motors[0], motors[1]);
     rightDrive = new MotorControllerGroup(motors[2], motors[3]);
 
-    leftDrive.setInverted(true);
-    rightDrive.setInverted(false);
+    leftDrive.setInverted(false);
+    rightDrive.setInverted(true);
 
     driveBase = new DifferentialDrive(leftDrive, rightDrive);
   }
@@ -44,8 +44,11 @@ public class DriveSubsystem extends SubsystemBase {
     if (rightX < 0.1 && rightX > -0.1)
       rightX = 0;
 
-    double steeringSensitivity = 1.25;
+    double steeringSensitivity = 1.5;
     rightX = Math.pow(rightX, 3) * steeringSensitivity;
+
+    if (rightX > 0.5) rightX = 0.5;
+    if (rightX < -0.5) rightX = -0.5;
 
     // rightX = Math.pow(rightX, 5) / Math.abs(Math.pow(rightX, 3));
 
@@ -72,8 +75,8 @@ public class DriveSubsystem extends SubsystemBase {
     System.out.println("Switched to: " + mode);
   }
 
-  // @Override
-  // public void periodic() {
-  // // This method will be called once per scheduler run
-  // }
+  @Override
+  public void periodic() {
+  // This method will be called once per scheduler run
+  }
 }

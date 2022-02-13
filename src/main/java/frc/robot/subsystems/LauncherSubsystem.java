@@ -10,21 +10,21 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LauncherSubsystem extends SubsystemBase {
-    // private TalonFX leftLaunch = new TalonFX(4);
-    // private TalonFX rightLaunch = new TalonFX(5);
+    public TalonFX leftLaunch = new TalonFX(4);
+    public TalonFX rightLaunch = new TalonFX(5);
 
-    // public LauncherSubsystem() {
-    //     leftLaunch.setInverted(true);
-    //     rightLaunch.setInverted(false);
-    // }
+    public LauncherSubsystem() {
+        leftLaunch.setInverted(true);
+        rightLaunch.setInverted(false);
+    }
 
-    // public void set(double power) {
-    //     leftLaunch.set(TalonFXControlMode.PercentOutput, power);
-    //     rightLaunch.set(TalonFXControlMode.PercentOutput, power);
-    // }
+    public void set(double power) {
+        leftLaunch.set(TalonFXControlMode.PercentOutput, power);
+        rightLaunch.set(TalonFXControlMode.PercentOutput, power);
+    }
 
-    // @Override
-    // public void periodic() {
-    // // This method will be called once per scheduler run
-    // }
+    @Override
+    public void periodic() {
+    // This method will be called once per scheduler run
+    }
 }
