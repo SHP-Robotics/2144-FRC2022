@@ -56,10 +56,10 @@ public class RobotContainer {
   public RobotContainer() {
     // Drive Command
     driveSubsystem.setDefaultCommand(
-    new RunCommand(
-    () -> driveSubsystem.drive(driver.getLeftY(),
-    driver.getRightY(), -driver.getRightX()),
-    driveSubsystem));
+        new RunCommand(
+            () -> driveSubsystem.drive(driver.getLeftY(),
+                driver.getRightY(), -driver.getRightX()),
+            driveSubsystem));
 
     flywheelSubsystem.setDefaultCommand(
         new RunCommand(
@@ -92,8 +92,8 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     new JoystickButton(driver, Constants.Control.kAButton)
-    .whenPressed(new InstantCommand(
-    () -> driveSubsystem.switchMode(), driveSubsystem));
+        .whenPressed(new InstantCommand(
+            () -> driveSubsystem.switchMode(), driveSubsystem));
 
     // new JoystickButton(driver, Constants.Control.kXButton)
     // .whenPressed(new InstantCommand(
