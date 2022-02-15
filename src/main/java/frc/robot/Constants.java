@@ -32,7 +32,7 @@ public final class Constants {
         public static final int kRightThumbPush = 10;
     }
 
-    public static final class FlywheelConstants {
+    public static final class Flywheel {
         public static final int kTalonPort = 11;
 
         public static final int kFlywheelTalonCurrentLimit = 50;
@@ -55,5 +55,22 @@ public final class Constants {
         // public static final double kD = 0;
 
         public static final double kVelocityTolerance = 0.5;
+    }
+
+    public static final class Vision {
+        public static final double kDeadzone = 5.00; // degrees
+
+    }
+
+    public static final class Turret {
+        public static final double kS = 0;
+        public static final double kV = 0;
+        public static final double kA = 0;
+
+        public static final double kP = 0;
+        public static final double kI = 0;
+        public static final double kD = 0;
+        
+        public static final double maxRPS = 1;
     }
 }

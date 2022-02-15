@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.*;
-import static frc.robot.Constants.FlywheelConstants.*;
+import static frc.robot.Constants.Flywheel.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
@@ -40,7 +40,7 @@ public class FlywheelSubsystem extends SubsystemBase {
     }
 
     /** @return the current falcon-reported velocity in rotations per second. */
-    public double getTalonVelocity() {
+    public double getTalonVelocityRPS() {
         return leftLaunch.getSelectedSensorVelocity() * kFlywheelRotationsPerPulse * 10;
     }
 
@@ -68,7 +68,7 @@ public class FlywheelSubsystem extends SubsystemBase {
         // Calculates voltage to apply.
         // Feedforward is scaled down to prevent overshoot since bang-bang can't
         // correct for overshoot.
-        
+
         // if trying to go backwards
         if (desiredVelocityRPS < 0) {
             leftLaunch.set(-0.2);
@@ -76,19 +76,23 @@ public class FlywheelSubsystem extends SubsystemBase {
             return;
         }
 
-        double velocity = this.getTalonVelocity();
+        double velocityRPS = this.getTalonVelocityRPS();
 
-        // wait for motor to come to rest before returning to ff + bb
-        if (velocity < 0) return;
+        // make motor stop if reversing before returning to ff + bb
+        if (velocityRPS < 0) {
+            leftLaunch.set(0);
+            rightLaunch.set(0);
+            return;
+        }
 
-        double voltage = 0.95 * flywheelFeedforward.calculate(desiredVelocityRPS)
-                + bangBangController.calculate(velocity, desiredVelocityRPS)
+        double voltage = 0.9 * flywheelFeedforward.calculate(desiredVelocityRPS)
+                + bangBangController.calculate(velocityRPS, desiredVelocityRPS)
                         * kNominalVoltage;
         this.setVoltage(voltage);
 
         SmartDashboard.putNumber("ff applied voltage", voltage);
         SmartDashboard.putNumber("left falcon applied voltage", leftLaunch.getBusVoltage());
-        SmartDashboard.putNumber("Left Launch Temperature ('C)", leftLaunch.getTemperature());
-        SmartDashboard.putNumber("Right Launch Temperature ('C)", rightLaunch.getTemperature());
+        SmartDashboard.putNumber("Left Launch Temperature (°F)", 1.8 * leftLaunch.getTemperature() + 32);
+        SmartDashboard.putNumber("Right Launch Temperature (°F)", 1.8 * rightLaunch.getTemperature() + 32);
     }
 }

@@ -14,9 +14,9 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.FlywheelSubsystem;
 import frc.robot.subsystems.LauncherSubsystem;
-import frc.robot.subsystems.MusicSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
-import frc.robot.subsystems.TestSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -34,14 +34,15 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   // Subsystems
   // private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
   private final FlywheelSubsystem flywheelSubsystem = new FlywheelSubsystem();
+  private final VisionSubsystem visionSubsystem = new VisionSubsystem();
+  private final TurretSubsystem turretSubsystem = new TurretSubsystem();
+
   // private final PneumaticSubsystem pneumaticSubsystem = new
   // PneumaticSubsystem();
-  // private final TestSubsystem testSubsystem = new TestSubsystem();
-  // private final LauncherSubsystem launcherSubsystem = new LauncherSubsystem();
-  // private final MusicSubsystem musicSubsystem = new MusicSubsystem(new
-  // TalonFX(0));
+  // private final LauncherSubsystem launcherSubsystem = new LauncherSubsystem()
 
   // Commands
   // private final ExampleCommand m_autoCommand = new
@@ -54,7 +55,6 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    // Drive Command
     driveSubsystem.setDefaultCommand(
         new RunCommand(
             () -> driveSubsystem.drive(driver.getLeftY(),
@@ -65,13 +65,13 @@ public class RobotContainer {
         new RunCommand(
             () -> flywheelSubsystem.setVelocityRotationsPerSecond(
                 (driver.getRightTriggerAxis() - driver.getLeftTriggerAxis())
-                    * Constants.FlywheelConstants.kFlywheelMaxSpeedRotationsPerSecond),
+                    * Constants.Flywheel.kFlywheelMaxSpeedRotationsPerSecond),
             flywheelSubsystem));
 
-    // testSubsystem.setDefaultCommand(new RunCommand(() -> {
-    // testSubsystem.set(driver.getRightTriggerAxis() -
-    // driver.getLeftTriggerAxis());
-    // }, testSubsystem));
+    turretSubsystem.setDefaultCommand(
+        new RunCommand(
+            () -> turretSubsystem.set(visionSubsystem.getDirection()),
+            turretSubsystem));
 
     // launcherSubsystem.setDefaultCommand(new RunCommand(() -> {
     // launcherSubsystem.set((driver.getRightTriggerAxis() -
