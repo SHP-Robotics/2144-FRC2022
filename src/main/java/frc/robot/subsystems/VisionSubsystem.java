@@ -22,9 +22,10 @@ public class VisionSubsystem extends SubsystemBase {
 	private int direction = 1; // 1 for right, -1 for left, 0 for nothing
 	private NetworkTableInstance table = null;
 
+	// UNITS: CM
 	double reflectiveTapeLength = 5 * 2.54; // inches*2.54=cm
 	double knownHeight = 10; // TODO: find value from top height of reflective tape - height of camera point
-								// AND convert to inches
+								// AND convert to cm
 
 	/**
 	 * Light modes for Limelight.
@@ -149,9 +150,7 @@ public class VisionSubsystem extends SubsystemBase {
 	}
 
 	public double pixelsToAngle(double pixelXValue) {
-		if (pixelXValue > 160) {
-			pixelXValue = pixelXValue - 160;
-		}
+		if (pixelXValue > 160) pixelXValue -= 160;
 		return pixelXValue / (320 / 59.6); // returns angle from center, center is 0 degrees
 	}
 
@@ -170,13 +169,13 @@ public class VisionSubsystem extends SubsystemBase {
 
 	public double getAngle(double knownHeight) { // gets angle from ground (0 degrees) to angle from camera to
 														// top of reflective tape
-		double sideC = getHypotenuse(5 * 2.54); // length of reflective tape
+		double sideC = getHypotenuse(reflectiveTapeLength); // length of reflective tape
 
 		return Math.asin(knownHeight / sideC);
 	}
 
 	public double getDistance(double knownHeight) { // distance from camera to net thing with the tape
-		double sideC = getHypotenuse(5 * 2.54); // length of reflective tape
+		double sideC = getHypotenuse(reflectiveTapeLength); // length of reflective tape
 
 		return Math.sqrt((sideC * sideC) - (knownHeight * knownHeight));
 	}
