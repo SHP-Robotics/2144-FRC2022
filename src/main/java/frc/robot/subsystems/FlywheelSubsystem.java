@@ -45,6 +45,14 @@ public class FlywheelSubsystem extends SubsystemBase {
     }
 
     /**
+     * @param rps
+     * @return the velocity in meters per second
+     */
+    public double calculateVelocityMeters(double rps) {
+        return Math.PI * kFlywheelDiameterMeters * rps; // circumference * rotations per second
+    }
+
+    /**
      * Sets the velocity setpoint for the flywheel.
      *
      * @param rotationsPerSecond velocity setpoint
@@ -63,6 +71,11 @@ public class FlywheelSubsystem extends SubsystemBase {
         rightLaunch.setVoltage(voltage);
     }
 
+    public void set(double power) {
+        leftLaunch.set(power);
+        rightLaunch.set(power);
+    }
+
     @Override
     public void periodic() {
         // Calculates voltage to apply.
@@ -71,8 +84,7 @@ public class FlywheelSubsystem extends SubsystemBase {
 
         // if trying to go backwards
         if (desiredVelocityRPS < 0) {
-            leftLaunch.set(-0.2);
-            rightLaunch.set(-0.2);
+            this.set(-0.1);
             return;
         }
 
@@ -80,17 +92,17 @@ public class FlywheelSubsystem extends SubsystemBase {
 
         // make motor stop if reversing before returning to ff + bb
         if (velocityRPS < 0) {
-            leftLaunch.set(0);
-            rightLaunch.set(0);
+            this.set(0);
             return;
         }
 
-        double voltage = 0.9 * flywheelFeedforward.calculate(desiredVelocityRPS)
+        this.setVoltage(0.9 * flywheelFeedforward.calculate(desiredVelocityRPS)
                 + bangBangController.calculate(velocityRPS, desiredVelocityRPS)
-                        * kNominalVoltage;
-        this.setVoltage(voltage);
+                        * kNominalVoltage);
 
-        SmartDashboard.putNumber("ff applied voltage", voltage);
+        SmartDashboard.putNumber("velocity (m/s)", this.calculateVelocityMeters(velocityRPS));
+        SmartDashboard.putNumber("current rps", velocityRPS);
+        SmartDashboard.putNumber("desired rps", desiredVelocityRPS);
         SmartDashboard.putNumber("left falcon applied voltage", leftLaunch.getBusVoltage());
         SmartDashboard.putNumber("Left Launch Temperature (°F)", 1.8 * leftLaunch.getTemperature() + 32);
         SmartDashboard.putNumber("Right Launch Temperature (°F)", 1.8 * rightLaunch.getTemperature() + 32);

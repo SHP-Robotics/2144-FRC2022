@@ -37,12 +37,12 @@ public class RobotContainer {
 
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
   private final FlywheelSubsystem flywheelSubsystem = new FlywheelSubsystem();
-  private final VisionSubsystem visionSubsystem = new VisionSubsystem();
-  private final TurretSubsystem turretSubsystem = new TurretSubsystem();
+  // private final VisionSubsystem visionSubsystem = new VisionSubsystem();
+  // private final TurretSubsystem turretSubsystem = new TurretSubsystem();
 
   // private final PneumaticSubsystem pneumaticSubsystem = new
   // PneumaticSubsystem();
-  // private final LauncherSubsystem launcherSubsystem = new LauncherSubsystem()
+  // private final LauncherSubsystem launcherSubsystem = new LauncherSubsystem();
 
   // Commands
   // private final ExampleCommand m_autoCommand = new
@@ -68,10 +68,10 @@ public class RobotContainer {
                     * Constants.Flywheel.kFlywheelMaxSpeedRotationsPerSecond),
             flywheelSubsystem));
 
-    turretSubsystem.setDefaultCommand(
-        new RunCommand(
-            () -> turretSubsystem.set(visionSubsystem.getDirection()),
-            turretSubsystem));
+    // turretSubsystem.setDefaultCommand(
+    // new RunCommand(
+    // () -> turretSubsystem.set(visionSubsystem.getDirection()),
+    // turretSubsystem));
 
     // launcherSubsystem.setDefaultCommand(new RunCommand(() -> {
     // launcherSubsystem.set((driver.getRightTriggerAxis() -

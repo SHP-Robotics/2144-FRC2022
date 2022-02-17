@@ -4,11 +4,11 @@
 
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.*;
 import static frc.robot.Constants.Vision.*;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.lang.Math;
@@ -19,13 +19,12 @@ import java.lang.Math;
  * @author Dan Waxman
  */
 public class VisionSubsystem extends SubsystemBase {
-	private int direction = 1; // 1 for right, -1 for left, 0 for nothing
+	private double direction = 1; // 1 for right, -1 for left, 0 for nothing
 	private NetworkTableInstance table = null;
 
-	// UNITS: CM
-	double reflectiveTapeLength = 5 * 2.54; // inches*2.54=cm
+	// UNITS: INCHES
+	double reflectiveTapeLength = 5;
 	double knownHeight = 10; // TODO: find value from top height of reflective tape - height of camera point
-								// AND convert to cm
 
 	/**
 	 * Light modes for Limelight.
@@ -150,7 +149,8 @@ public class VisionSubsystem extends SubsystemBase {
 	}
 
 	public double pixelsToAngle(double pixelXValue) {
-		if (pixelXValue > 160) pixelXValue -= 160;
+		if (pixelXValue > 160)
+			pixelXValue -= 160;
 		return pixelXValue / (320 / 59.6); // returns angle from center, center is 0 degrees
 	}
 
@@ -168,7 +168,7 @@ public class VisionSubsystem extends SubsystemBase {
 	}
 
 	public double getAngle(double knownHeight) { // gets angle from ground (0 degrees) to angle from camera to
-														// top of reflective tape
+													// top of reflective tape
 		double sideC = getHypotenuse(reflectiveTapeLength); // length of reflective tape
 
 		return Math.asin(knownHeight / sideC);
@@ -180,19 +180,23 @@ public class VisionSubsystem extends SubsystemBase {
 		return Math.sqrt((sideC * sideC) - (knownHeight * knownHeight));
 	}
 
-	public int getDirection() {
+	public double getDirection() {
 		return direction;
 	}
 
 	@Override
 	public void periodic() {
-		if (!isTarget()) { // if there is no target
+		boolean isTarget = isTarget();
+		double offset = getTx();
+
+		SmartDashboard.putBoolean("Target found?", isTarget);
+		SmartDashboard.putNumber("Offset", offset);
+
+		if (!isTarget) { // if there is no target
 			// pan turret to right
-			direction = 1;
+			direction = 0.5;
 			return;
 		}
-
-		double offset = getTx();
 
 		if (offset > kDeadzone) { // if offset is positive
 			// turn turret to right
@@ -200,6 +204,7 @@ public class VisionSubsystem extends SubsystemBase {
 		} else if (offset < -kDeadzone) { // else offset is negative
 			// turn turret to left
 			direction = -1;
-		} else direction = 0;
+		} else
+			direction = 0;
 	}
 }
