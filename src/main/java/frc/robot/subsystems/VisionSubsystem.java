@@ -198,13 +198,14 @@ public class VisionSubsystem extends SubsystemBase {
 			return;
 		}
 
-		if (offset > kDeadzone) { // if offset is positive
-			// turn turret to right
-			direction = 1;
-		} else if (offset < -kDeadzone) { // else offset is negative
-			// turn turret to left
-			direction = -1;
-		} else
-			direction = 0;
+		direction = offset > kDeadzone ? 1 : offset < -kDeadzone ? -1 : 0;
+		// if (offset > kDeadzone) { // if offset is positive
+		// // turn turret to right
+		// direction = 1;
+		// } else if (offset < -kDeadzone) { // else offset is negative
+		// // turn turret to left
+		// direction = -1;
+		// } else
+		// direction = 0;
 	}
 }

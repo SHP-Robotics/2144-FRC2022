@@ -71,9 +71,9 @@ public class FlywheelSubsystem extends SubsystemBase {
         rightLaunch.setVoltage(voltage);
     }
 
-    public void set(double power) {
-        leftLaunch.set(power);
-        rightLaunch.set(power);
+    public void set(double speed) {
+        leftLaunch.set(speed);
+        rightLaunch.set(speed);
     }
 
     @Override

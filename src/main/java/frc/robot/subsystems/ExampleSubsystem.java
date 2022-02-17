@@ -13,19 +13,23 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class ExampleSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
 
-  // CANSparkMax motor = new CANSparkMax(6, MotorType.kBrushless);
+  private CANSparkMax motor = new CANSparkMax(6, MotorType.kBrushed);
 
   // public ExampleSubsystem() {
 
   // }
 
-  // @Override
-  // public void periodic() {
-  //   SmartDashboard.putNumber("mag enc", motor.getEncoder().getPosition());
-  // }
+  public void set(double speed) {
+    motor.set(speed);
+  }
+
+  @Override
+  public void periodic() {
+    SmartDashboard.putNumber("mag enc", motor.getEncoder().getPosition());
+  }
 
   // @Override
   // public void simulationPeriodic() {
-  //   // This method will be called once per scheduler run during simulation
+  // // This method will be called once per scheduler run during simulation
   // }
 }
