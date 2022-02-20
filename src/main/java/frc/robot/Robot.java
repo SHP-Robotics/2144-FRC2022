@@ -4,7 +4,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /**
@@ -20,6 +25,8 @@ public class Robot extends TimedRobot {
   // private Command m_autonomousCommand;
 
   private RobotContainer robotContainer;
+
+  // private final DigitalInput testSwitch = new DigitalInput(0);
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -70,6 +77,8 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("LimelightX", x);
     // SmartDashboard.putNumber("LimelightY", y);
     // SmartDashboard.putNumber("LimelightArea", area);
+
+    // SmartDashboard.putBoolean("switch", !testSwitch.get());
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

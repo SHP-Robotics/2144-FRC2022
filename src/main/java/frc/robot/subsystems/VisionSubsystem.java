@@ -194,7 +194,7 @@ public class VisionSubsystem extends SubsystemBase {
 
 		if (!isTarget) { // if there is no target
 			// pan turret to right
-			direction = 0.5;
+			direction = 2;
 			return;
 		}
 

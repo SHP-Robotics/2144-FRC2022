@@ -82,5 +82,9 @@ public final class Constants {
 
         // maximum motor rotations per second
         public static final double maxRPS = 3;
+
+        public static final double kTicksPerRevolution = 4096;
+        public static final double kRightThresholdDegrees = 30; // for now
+        public static final double kLeftThresholdDegrees = -30; // for now
     }
 }

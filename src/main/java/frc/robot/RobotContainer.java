@@ -15,6 +15,7 @@ import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.FlywheelSubsystem;
 import frc.robot.subsystems.LauncherSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
+import frc.robot.subsystems.TestTurretSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -34,12 +36,12 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  */
 public class RobotContainer {
   // Subsystems
-  private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
+  // private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
   private final FlywheelSubsystem flywheelSubsystem = new FlywheelSubsystem();
-  // private final VisionSubsystem visionSubsystem = new VisionSubsystem();
-  // private final TurretSubsystem turretSubsystem = new TurretSubsystem();
+  private final VisionSubsystem visionSubsystem = new VisionSubsystem();
+  private final TestTurretSubsystem turretSubsystem = new TestTurretSubsystem();
 
   // private final PneumaticSubsystem pneumaticSubsystem = new
   // PneumaticSubsystem();
@@ -62,27 +64,28 @@ public class RobotContainer {
                 driver.getRightY(), -driver.getRightX()),
             driveSubsystem));
 
-    // flywheelSubsystem.setDefaultCommand(
-    // new RunCommand(
-    // () -> flywheelSubsystem.setVelocityRotationsPerSecond(
-    // (driver.getRightTriggerAxis() - driver.getLeftTriggerAxis())
-    // * Constants.Flywheel.kFlywheelMaxSpeedRotationsPerSecond),
-    // flywheelSubsystem));
+    flywheelSubsystem.setDefaultCommand(
+        new RunCommand(
+            () -> flywheelSubsystem.setVelocityRotationsPerSecond(
+                (driver.getRightTriggerAxis() - driver.getLeftTriggerAxis())
+                    * Constants.Flywheel.kFlywheelMaxSpeedRotationsPerSecond),
+            flywheelSubsystem));
 
-    // turretSubsystem.setDefaultCommand(
-    // new RunCommand(
-    // () -> turretSubsystem.set(visionSubsystem.getDirection(), true),
-    // turretSubsystem));
+    turretSubsystem.setDefaultCommand(
+        new RunCommand(
+            () -> turretSubsystem.moveByDegrees(visionSubsystem.getTx()),
+            turretSubsystem));
 
     // launcherSubsystem.setDefaultCommand(new RunCommand(() -> {
     // launcherSubsystem.set((driver.getRightTriggerAxis() -
     // driver.getLeftTriggerAxis()) * 0.8);
     // }, launcherSubsystem));
 
-    exampleSubsystem.setDefaultCommand(
-        new RunCommand(
-            () -> exampleSubsystem.set(driver.getRightTriggerAxis() - driver.getLeftTriggerAxis()),
-            exampleSubsystem));
+    // exampleSubsystem.setDefaultCommand(
+    // new RunCommand(
+    // () -> exampleSubsystem.set(driver.getRightTriggerAxis() -
+    // driver.getLeftTriggerAxis()),
+    // exampleSubsystem));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -98,14 +101,14 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // kill switch
-    new JoystickButton(driver, Constants.Control.kSelect)
-        .whenPressed(new InstantCommand(
-            () -> CommandScheduler.getInstance().disable()));
+    // new JoystickButton(driver, Constants.Control.kSelect)
+    // .whenPressed(new InstantCommand(
+    // () -> CommandScheduler.getInstance().disable()));
 
-    // enable switch
-    new JoystickButton(driver, Constants.Control.kStart)
-        .whenPressed(new InstantCommand(
-            () -> CommandScheduler.getInstance().enable()));
+    // // enable switch
+    // new JoystickButton(driver, Constants.Control.kStart)
+    // .whenPressed(new InstantCommand(
+    // () -> CommandScheduler.getInstance().enable()));
 
     // switch drive mode
     new JoystickButton(driver, Constants.Control.kAButton)
@@ -113,19 +116,19 @@ public class RobotContainer {
             () -> driveSubsystem.switchMode(), driveSubsystem));
 
     // move turret right
-    // new JoystickButton(driver, Constants.Control.kRBumper)
+    // new POVButton(driver, 90)
     // .whileHeld(new InstantCommand(
     // () -> turretSubsystem.set(1.0, false), turretSubsystem));
 
     // // move turret left
-    // new JoystickButton(driver, Constants.Control.kLBumper)
+    // new POVButton(driver, 270)
     // .whileHeld(new InstantCommand(
     // () -> turretSubsystem.set(-1.0, false), turretSubsystem));
 
-    // toggle turret mode
-    // new JoystickButton(driver, Constants.Control.kXButton)
-    // .whenPressed(new InstantCommand(
-    // () -> turretSubsystem.toggle(), turretSubsystem));
+    // reset turret position
+    new JoystickButton(driver, Constants.Control.kXButton)
+        .whenPressed(new InstantCommand(
+            () -> turretSubsystem.resetPosition(), turretSubsystem));
 
     // new JoystickButton(driver, Constants.Control.kXButton)
     // .whenPressed(new InstantCommand(
