@@ -11,19 +11,18 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
-public class TurretSubsystem extends SubsystemBase implements Loggable {
+public class Turret extends SubsystemBase implements Loggable {
     private final TalonSRX motor = new TalonSRX(6);
     private final double ratio = 1.0 / 12.7; // input : output
 
     @Log(name = "auto enabled")
-    private boolean isAutoEnabled = false;
-
+    private boolean isClosedLoop = false;
     private double panPower = 0.2;
 
     private final ProfiledPIDController pid = new ProfiledPIDController(kP, kI, kD,
             new TrapezoidProfile.Constraints(1, 1));
 
-    public TurretSubsystem() {
+    public Turret() {
         // motor.config_kP(0, kP);
         // motor.config_kI(0, kI);
         // motor.config_kD(0, kD);
@@ -57,8 +56,8 @@ public class TurretSubsystem extends SubsystemBase implements Loggable {
         motor.setSelectedSensorPosition(0);
     }
 
-    public void toggle() {
-        isAutoEnabled = !isAutoEnabled;
+    public void toggleLoop() {
+        isClosedLoop = !isClosedLoop;
     }
 
     public void panTurret() {
@@ -75,7 +74,7 @@ public class TurretSubsystem extends SubsystemBase implements Loggable {
     }
 
     public void adjust(boolean isTarget, double degrees) {
-        if (!isAutoEnabled) {
+        if (!isClosedLoop) {
             motor.set(ControlMode.PercentOutput, 0);
             return;
         }
@@ -86,7 +85,6 @@ public class TurretSubsystem extends SubsystemBase implements Loggable {
         }
 
         double desiredDegrees = this.getDegrees() + degrees;
-
         if (desiredDegrees > kThresholdDegrees)
             desiredDegrees = kThresholdDegrees;
         else if (desiredDegrees < -kThresholdDegrees)
@@ -94,11 +92,11 @@ public class TurretSubsystem extends SubsystemBase implements Loggable {
 
         // motor.set(ControlMode.Position, this.convertDegreesToTicks(desiredDegrees));
 
-        motor.set(ControlMode.PercentOutput, this.getPower(this.convertDegreesToTicks(degrees)));
+        motor.set(ControlMode.PercentOutput, this.getPower(this.convertDegreesToTicks(desiredDegrees)));
     }
 
-    public void set(double power) {
-        isAutoEnabled = false;
+    public void openLoop(double power) {
+        if (isClosedLoop) isClosedLoop = false;
         motor.set(ControlMode.PercentOutput, power);
     }
 

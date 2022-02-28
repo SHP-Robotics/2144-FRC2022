@@ -8,11 +8,11 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class PneumaticSubsystem extends SubsystemBase {
+public class Pneumatics extends SubsystemBase {
   private DoubleSolenoid doubleSolenoid;
 
   /** Creates a new ExampleSubsystem. */
-  public PneumaticSubsystem() {
+  public Pneumatics() {
     // doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
     doubleSolenoid.set(Value.kOff);
   }

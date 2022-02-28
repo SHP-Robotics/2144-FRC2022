@@ -10,13 +10,13 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.FlywheelSubsystem;
-import frc.robot.subsystems.LauncherSubsystem;
-import frc.robot.subsystems.PneumaticSubsystem;
-import frc.robot.subsystems.TurretSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Example;
+import frc.robot.subsystems.Flywheel;
+import frc.robot.subsystems.FlywheelTest;
+import frc.robot.subsystems.Pneumatics;
+import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.Vision;
 import io.github.oblarg.oblog.Logger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -40,10 +40,10 @@ public class RobotContainer {
     // Subsystems
     // private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 
-    private final DriveSubsystem driveSubsystem = new DriveSubsystem();
+    private final Drive drive = new Drive();
     // private final FlywheelSubsystem flywheelSubsystem = new FlywheelSubsystem();
-    private final VisionSubsystem visionSubsystem = new VisionSubsystem();
-    private final TurretSubsystem turretSubsystem = new TurretSubsystem();
+    private final Vision vision = new Vision();
+    private final Turret turret = new Turret();
 
     // private final PneumaticSubsystem pneumaticSubsystem = new
     // PneumaticSubsystem();
@@ -67,11 +67,11 @@ public class RobotContainer {
         // cnofigure logger
         Logger.configureLoggingAndConfig(this, false);
 
-        driveSubsystem.setDefaultCommand(
+        drive.setDefaultCommand(
                 new RunCommand(
-                        () -> driveSubsystem.drive(driver.getLeftY(),
+                        () -> drive.drive(driver.getLeftY(),
                                 driver.getRightY(), -driver.getRightX()),
-                        driveSubsystem));
+                        drive));
 
         // flywheelSubsystem.setDefaultCommand(
         // new RunCommand(
@@ -80,10 +80,11 @@ public class RobotContainer {
         // * Constants.Flywheel.kFlywheelMaxSpeedRotationsPerSecond),
         // flywheelSubsystem));
 
-        turretSubsystem.setDefaultCommand(
+        turret.setDefaultCommand(
                 new RunCommand(
-                        () -> turretSubsystem.adjust(visionSubsystem.isTarget(), visionSubsystem.getTx()),
-                        turretSubsystem));
+                        () -> turret.adjust(vision.isTarget(),
+                                vision.getTx()),
+                        turret));
 
         // flywheelReady.and(ballIndexed).whenActive(new StartEndCommand());
 
@@ -124,32 +125,32 @@ public class RobotContainer {
         // switch drive mode
         new JoystickButton(driver, Constants.Control.kAButton)
                 .whenPressed(new InstantCommand(
-                        () -> driveSubsystem.switchMode(), driveSubsystem));
+                        () -> drive.switchMode(), drive));
 
         // move turret right
         new POVButton(driver, 90)
                 .whileHeld(new InstantCommand(
-                        () -> turretSubsystem.set(0.1), turretSubsystem));
+                        () -> turret.openLoop(0.1), turret));
 
         // move turret left
         new POVButton(driver, 270)
                 .whileHeld(new InstantCommand(
-                        () -> turretSubsystem.set(-0.1), turretSubsystem));
+                        () -> turret.openLoop(-0.1), turret));
 
         // reset turret position
         new JoystickButton(driver, Constants.Control.kXButton)
                 .whenPressed(new InstantCommand(
-                        () -> turretSubsystem.resetPosition(), turretSubsystem));
+                        () -> turret.resetPosition(), turret));
 
         // toggle turret control
         new JoystickButton(driver, Constants.Control.kBButton)
                 .whenPressed(new InstantCommand(
-                        () -> turretSubsystem.toggle(), turretSubsystem));
+                        () -> turret.toggleLoop(), turret));
 
         // test
         new JoystickButton(driver, Constants.Control.kYButton)
                 .whenPressed(new InstantCommand(
-                        () -> turretSubsystem.adjust(true, 30), turretSubsystem));
+                        () -> turret.adjust(true, 30), turret));
 
         // new JoystickButton(driver, Constants.Control.kXButton)
         // .whenPressed(new InstantCommand(

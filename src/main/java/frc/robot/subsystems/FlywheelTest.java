@@ -5,11 +5,11 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class LauncherSubsystem extends SubsystemBase {
+public class FlywheelTest extends SubsystemBase {
     public TalonFX leftLaunch = new TalonFX(4);
     public TalonFX rightLaunch = new TalonFX(5);
 
-    public LauncherSubsystem() {
+    public FlywheelTest() {
         leftLaunch.setInverted(true);
         rightLaunch.setInverted(false);
     }

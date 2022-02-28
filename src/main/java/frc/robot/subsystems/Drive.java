@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class DriveSubsystem extends SubsystemBase {
+public class Drive extends SubsystemBase {
   private DifferentialDrive driveBase;
 
   public WPI_TalonFX[] motors = new WPI_TalonFX[4];
@@ -21,7 +21,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   private int mode = 1;
 
-  public DriveSubsystem() {
+  public Drive() {
     for (int i = 0; i < 4; i++) {
       motors[i] = new WPI_TalonFX(i);
     }
@@ -47,22 +47,22 @@ public class DriveSubsystem extends SubsystemBase {
     double steeringSensitivity = 1.5;
     rightX = Math.pow(rightX, 3) * steeringSensitivity;
 
-    if (rightX > 0.5) rightX = 0.5;
-    if (rightX < -0.5) rightX = -0.5;
+    if (rightX > 0.3) rightX = 0.3;
+    if (rightX < -0.3) rightX = -0.3;
 
     // rightX = Math.pow(rightX, 5) / Math.abs(Math.pow(rightX, 3));
 
     double leftSpeed = mode == 0 ? leftY : leftY - rightX;
     double rightSpeed = mode == 0 ? rightY : leftY + rightX;
 
-    if (leftSpeed > 1.0)
-      leftSpeed = 1.0;
-    if (leftSpeed < -1.0)
-      leftSpeed = -1.0;
-    if (rightSpeed > 1.0)
-      rightSpeed = 1.0;
-    if (rightSpeed < -1.0)
-      rightSpeed = -1.0;
+    if (leftSpeed > 0.5)
+      leftSpeed = 0.5;
+    if (leftSpeed < -0.5)
+      leftSpeed = -0.5;
+    if (rightSpeed > 0.5)
+      rightSpeed = 0.5;
+    if (rightSpeed < -0.5)
+      rightSpeed = -0.5;
 
     // System.out.println(leftSpeed);
     // System.out.println(rightSpeed);

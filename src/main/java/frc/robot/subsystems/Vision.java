@@ -18,7 +18,7 @@ import java.lang.Math;
  * 
  * @author Dan Waxman
  */
-public class VisionSubsystem extends SubsystemBase {
+public class Vision extends SubsystemBase {
 	private double direction = 1; // 1 for right, -1 for left, 0 for nothing
 	private NetworkTableInstance table = null;
 

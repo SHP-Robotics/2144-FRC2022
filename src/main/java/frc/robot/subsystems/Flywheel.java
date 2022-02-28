@@ -11,7 +11,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class FlywheelSubsystem extends SubsystemBase {
+public class Flywheel extends SubsystemBase {
     private final WPI_TalonFX leftLaunch = new WPI_TalonFX(4);
     private final WPI_TalonFX rightLaunch = new WPI_TalonFX(5);
 
@@ -24,7 +24,7 @@ public class FlywheelSubsystem extends SubsystemBase {
      * Creates a new Flywheel. Controlled with a feedforward and a bang-bang
      * controlller.
      */
-    public FlywheelSubsystem() {
+    public Flywheel() {
         TalonFXConfiguration flywheelTalonConfig = new TalonFXConfiguration();
         flywheelTalonConfig.supplyCurrLimit.currentLimit = kFlywheelTalonCurrentLimit;
         flywheelTalonConfig.supplyCurrLimit.enable = true;

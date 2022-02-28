@@ -33,16 +33,9 @@ public final class Constants {
     }
 
     public static final class Flywheel {
-        public static final int kTalonPort = 11;
-
         public static final int kFlywheelTalonCurrentLimit = 50;
-
-        // public static final int kRevEncoderPulsesPerRevolution = 2048;
-        // public static final int kRevEncoderSamplesToAverage = 5;
         public static final int kFalconPulsesPerRevolution = 2048;
-
         public static final double kFlywheelRotationsPerPulse = 1.0 / kFalconPulsesPerRevolution;
-
         public static final double kFlywheelMaxSpeedRotationsPerSecond = 50;
 
         // 1.5 : 1.0
@@ -55,17 +48,13 @@ public final class Constants {
         public static final double kV = 0.13604;
         public static final double kA = 0.023556;
 
-        // currently unused
-        // public static final double kP = 1;
-        // public static final double kD = 0;
-
         // public static final double kVelocityTolerance = 0.5;
 
         public static final double kFlywheelDiameterMeters = 0.102;
     }
 
     public static final class Vision {
-        public static final double kDeadzone = 5; // degrees
+        // public static final double kDeadzone = 5; // degrees
 
     }
 
