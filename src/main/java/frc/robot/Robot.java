@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import io.github.oblarg.oblog.Logger;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -63,6 +64,9 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
+    // update logger
+    Logger.updateEntries();
+
     // NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     // NetworkTableEntry tx = table.getEntry("tx");
     // NetworkTableEntry ty = table.getEntry("ty");
@@ -100,7 +104,7 @@ public class Robot extends TimedRobot {
 
     // // schedule the autonomous command (example)
     // if (m_autonomousCommand != null) {
-    //   m_autonomousCommand.schedule();
+    // m_autonomousCommand.schedule();
     // }
   }
 
@@ -116,7 +120,7 @@ public class Robot extends TimedRobot {
     // continue until interrupted by another command, remove
     // this line or comment it out.
     // if (m_autonomousCommand != null) {
-    //   m_autonomousCommand.cancel();
+    // m_autonomousCommand.cancel();
     // }
   }
 

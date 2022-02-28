@@ -70,21 +70,12 @@ public final class Constants {
     }
 
     public static final class Turret {
-        // feedforward gains
-        public static final double kS = 0;
-        public static final double kV = 0;
-        public static final double kA = 0;
-
         // pid gains
-        public static final double kP = 0;
-        public static final double kI = 0;
-        public static final double kD = 0;
-
-        // maximum motor rotations per second
-        public static final double maxRPS = 3;
+        public static final double kP = 0.15;
+        public static final double kI = 0.0002;
+        public static final double kD = 1;
 
         public static final double kTicksPerRevolution = 4096;
-        public static final double kRightThresholdDegrees = 30; // for now
-        public static final double kLeftThresholdDegrees = -30; // for now
+        public static final double kThresholdDegrees = 90; // for now
     }
 }

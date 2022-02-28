@@ -192,13 +192,13 @@ public class VisionSubsystem extends SubsystemBase {
 		SmartDashboard.putBoolean("Target found?", isTarget);
 		SmartDashboard.putNumber("Offset", offset);
 
-		if (!isTarget) { // if there is no target
-			// pan turret to right
-			direction = 2;
-			return;
-		}
+		// if (!isTarget) { // if there is no target
+		// 	// pan turret to right
+		// 	direction = 2;
+		// 	return;
+		// }
 
-		direction = offset > kDeadzone ? 1 : offset < -kDeadzone ? -1 : 0;
+		// direction = offset > kDeadzone ? 1 : offset < -kDeadzone ? -1 : 0;
 		// if (offset > kDeadzone) { // if offset is positive
 		// // turn turret to right
 		// direction = 1;

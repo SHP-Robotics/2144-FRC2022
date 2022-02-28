@@ -2,62 +2,110 @@ package frc.robot.subsystems;
 
 import static frc.robot.Constants.Turret.*;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
-public class TurretSubsystem extends SubsystemBase {
-    // private final CANSparkMax motor = new CANSparkMax(6, MotorType.kBrushed);
-    private final DigitalInput leftSwitch = new DigitalInput(0);
-    private final DigitalInput rightSwitch = new DigitalInput(1);
+public class TurretSubsystem extends SubsystemBase implements Loggable {
+    private final TalonSRX motor = new TalonSRX(6);
+    private final double ratio = 1.0 / 12.7; // input : output
 
-    private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);
-    private final PIDController pid = new PIDController(kP, kI, kD);
+    @Log(name = "auto enabled")
+    private boolean isAutoEnabled = false;
 
-    private boolean canPan = false;
-    private double panPower = 0.5;
-    // public TurretSubsystem() {
+    private double panPower = 0.2;
 
-    // }
+    private final ProfiledPIDController pid = new ProfiledPIDController(kP, kI, kD,
+            new TrapezoidProfile.Constraints(1, 1));
 
-    public double getVelocityRPS() {
-        return 0;
-        // return motor.getEncoder().getVelocity() / 60; // rpm / 60 = rps
+    public TurretSubsystem() {
+        // motor.config_kP(0, kP);
+        // motor.config_kI(0, kI);
+        // motor.config_kD(0, kD);
+
+        motor.config_kP(0, 0);
+        motor.config_kI(0, 0);
+        motor.config_kD(0, 0);
     }
 
-    public void set(double power, boolean isAuto) {
-        SmartDashboard.putNumber("panPower", panPower);
+    @Log(name = "turret encoder")
+    public double getEncoderPosition() {
+        return motor.getSelectedSensorPosition();
+    }
 
-        if (!canPan && isAuto) {
-            // motor.set(0);
-            return;
-        }
+    @Log(name = "turret degrees")
+    public double getDegrees() {
+        // turret positon / ticks per revolution * 360
+        return this.getEncoderPosition() * ratio / kTicksPerRevolution * 360;
+    }
 
-        if (power == 2 && canPan) { // if panning
-            // if touching particular switch, go in opposite direction
-            panPower = !leftSwitch.get() ? 0.5 : !rightSwitch.get() ? -0.5 : panPower;
-            // set power to panPower
-            power = panPower;
-        } else if ((!leftSwitch.get() && power < 0) || (!rightSwitch.get() && power > 0)) { // else if touching switch
-            // set power to 0
-            power = 0;
-        }
+    public double getRadians(double pulses) {
+        return Math.toRadians(this.getDegrees());
+    }
 
-        double desiredRPS = power * maxRPS;
-        // motor.setVoltage(feedforward.calculate(desiredRPS) + pid.calculate(this.getVelocityRPS(), desiredRPS));
+    public double convertDegreesToTicks(double degrees) {
+        // degrees / 360 * ticks per turret revolution
+        return degrees / 360 * kTicksPerRevolution / ratio;
+    }
+
+    public void resetPosition() {
+        motor.setSelectedSensorPosition(0);
     }
 
     public void toggle() {
-        canPan = !canPan;
+        isAutoEnabled = !isAutoEnabled;
+    }
+
+    public void panTurret() {
+        if (this.getDegrees() >= kThresholdDegrees)
+            panPower = -Math.abs(panPower);
+        else if (this.getDegrees() <= -kThresholdDegrees)
+            panPower = Math.abs(panPower);
+        motor.set(ControlMode.PercentOutput, panPower);
+    }
+
+    @Log(name = "turret power")
+    public double getPower(double setpoint) {
+        return pid.calculate(this.getEncoderPosition(), setpoint);
+    }
+
+    public void adjust(boolean isTarget, double degrees) {
+        if (!isAutoEnabled) {
+            motor.set(ControlMode.PercentOutput, 0);
+            return;
+        }
+
+        if (!isTarget) {
+            this.panTurret();
+            return;
+        }
+
+        double desiredDegrees = this.getDegrees() + degrees;
+
+        if (desiredDegrees > kThresholdDegrees)
+            desiredDegrees = kThresholdDegrees;
+        else if (desiredDegrees < -kThresholdDegrees)
+            desiredDegrees = -kThresholdDegrees;
+
+        // motor.set(ControlMode.Position, this.convertDegreesToTicks(desiredDegrees));
+
+        motor.set(ControlMode.PercentOutput, this.getPower(this.convertDegreesToTicks(degrees)));
+    }
+
+    public void set(double power) {
+        isAutoEnabled = false;
+        motor.set(ControlMode.PercentOutput, power);
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("Turret can pan?", canPan);
+        // SmartDashboard.putBoolean("driver override", !isAutoEnabled);
+        // SmartDashboard.putNumber("current degrees", this.getDegrees());
+        // SmartDashboard.putNumber("turret encoder", this.getEncoderPosition());
     }
 }

@@ -15,15 +15,16 @@ import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.FlywheelSubsystem;
 import frc.robot.subsystems.LauncherSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
-import frc.robot.subsystems.TestTurretSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import io.github.oblarg.oblog.Logger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -35,125 +36,141 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // Subsystems
-  // private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 
-  private final DriveSubsystem driveSubsystem = new DriveSubsystem();
-  private final FlywheelSubsystem flywheelSubsystem = new FlywheelSubsystem();
-  private final VisionSubsystem visionSubsystem = new VisionSubsystem();
-  private final TestTurretSubsystem turretSubsystem = new TestTurretSubsystem();
+    // Subsystems
+    // private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 
-  // private final PneumaticSubsystem pneumaticSubsystem = new
-  // PneumaticSubsystem();
-  // private final LauncherSubsystem launcherSubsystem = new LauncherSubsystem();
+    private final DriveSubsystem driveSubsystem = new DriveSubsystem();
+    // private final FlywheelSubsystem flywheelSubsystem = new FlywheelSubsystem();
+    private final VisionSubsystem visionSubsystem = new VisionSubsystem();
+    private final TurretSubsystem turretSubsystem = new TurretSubsystem();
 
-  // Commands
-  // private final ExampleCommand m_autoCommand = new
-  // ExampleCommand(m_exampleSubsystem);
+    // private final PneumaticSubsystem pneumaticSubsystem = new
+    // PneumaticSubsystem();
+    // private final LauncherSubsystem launcherSubsystem = new LauncherSubsystem();
 
-  // Controllers
-  public final XboxController driver = new XboxController(0);
+    // Commands
+    // private final ExampleCommand m_autoCommand = new
+    // ExampleCommand(m_exampleSubsystem);
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
-  public RobotContainer() {
-    driveSubsystem.setDefaultCommand(
-        new RunCommand(
-            () -> driveSubsystem.drive(driver.getLeftY(),
-                driver.getRightY(), -driver.getRightX()),
-            driveSubsystem));
+    // Controllers
+    public final XboxController driver = new XboxController(0);
 
-    flywheelSubsystem.setDefaultCommand(
-        new RunCommand(
-            () -> flywheelSubsystem.setVelocityRotationsPerSecond(
-                (driver.getRightTriggerAxis() - driver.getLeftTriggerAxis())
-                    * Constants.Flywheel.kFlywheelMaxSpeedRotationsPerSecond),
-            flywheelSubsystem));
+    // use flywheel is ready trigger to tell indexer to move
+    // Trigger flywheelReady = new Trigger(flywheelSubsystem::isAtSetpoint);
+    // Trigger ballIndexed = new Trigger(IndexingSubsystem::isBallIndexed);
 
-    turretSubsystem.setDefaultCommand(
-        new RunCommand(
-            () -> turretSubsystem.moveByDegrees(visionSubsystem.getTx()),
-            turretSubsystem));
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
+    public RobotContainer() {
+        // cnofigure logger
+        Logger.configureLoggingAndConfig(this, false);
 
-    // launcherSubsystem.setDefaultCommand(new RunCommand(() -> {
-    // launcherSubsystem.set((driver.getRightTriggerAxis() -
-    // driver.getLeftTriggerAxis()) * 0.8);
-    // }, launcherSubsystem));
+        driveSubsystem.setDefaultCommand(
+                new RunCommand(
+                        () -> driveSubsystem.drive(driver.getLeftY(),
+                                driver.getRightY(), -driver.getRightX()),
+                        driveSubsystem));
 
-    // exampleSubsystem.setDefaultCommand(
-    // new RunCommand(
-    // () -> exampleSubsystem.set(driver.getRightTriggerAxis() -
-    // driver.getLeftTriggerAxis()),
-    // exampleSubsystem));
+        // flywheelSubsystem.setDefaultCommand(
+        // new RunCommand(
+        // () -> flywheelSubsystem.setVelocityRotationsPerSecond(
+        // (driver.getRightTriggerAxis() - driver.getLeftTriggerAxis())
+        // * Constants.Flywheel.kFlywheelMaxSpeedRotationsPerSecond),
+        // flywheelSubsystem));
 
-    // Configure the button bindings
-    configureButtonBindings();
-  }
+        turretSubsystem.setDefaultCommand(
+                new RunCommand(
+                        () -> turretSubsystem.adjust(visionSubsystem.isTarget(), visionSubsystem.getTx()),
+                        turretSubsystem));
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be
-   * created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
-   * it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
-  private void configureButtonBindings() {
-    // kill switch
-    // new JoystickButton(driver, Constants.Control.kSelect)
-    // .whenPressed(new InstantCommand(
-    // () -> CommandScheduler.getInstance().disable()));
+        // flywheelReady.and(ballIndexed).whenActive(new StartEndCommand());
 
-    // // enable switch
-    // new JoystickButton(driver, Constants.Control.kStart)
-    // .whenPressed(new InstantCommand(
-    // () -> CommandScheduler.getInstance().enable()));
+        // launcherSubsystem.setDefaultCommand(new RunCommand(() -> {
+        // launcherSubsystem.set((driver.getRightTriggerAxis() -
+        // driver.getLeftTriggerAxis()) * 0.8);
+        // }, launcherSubsystem));
 
-    // switch drive mode
-    new JoystickButton(driver, Constants.Control.kAButton)
-        .whenPressed(new InstantCommand(
-            () -> driveSubsystem.switchMode(), driveSubsystem));
+        // exampleSubsystem.setDefaultCommand(
+        // new RunCommand(
+        // () -> exampleSubsystem.set(driver.getRightTriggerAxis() -
+        // driver.getLeftTriggerAxis()),
+        // exampleSubsystem));
 
-    // move turret right
-    // new POVButton(driver, 90)
-    // .whileHeld(new InstantCommand(
-    // () -> turretSubsystem.set(1.0, false), turretSubsystem));
+        // Configure the button bindings
+        configureButtonBindings();
+    }
 
-    // // move turret left
-    // new POVButton(driver, 270)
-    // .whileHeld(new InstantCommand(
-    // () -> turretSubsystem.set(-1.0, false), turretSubsystem));
+    /**
+     * Use this method to define your button->command mappings. Buttons can be
+     * created by
+     * instantiating a {@link GenericHID} or one of its subclasses ({@link
+     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+     * it to a {@link
+     * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+     */
+    private void configureButtonBindings() {
+        // kill switch
+        // new JoystickButton(driver, Constants.Control.kSelect)
+        // .whenPressed(new InstantCommand(
+        // () -> CommandScheduler.getInstance().disable()));
 
-    // reset turret position
-    new JoystickButton(driver, Constants.Control.kXButton)
-        .whenPressed(new InstantCommand(
-            () -> turretSubsystem.resetPosition(), turretSubsystem));
+        // // enable switch
+        // new JoystickButton(driver, Constants.Control.kStart)
+        // .whenPressed(new InstantCommand(
+        // () -> CommandScheduler.getInstance().enable()));
 
-    // new JoystickButton(driver, Constants.Control.kXButton)
-    // .whenPressed(new InstantCommand(
-    // () -> pneumaticSubsystem.forward(), pneumaticSubsystem));
+        // switch drive mode
+        new JoystickButton(driver, Constants.Control.kAButton)
+                .whenPressed(new InstantCommand(
+                        () -> driveSubsystem.switchMode(), driveSubsystem));
 
-    // new JoystickButton(driver, Constants.Control.kYButton)
-    // .whenPressed(new InstantCommand(
-    // () -> pneumaticSubsystem.reverse(), pneumaticSubsystem));
+        // move turret right
+        new POVButton(driver, 90)
+                .whileHeld(new InstantCommand(
+                        () -> turretSubsystem.set(0.1), turretSubsystem));
 
-    // new JoystickButton(driver, Constants.Control.kBButton)
-    // .whenPressed(new InstantCommand(
-    // () -> pneumaticSubsystem.off(), pneumaticSubsystem));
+        // move turret left
+        new POVButton(driver, 270)
+                .whileHeld(new InstantCommand(
+                        () -> turretSubsystem.set(-0.1), turretSubsystem));
 
-    // new JoystickButton(driver, Constants.Control.kBButton)
-    // .whenPressed(new InstantCommand(
-    // () -> musicSubsystem.play(), musicSubsystem));
-  }
+        // reset turret position
+        new JoystickButton(driver, Constants.Control.kXButton)
+                .whenPressed(new InstantCommand(
+                        () -> turretSubsystem.resetPosition(), turretSubsystem));
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  // public Command getAutonomousCommand() {
-  // // An ExampleCommand will run in autonomous
-  // return m_autoCommand;
-  // }
+        // toggle turret control
+        new JoystickButton(driver, Constants.Control.kBButton)
+                .whenPressed(new InstantCommand(
+                        () -> turretSubsystem.toggle(), turretSubsystem));
+
+        // test
+        new JoystickButton(driver, Constants.Control.kYButton)
+                .whenPressed(new InstantCommand(
+                        () -> turretSubsystem.adjust(true, 30), turretSubsystem));
+
+        // new JoystickButton(driver, Constants.Control.kXButton)
+        // .whenPressed(new InstantCommand(
+        // () -> pneumaticSubsystem.forward(), pneumaticSubsystem));
+
+        // new JoystickButton(driver, Constants.Control.kYButton)
+        // .whenPressed(new InstantCommand(
+        // () -> pneumaticSubsystem.reverse(), pneumaticSubsystem));
+
+        // new JoystickButton(driver, Constants.Control.kBButton)
+        // .whenPressed(new InstantCommand(
+        // () -> pneumaticSubsystem.off(), pneumaticSubsystem));
+    }
+
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    // public Command getAutonomousCommand() {
+    // // An ExampleCommand will run in autonomous
+    // return m_autoCommand;
+    // }
 }

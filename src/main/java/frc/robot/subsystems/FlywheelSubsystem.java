@@ -41,7 +41,9 @@ public class FlywheelSubsystem extends SubsystemBase {
 
     /** @return the current falcon-reported velocity in rotations per second. */
     public double getTalonVelocityRPS() {
-        return leftLaunch.getSelectedSensorVelocity() * kFlywheelRotationsPerPulse * 10;
+        // units/100ms * 10 = units/second
+        // units/second * rotations/units = rotations/second
+        return leftLaunch.getSelectedSensorVelocity() * 10 * kFlywheelRotationsPerPulse;
     }
 
     /**
@@ -76,6 +78,10 @@ public class FlywheelSubsystem extends SubsystemBase {
         rightLaunch.set(speed);
     }
 
+    public boolean isAtSetpoint() {
+        return this.getTalonVelocityRPS() >= desiredVelocityRPS;
+    }
+
     @Override
     public void periodic() {
         // Calculates voltage to apply.
@@ -103,7 +109,7 @@ public class FlywheelSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("velocity (m/s)", this.calculateVelocityMeters(velocityRPS));
         SmartDashboard.putNumber("current rps", velocityRPS);
         SmartDashboard.putNumber("desired rps", desiredVelocityRPS);
-        SmartDashboard.putNumber("left falcon applied voltage", leftLaunch.getBusVoltage());
+        // SmartDashboard.putNumber("left falcon applied voltage", leftLaunch.getBusVoltage());
         SmartDashboard.putNumber("Left Launch Temperature (°F)", 1.8 * leftLaunch.getTemperature() + 32);
         SmartDashboard.putNumber("Right Launch Temperature (°F)", 1.8 * rightLaunch.getTemperature() + 32);
     }
