@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
@@ -19,15 +20,15 @@ public class Turret extends SubsystemBase implements Loggable {
     private boolean isClosedLoop = false;
     private double panPower = 0.2;
 
-    private final ProfiledPIDController pid = new ProfiledPIDController(kP, kI, kD,
-            new TrapezoidProfile.Constraints(1, 1));
+    // private final ProfiledPIDController pid = new ProfiledPIDController(kP, 0, 0,
+    //         new TrapezoidProfile.Constraints(1, 1));
 
     public Turret() {
-        // motor.config_kP(0, kP);
+        motor.config_kP(0, kP);
         // motor.config_kI(0, kI);
         // motor.config_kD(0, kD);
 
-        motor.config_kP(0, 0);
+        // motor.config_kP(0, 0);
         motor.config_kI(0, 0);
         motor.config_kD(0, 0);
     }
@@ -68,10 +69,10 @@ public class Turret extends SubsystemBase implements Loggable {
         motor.set(ControlMode.PercentOutput, panPower);
     }
 
-    @Log(name = "turret power")
-    public double getPower(double setpoint) {
-        return pid.calculate(this.getEncoderPosition(), setpoint);
-    }
+    // @Log(name = "turret power")
+    // public double getPower(double setpoint) {
+    //     return pid.calculate(this.getEncoderPosition(), setpoint);
+    // }
 
     public void adjust(boolean isTarget, double degrees) {
         if (!isClosedLoop) {
@@ -80,7 +81,7 @@ public class Turret extends SubsystemBase implements Loggable {
         }
 
         if (!isTarget) {
-            this.panTurret();
+            //this.panTurret();
             return;
         }
 
@@ -90,9 +91,9 @@ public class Turret extends SubsystemBase implements Loggable {
         else if (desiredDegrees < -kThresholdDegrees)
             desiredDegrees = -kThresholdDegrees;
 
-        // motor.set(ControlMode.Position, this.convertDegreesToTicks(desiredDegrees));
+        motor.set(ControlMode.Position, this.convertDegreesToTicks(desiredDegrees));
 
-        motor.set(ControlMode.PercentOutput, this.getPower(this.convertDegreesToTicks(desiredDegrees)));
+        // motor.set(ControlMode.PercentOutput, this.getPower(this.convertDegreesToTicks(desiredDegrees)));
     }
 
     public void openLoop(double power) {
@@ -102,8 +103,8 @@ public class Turret extends SubsystemBase implements Loggable {
 
     @Override
     public void periodic() {
-        // SmartDashboard.putBoolean("driver override", !isAutoEnabled);
-        // SmartDashboard.putNumber("current degrees", this.getDegrees());
-        // SmartDashboard.putNumber("turret encoder", this.getEncoderPosition());
+        SmartDashboard.putBoolean("driver override", !isClosedLoop);
+        SmartDashboard.putNumber("current degrees", this.getDegrees());
+        SmartDashboard.putNumber("turret encoder", this.getEncoderPosition());
     }
 }

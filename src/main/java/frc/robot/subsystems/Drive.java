@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -18,6 +19,8 @@ public class Drive extends SubsystemBase {
 
   private MotorControllerGroup leftDrive;
   private MotorControllerGroup rightDrive;
+
+  // AHRS navx = new AHRS();
 
   private int mode = 1;
 
@@ -40,29 +43,34 @@ public class Drive extends SubsystemBase {
     driveBase = new DifferentialDrive(leftDrive, rightDrive);
   }
 
-  public void drive(double leftY, double rightY, double rightX) {    
+  public void drive(double leftY, double rightY, double rightX) {
+    double forwardThreshold = 0.6;
+    double turnThreshold = 0.5;
+
     if (rightX < 0.1 && rightX > -0.1)
       rightX = 0;
 
     double steeringSensitivity = 1.5;
     rightX = Math.pow(rightX, 3) * steeringSensitivity;
 
-    if (rightX > 0.3) rightX = 0.3;
-    if (rightX < -0.3) rightX = -0.3;
+    if (rightX > turnThreshold)
+      rightX = turnThreshold;
+    if (rightX < -turnThreshold)
+      rightX = -turnThreshold;
 
     // rightX = Math.pow(rightX, 5) / Math.abs(Math.pow(rightX, 3));
 
     double leftSpeed = mode == 0 ? leftY : leftY - rightX;
     double rightSpeed = mode == 0 ? rightY : leftY + rightX;
 
-    if (leftSpeed > 0.5)
-      leftSpeed = 0.5;
-    if (leftSpeed < -0.5)
-      leftSpeed = -0.5;
-    if (rightSpeed > 0.5)
-      rightSpeed = 0.5;
-    if (rightSpeed < -0.5)
-      rightSpeed = -0.5;
+    if (leftSpeed > forwardThreshold)
+      leftSpeed = forwardThreshold;
+    if (leftSpeed < -forwardThreshold)
+      leftSpeed = -forwardThreshold;
+    if (rightSpeed > forwardThreshold)
+      rightSpeed = forwardThreshold;
+    if (rightSpeed < -forwardThreshold)
+      rightSpeed = -forwardThreshold;
 
     // System.out.println(leftSpeed);
     // System.out.println(rightSpeed);
@@ -77,6 +85,6 @@ public class Drive extends SubsystemBase {
 
   @Override
   public void periodic() {
-  // This method will be called once per scheduler run
+    // This method will be called once per scheduler run
   }
 }

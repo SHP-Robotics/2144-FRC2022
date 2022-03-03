@@ -42,8 +42,8 @@ public class RobotContainer {
 
     private final Drive drive = new Drive();
     // private final FlywheelSubsystem flywheelSubsystem = new FlywheelSubsystem();
-    private final Vision vision = new Vision();
-    private final Turret turret = new Turret();
+//     private final Vision vision = new Vision();
+//     private final Turret turret = new Turret();
 
     // private final PneumaticSubsystem pneumaticSubsystem = new
     // PneumaticSubsystem();
@@ -80,11 +80,11 @@ public class RobotContainer {
         // * Constants.Flywheel.kFlywheelMaxSpeedRotationsPerSecond),
         // flywheelSubsystem));
 
-        turret.setDefaultCommand(
-                new RunCommand(
-                        () -> turret.adjust(vision.isTarget(),
-                                vision.getTx()),
-                        turret));
+        // turret.setDefaultCommand(
+        //         new RunCommand(
+        //                 () -> turret.adjust(vision.isTarget(),
+        //                         vision.getTx()),
+        //                 turret));
 
         // flywheelReady.and(ballIndexed).whenActive(new StartEndCommand());
 
@@ -123,34 +123,34 @@ public class RobotContainer {
         // () -> CommandScheduler.getInstance().enable()));
 
         // switch drive mode
-        new JoystickButton(driver, Constants.Control.kAButton)
-                .whenPressed(new InstantCommand(
-                        () -> drive.switchMode(), drive));
+        // new JoystickButton(driver, Constants.Control.kAButton)
+        //         .whenPressed(new InstantCommand(
+        //                 () -> drive.switchMode(), drive));
 
-        // move turret right
-        new POVButton(driver, 90)
-                .whileHeld(new InstantCommand(
-                        () -> turret.openLoop(0.1), turret));
+        // // move turret right
+        // new POVButton(driver, 90)
+        //         .whileHeld(new InstantCommand(
+        //                 () -> turret.openLoop(0.2), turret));
 
-        // move turret left
-        new POVButton(driver, 270)
-                .whileHeld(new InstantCommand(
-                        () -> turret.openLoop(-0.1), turret));
+        // // move turret left
+        // new POVButton(driver, 270)
+        //         .whileHeld(new InstantCommand(
+        //                 () -> turret.openLoop(-0.2), turret));
 
-        // reset turret position
-        new JoystickButton(driver, Constants.Control.kXButton)
-                .whenPressed(new InstantCommand(
-                        () -> turret.resetPosition(), turret));
+        // // reset turret position
+        // new JoystickButton(driver, Constants.Control.kXButton)
+        //         .whenPressed(new InstantCommand(
+        //                 () -> turret.resetPosition(), turret));
 
-        // toggle turret control
-        new JoystickButton(driver, Constants.Control.kBButton)
-                .whenPressed(new InstantCommand(
-                        () -> turret.toggleLoop(), turret));
+        // // toggle turret control
+        // new JoystickButton(driver, Constants.Control.kBButton)
+        //         .whenPressed(new InstantCommand(
+        //                 () -> turret.toggleLoop(), turret));
 
-        // test
-        new JoystickButton(driver, Constants.Control.kYButton)
-                .whenPressed(new InstantCommand(
-                        () -> turret.adjust(true, 30), turret));
+        // // test
+        // new JoystickButton(driver, Constants.Control.kYButton)
+        //         .whenPressed(new InstantCommand(
+        //                 () -> turret.adjust(true, 30), turret));
 
         // new JoystickButton(driver, Constants.Control.kXButton)
         // .whenPressed(new InstantCommand(
