@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.Drive.*;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
@@ -44,33 +46,18 @@ public class Drive extends SubsystemBase {
   }
 
   public void drive(double leftY, double rightY, double rightX) {
-    double forwardThreshold = 0.6;
-    double turnThreshold = 0.5;
-
     if (rightX < 0.1 && rightX > -0.1)
       rightX = 0;
 
-    double steeringSensitivity = 1.5;
-    rightX = Math.pow(rightX, 3) * steeringSensitivity;
-
-    if (rightX > turnThreshold)
-      rightX = turnThreshold;
-    if (rightX < -turnThreshold)
-      rightX = -turnThreshold;
+    rightX = Math.max(-kTurnThreshold, Math.min(kTurnThreshold, Math.pow(rightX, 3) * kTurningSensitivity));
 
     // rightX = Math.pow(rightX, 5) / Math.abs(Math.pow(rightX, 3));
 
     double leftSpeed = mode == 0 ? leftY : leftY - rightX;
     double rightSpeed = mode == 0 ? rightY : leftY + rightX;
 
-    if (leftSpeed > forwardThreshold)
-      leftSpeed = forwardThreshold;
-    if (leftSpeed < -forwardThreshold)
-      leftSpeed = -forwardThreshold;
-    if (rightSpeed > forwardThreshold)
-      rightSpeed = forwardThreshold;
-    if (rightSpeed < -forwardThreshold)
-      rightSpeed = -forwardThreshold;
+    leftSpeed = Math.max(-kForwardThreshold, Math.min(kForwardThreshold, leftSpeed));
+    rightSpeed = Math.max(-kForwardThreshold, Math.min(kForwardThreshold, rightSpeed));
 
     // System.out.println(leftSpeed);
     // System.out.println(rightSpeed);

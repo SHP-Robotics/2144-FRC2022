@@ -32,6 +32,13 @@ public final class Constants {
         public static final int kRightThumbPush = 10;
     }
 
+    public static final class Drive {
+        public static final double kForwardThreshold = 0.6;
+        public static final double kTurnThreshold = 0.5;
+
+        public static final double kTurningSensitivity = 1.5;
+    }
+
     public static final class Flywheel {
         public static final int kFlywheelTalonCurrentLimit = 50;
         public static final int kFalconPulsesPerRevolution = 2048;
