@@ -66,7 +66,7 @@ public class Drive extends SubsystemBase {
   }
 
   public void switchMode() {
-    mode = mode == 0 ? 1 : 0;
+    mode = Math.abs(mode - 1);
     System.out.println("Switched to: " + mode);
   }
 
