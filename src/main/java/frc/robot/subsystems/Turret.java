@@ -1,36 +1,42 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.Turret.*;
+import static frc.robot.Constants.*;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
 public class Turret extends SubsystemBase implements Loggable {
-    private final TalonSRX motor = new TalonSRX(6);
-    private final double ratio = 1.0 / 12.7; // input : output
+    private final WPI_TalonFX motor = new WPI_TalonFX(6);
 
     @Log(name = "auto enabled")
     private boolean isClosedLoop = false;
-    private double panPower = 0.2;
+    private double panPower = 0.1;
+
+    // double power = 0;
 
     // private final ProfiledPIDController pid = new ProfiledPIDController(kP, 0, 0,
-    //         new TrapezoidProfile.Constraints(1, 1));
+    // new TrapezoidProfile.Constraints(1, 1));
 
     public Turret() {
         motor.config_kP(0, kP);
-        // motor.config_kI(0, kI);
-        // motor.config_kD(0, kD);
+        motor.config_kI(0, kI);
+        motor.config_kD(0, kD);
 
         // motor.config_kP(0, 0);
-        motor.config_kI(0, 0);
-        motor.config_kD(0, 0);
+        // motor.config_kI(0, 0);
+        // motor.config_kD(0, 0);
+
+        motor.configMotionCruiseVelocity(5000);
+        motor.configMotionAcceleration(5000);
+
+        motor.setInverted(true);
     }
 
     @Log(name = "turret encoder")
@@ -71,7 +77,8 @@ public class Turret extends SubsystemBase implements Loggable {
 
     // @Log(name = "turret power")
     // public double getPower(double setpoint) {
-    //     return pid.calculate(this.getEncoderPosition(), setpoint);
+    // power = pid.calculate(this.getEncoderPosition(), setpoint);
+    // return power;
     // }
 
     public void adjust(boolean isTarget, double degrees) {
@@ -81,7 +88,7 @@ public class Turret extends SubsystemBase implements Loggable {
         }
 
         if (!isTarget) {
-            //this.panTurret();
+            // this.panTurret();
             return;
         }
 
@@ -93,11 +100,17 @@ public class Turret extends SubsystemBase implements Loggable {
 
         motor.set(ControlMode.Position, this.convertDegreesToTicks(desiredDegrees));
 
-        // motor.set(ControlMode.PercentOutput, this.getPower(this.convertDegreesToTicks(desiredDegrees)));
+        // this.getPower(this.convertDegreesToTicks(desiredDegrees));
     }
 
     public void openLoop(double power) {
-        if (isClosedLoop) isClosedLoop = false;
+        if (isClosedLoop)
+            isClosedLoop = false;
+
+        double degrees = this.getDegrees();
+        if ((degrees > kThresholdDegrees && power > 0) || (degrees < -kThresholdDegrees && power < 0))
+            return;
+
         motor.set(ControlMode.PercentOutput, power);
     }
 
@@ -106,5 +119,6 @@ public class Turret extends SubsystemBase implements Loggable {
         SmartDashboard.putBoolean("driver override", !isClosedLoop);
         SmartDashboard.putNumber("current degrees", this.getDegrees());
         SmartDashboard.putNumber("turret encoder", this.getEncoderPosition());
+        // SmartDashboard.putNumber("turret power", power);
     }
 }

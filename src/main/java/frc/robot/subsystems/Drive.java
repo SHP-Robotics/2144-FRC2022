@@ -8,12 +8,15 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.SPI;
 
 public class Drive extends SubsystemBase {
   private DifferentialDrive driveBase;
 
-  public WPI_TalonFX[] motors = new WPI_TalonFX[4];
+  public WPI_TalonFX[] motors;
   // new WPI_TalonFX(0), // Left Front
   // new WPI_TalonFX(1), // Left Back
   // new WPI_TalonFX(2), // Right Front
@@ -22,18 +25,20 @@ public class Drive extends SubsystemBase {
   private MotorControllerGroup leftDrive;
   private MotorControllerGroup rightDrive;
 
-  // AHRS navx = new AHRS();
+  // private AHRS navx;
 
   private int mode = 1;
+  // private double previousAngle = 0;
+
+  // private final PIDController pid = new PIDController(0.01, 0, 0);
 
   public Drive() {
+    motors = new WPI_TalonFX[4];
+
     for (int i = 0; i < 4; i++) {
       motors[i] = new WPI_TalonFX(i);
-    }
-
-    for (WPI_TalonFX motor : motors) {
-      motor.configOpenloopRamp(0.8);
-      motor.setNeutralMode(NeutralMode.Brake);
+      motors[i].configOpenloopRamp(0.8);
+      motors[i].setNeutralMode(NeutralMode.Coast);
     }
 
     leftDrive = new MotorControllerGroup(motors[0], motors[1]);
@@ -43,11 +48,17 @@ public class Drive extends SubsystemBase {
     rightDrive.setInverted(true);
 
     driveBase = new DifferentialDrive(leftDrive, rightDrive);
+
+    // navx = new AHRS(SPI.Port.kMXP);
   }
 
   public void drive(double leftY, double rightY, double rightX) {
-    if (rightX < 0.1 && rightX > -0.1)
-      rightX = 0;
+    double driftCompensation = 0;
+    // double angle = navx.getAngle();
+    // if (rightX < 0.1 && rightX > -0.1) { // driving forward
+    //   rightX = 0;
+    //   driftCompensation = pid.calculate(angle, previousAngle);
+    // } else previousAngle = angle; // turning
 
     rightX = Math.max(-kTurnThreshold, Math.min(kTurnThreshold, Math.pow(rightX, 3) * kTurningSensitivity));
 
@@ -62,7 +73,7 @@ public class Drive extends SubsystemBase {
     // System.out.println(leftSpeed);
     // System.out.println(rightSpeed);
 
-    driveBase.tankDrive(leftSpeed, rightSpeed);
+    driveBase.tankDrive(leftSpeed + driftCompensation, rightSpeed);
   }
 
   public void switchMode() {
@@ -73,5 +84,6 @@ public class Drive extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    // SmartDashboard.putNumber("navx angle", navx.getAngle());
   }
 }
