@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean
@@ -40,10 +43,17 @@ public final class Constants {
     }
 
     public static final class Flywheel {
-        public static final int kFlywheelTalonCurrentLimit = 50;
-        public static final int kFalconPulsesPerRevolution = 2048;
-        public static final double kFlywheelRotationsPerPulse = 1.0 / kFalconPulsesPerRevolution;
-        public static final double kFlywheelMaxSpeedRotationsPerSecond = 50;
+        public static final int kContinuousCurrentLimit = 40;
+        public static final int kPeakCurrentLimit = 60;
+        public static final double kPeakCurrentDuration = 0.1;
+
+        public static final double kVoltageSaturation = 12;
+        public static final int kVoltageMeasurementSamples = 32;
+
+        public static final double kMaxRPS = 50;
+
+        public static final int kTicksPerRevolution = 2048;
+        public static final double kRotationsPerTick = 1.0 / kTicksPerRevolution;
 
         // 1.5 : 1.0
         // public static final double kS = 0.59083;
@@ -63,12 +73,12 @@ public final class Constants {
     public static final class Turret {
         // pid gains
         public static final double kP = 0.3; // 0.3
-        public static final double kI = 0;//0.0002;
+        public static final double kI = 0;// 0.0002;
         public static final double kD = 10;
 
         public static final double kTicksPerRevolution = 2048;
         public static final double kThresholdDegrees = 30; // for now
-    
+
         public static final double ratio = kTicksPerRevolution / 27400; // input : output
 
     }

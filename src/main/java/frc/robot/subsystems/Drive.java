@@ -61,8 +61,8 @@ public class Drive extends SubsystemBase {
     double driftCompensation = 0;
     // double angle = navx.getAngle();
     // if (rightX < 0.1 && rightX > -0.1) { // driving forward
-    //   rightX = 0;
-    //   driftCompensation = pid.calculate(angle, previousAngle);
+    // rightX = 0;
+    // driftCompensation = pid.calculate(angle, previousAngle);
     // } else previousAngle = angle; // turning
 
     rightX = Math.max(-kTurnThreshold, Math.min(kTurnThreshold, Math.pow(rightX, 3) * kTurningSensitivity));
@@ -79,6 +79,12 @@ public class Drive extends SubsystemBase {
     // System.out.println(rightSpeed);
 
     driveBase.tankDrive(leftRamp.calculate(leftSpeed + driftCompensation), rightRamp.calculate(rightSpeed));
+  }
+
+  public void brake() {
+    driveBase.tankDrive(0, 0);
+    leftRamp.reset(0);
+    rightRamp.reset(0);
   }
 
   public void switchMode() {

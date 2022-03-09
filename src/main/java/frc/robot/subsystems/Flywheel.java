@@ -4,6 +4,7 @@ import static frc.robot.Constants.*;
 import static frc.robot.Constants.Flywheel.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.math.controller.BangBangController;
@@ -22,16 +23,26 @@ public class Flywheel extends SubsystemBase {
 
     /**
      * Creates a new Flywheel. Controlled with a feedforward and a bang-bang
-     * controlller.
+     * controler.
      */
     public Flywheel() {
-        TalonFXConfiguration flywheelTalonConfig = new TalonFXConfiguration();
-        flywheelTalonConfig.supplyCurrLimit.currentLimit = kFlywheelTalonCurrentLimit;
-        flywheelTalonConfig.supplyCurrLimit.enable = true;
-        flywheelTalonConfig.openloopRamp = 0.2;
+        TalonFXConfiguration talonConfig = new TalonFXConfiguration();
+        talonConfig.supplyCurrLimit.enable = true;
+        talonConfig.supplyCurrLimit = new SupplyCurrentLimitConfiguration(
+                true,
+                kContinuousCurrentLimit,
+                kPeakCurrentLimit,
+                kPeakCurrentDuration);
+        talonConfig.voltageCompSaturation = kVoltageSaturation;
+        // talonConfig.voltageMeasurementFilter = kVoltageMeasurementSamples;
+        talonConfig.openloopRamp = 0.2;
 
-        leftLaunch.configAllSettings(flywheelTalonConfig);
-        rightLaunch.configAllSettings(flywheelTalonConfig);
+        leftLaunch.configAllSettings(talonConfig);
+        rightLaunch.configAllSettings(talonConfig);
+
+        leftLaunch.enableVoltageCompensation(true);
+        rightLaunch.enableVoltageCompensation(true);
+
         leftLaunch.setNeutralMode(NeutralMode.Coast);
         rightLaunch.setNeutralMode(NeutralMode.Coast);
 
@@ -43,7 +54,7 @@ public class Flywheel extends SubsystemBase {
     public double getTalonVelocityRPS() {
         // units/100ms * 10 = units/second
         // units/second * rotations/units = rotations/second
-        return leftLaunch.getSelectedSensorVelocity() * 10 * kFlywheelRotationsPerPulse;
+        return leftLaunch.getSelectedSensorVelocity() * 10 * kRotationsPerTick;
     }
 
     /**
@@ -102,14 +113,15 @@ public class Flywheel extends SubsystemBase {
             return;
         }
 
-        this.setVoltage(0.9 * flywheelFeedforward.calculate(desiredVelocityRPS)
+        this.setVoltage(0.85 * flywheelFeedforward.calculate(desiredVelocityRPS)
                 + bangBangController.calculate(velocityRPS, desiredVelocityRPS)
                         * kNominalVoltage);
 
         SmartDashboard.putNumber("velocity (m/s)", this.calculateVelocityMeters(velocityRPS));
         SmartDashboard.putNumber("current rps", velocityRPS);
         SmartDashboard.putNumber("desired rps", desiredVelocityRPS);
-        // SmartDashboard.putNumber("left falcon applied voltage", leftLaunch.getBusVoltage());
+        // SmartDashboard.putNumber("left falcon applied voltage",
+        // leftLaunch.getBusVoltage());
         SmartDashboard.putNumber("Left Launch Temperature (°F)", 1.8 * leftLaunch.getTemperature() + 32);
         SmartDashboard.putNumber("Right Launch Temperature (°F)", 1.8 * rightLaunch.getTemperature() + 32);
     }

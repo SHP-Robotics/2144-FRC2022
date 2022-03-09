@@ -67,11 +67,11 @@ public class RobotContainer {
         // drive));
 
         // flywheel.setDefaultCommand(
-        //         new RunCommand(
-        //                 () -> flywheel.setVelocityRotationsPerSecond(
-        //                         (driver.getRightTriggerAxis() - driver.getLeftTriggerAxis())
-        //                                 * Constants.Flywheel.kFlywheelMaxSpeedRotationsPerSecond),
-        //                 flywheel));
+        // new RunCommand(
+        // () -> flywheel.setVelocityRotationsPerSecond(
+        // (driver.getRightTriggerAxis() - driver.getLeftTriggerAxis())
+        // * Constants.Flywheel.kFlywheelMaxSpeedRotationsPerSecond),
+        // flywheel));
 
         // turret.setDefaultCommand(
         // new RunCommand(
@@ -87,8 +87,8 @@ public class RobotContainer {
         // }, launcherSubsystem));
 
         intake.setDefaultCommand(new RunCommand(() -> {
-        intake.set((driver.getRightTriggerAxis() -
-        driver.getLeftTriggerAxis()) * 1.0);
+            intake.set((driver.getRightTriggerAxis() -
+                    driver.getLeftTriggerAxis()) * 1.0);
         }, intake));
 
         // exampleSubsystem.setDefaultCommand(
@@ -124,6 +124,11 @@ public class RobotContainer {
         // new JoystickButton(driver, Constants.Control.kAButton)
         // .whenPressed(new InstantCommand(
         // () -> drive.switchMode(), drive));
+
+        // brake
+        // new JoystickButton(driver, Constants.Control.kLeftThumbPush)
+        // .whenPressed(new InstantCommand(
+        // () -> drive.brake(), drive));
 
         // // move turret right
         // new POVButton(driver, 90)
