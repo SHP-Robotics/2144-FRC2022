@@ -60,11 +60,6 @@ public final class Constants {
         public static final double kFlywheelDiameterMeters = 0.102;
     }
 
-    public static final class Vision {
-        // public static final double kDeadzone = 5; // degrees
-
-    }
-
     public static final class Turret {
         // pid gains
         public static final double kP = 0.3; // 0.3
@@ -72,7 +67,7 @@ public final class Constants {
         public static final double kD = 10;
 
         public static final double kTicksPerRevolution = 2048;
-        public static final double kThresholdDegrees = 90; // for now
+        public static final double kThresholdDegrees = 30; // for now
     
         public static final double ratio = kTicksPerRevolution / 27400; // input : output
 

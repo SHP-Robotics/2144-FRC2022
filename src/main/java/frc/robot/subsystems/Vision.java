@@ -4,12 +4,11 @@
 
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.Vision.*;
-
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
 import java.lang.Math;
 
@@ -18,8 +17,7 @@ import java.lang.Math;
  * 
  * @author Dan Waxman
  */
-public class Vision extends SubsystemBase {
-	private double direction = 1; // 1 for right, -1 for left, 0 for nothing
+public class Vision extends SubsystemBase implements Loggable {
 	private NetworkTableInstance table = null;
 
 	// UNITS: INCHES
@@ -49,6 +47,7 @@ public class Vision extends SubsystemBase {
 	 * 
 	 * @return true if a target is detected, false otherwise.
 	 */
+	@Log
 	public boolean isTarget() {
 		return getValue("tv").getDouble(0) == 1;
 	}
@@ -58,6 +57,7 @@ public class Vision extends SubsystemBase {
 	 * 
 	 * @return tx as reported by the Limelight.
 	 */
+	@Log(name = "offset")
 	public double getTx() {
 		return getValue("tx").getDouble(0.00);
 	}
@@ -180,32 +180,9 @@ public class Vision extends SubsystemBase {
 		return Math.sqrt((sideC * sideC) - (knownHeight * knownHeight));
 	}
 
-	public double getDirection() {
-		return direction;
-	}
-
-	@Override
-	public void periodic() {
-		boolean isTarget = isTarget();
-		double offset = getTx();
-
-		SmartDashboard.putBoolean("Target found?", isTarget);
-		SmartDashboard.putNumber("Offset", offset);
-
-		// if (!isTarget) { // if there is no target
-		// 	// pan turret to right
-		// 	direction = 2;
-		// 	return;
-		// }
-
-		// direction = offset > kDeadzone ? 1 : offset < -kDeadzone ? -1 : 0;
-		// if (offset > kDeadzone) { // if offset is positive
-		// // turn turret to right
-		// direction = 1;
-		// } else if (offset < -kDeadzone) { // else offset is negative
-		// // turn turret to left
-		// direction = -1;
-		// } else
-		// direction = 0;
-	}
+	// @Override
+	// public void periodic() {
+	// 	SmartDashboard.putBoolean("Target found?", isTarget());
+	// 	SmartDashboard.putNumber("Offset", getTx());
+	// }
 }

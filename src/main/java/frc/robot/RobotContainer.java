@@ -4,23 +4,14 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.Drive;
-import frc.robot.subsystems.Example;
 import frc.robot.subsystems.Flywheel;
-import frc.robot.subsystems.FlywheelTest;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Pneumatics;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
 import io.github.oblarg.oblog.Logger;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -41,11 +32,11 @@ public class RobotContainer {
     // Subsystems
     // private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 
-    private final Drive drive = new Drive();
-    // private final FlywheelSubsystem flywheelSubsystem = new FlywheelSubsystem();
-    private final Vision vision = new Vision();
-    private final Turret turret = new Turret();
-    // private final Intake intake = new Intake();
+    // private final Drive drive = new Drive();
+    // private final Flywheel flywheel = new Flywheel();
+    // private final Vision vision = new Vision();
+    // private final Turret turret = new Turret();
+    private final Intake intake = new Intake();
 
     // private final PneumaticSubsystem pneumaticSubsystem = new
     // PneumaticSubsystem();
@@ -69,24 +60,24 @@ public class RobotContainer {
         // cnofigure logger
         Logger.configureLoggingAndConfig(this, false);
 
-        drive.setDefaultCommand(
-                new RunCommand(
-                        () -> drive.drive(driver.getLeftY(),
-                                driver.getRightY(), -driver.getRightX()),
-                        drive));
-
-        // flywheelSubsystem.setDefaultCommand(
+        // drive.setDefaultCommand(
         // new RunCommand(
-        // () -> flywheelSubsystem.setVelocityRotationsPerSecond(
-        // (driver.getRightTriggerAxis() - driver.getLeftTriggerAxis())
-        // * Constants.Flywheel.kFlywheelMaxSpeedRotationsPerSecond),
-        // flywheelSubsystem));
+        // () -> drive.drive(driver.getLeftY(),
+        // driver.getRightY(), -driver.getRightX()),
+        // drive));
 
-        turret.setDefaultCommand(
-        new RunCommand(
-        () -> turret.adjust(vision.isTarget(),
-        vision.getTx()),
-        turret));
+        // flywheel.setDefaultCommand(
+        //         new RunCommand(
+        //                 () -> flywheel.setVelocityRotationsPerSecond(
+        //                         (driver.getRightTriggerAxis() - driver.getLeftTriggerAxis())
+        //                                 * Constants.Flywheel.kFlywheelMaxSpeedRotationsPerSecond),
+        //                 flywheel));
+
+        // turret.setDefaultCommand(
+        // new RunCommand(
+        // () -> turret.adjust(vision.isTarget(),
+        // vision.getTx()),
+        // turret));
 
         // flywheelReady.and(ballIndexed).whenActive(new StartEndCommand());
 
@@ -95,10 +86,10 @@ public class RobotContainer {
         // driver.getLeftTriggerAxis()) * 0.8);
         // }, launcherSubsystem));
 
-        // intake.setDefaultCommand(new RunCommand(() -> {
-        // intake.set((driver.getRightTriggerAxis() -
-        // driver.getLeftTriggerAxis()) * 1.0);
-        // }, intake));
+        intake.setDefaultCommand(new RunCommand(() -> {
+        intake.set((driver.getRightTriggerAxis() -
+        driver.getLeftTriggerAxis()) * 1.0);
+        }, intake));
 
         // exampleSubsystem.setDefaultCommand(
         // new RunCommand(
@@ -135,24 +126,24 @@ public class RobotContainer {
         // () -> drive.switchMode(), drive));
 
         // // move turret right
-        new POVButton(driver, 90)
-        .whileHeld(new InstantCommand(
-        () -> turret.openLoop(0.1), turret));
+        // new POVButton(driver, 90)
+        // .whileHeld(new InstantCommand(
+        // () -> turret.openLoop(0.1), turret));
 
-        // move turret left
-        new POVButton(driver, 270)
-        .whileHeld(new InstantCommand(
-        () -> turret.openLoop(-0.1), turret));
+        // // move turret left
+        // new POVButton(driver, 270)
+        // .whileHeld(new InstantCommand(
+        // () -> turret.openLoop(-0.1), turret));
 
-        // reset turret position
-        new JoystickButton(driver, Constants.Control.kXButton)
-        .whenPressed(new InstantCommand(
-        () -> turret.resetPosition(), turret));
+        // // reset turret position
+        // new JoystickButton(driver, Constants.Control.kXButton)
+        // .whenPressed(new InstantCommand(
+        // () -> turret.resetPosition(), turret));
 
-        // toggle turret control
-        new JoystickButton(driver, Constants.Control.kBButton)
-        .whenPressed(new InstantCommand(
-        () -> turret.toggleLoop(), turret));
+        // // toggle turret control
+        // new JoystickButton(driver, Constants.Control.kBButton)
+        // .whenPressed(new InstantCommand(
+        // () -> turret.toggleLoop(), turret));
 
         // // test
         // new JoystickButton(driver, Constants.Control.kYButton)

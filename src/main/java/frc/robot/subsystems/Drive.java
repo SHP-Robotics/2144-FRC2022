@@ -10,7 +10,8 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
+// import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.SPI;
 
 public class Drive extends SubsystemBase {
@@ -25,9 +26,13 @@ public class Drive extends SubsystemBase {
   private MotorControllerGroup leftDrive;
   private MotorControllerGroup rightDrive;
 
-  // private AHRS navx;
+  private AHRS navx;
 
   private int mode = 1;
+
+  private SlewRateLimiter leftRamp = new SlewRateLimiter(0.5);
+  private SlewRateLimiter rightRamp = new SlewRateLimiter(0.5);
+
   // private double previousAngle = 0;
 
   // private final PIDController pid = new PIDController(0.01, 0, 0);
@@ -37,7 +42,7 @@ public class Drive extends SubsystemBase {
 
     for (int i = 0; i < 4; i++) {
       motors[i] = new WPI_TalonFX(i);
-      motors[i].configOpenloopRamp(0.8);
+      motors[i].configOpenloopRamp(0);
       motors[i].setNeutralMode(NeutralMode.Coast);
     }
 
@@ -49,7 +54,7 @@ public class Drive extends SubsystemBase {
 
     driveBase = new DifferentialDrive(leftDrive, rightDrive);
 
-    // navx = new AHRS(SPI.Port.kMXP);
+    navx = new AHRS(SPI.Port.kMXP);
   }
 
   public void drive(double leftY, double rightY, double rightX) {
@@ -73,7 +78,7 @@ public class Drive extends SubsystemBase {
     // System.out.println(leftSpeed);
     // System.out.println(rightSpeed);
 
-    driveBase.tankDrive(leftSpeed + driftCompensation, rightSpeed);
+    driveBase.tankDrive(leftRamp.calculate(leftSpeed + driftCompensation), rightRamp.calculate(rightSpeed));
   }
 
   public void switchMode() {
@@ -84,6 +89,6 @@ public class Drive extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    // SmartDashboard.putNumber("navx angle", navx.getAngle());
+    SmartDashboard.putNumber("navx angle", navx.getAngle());
   }
 }

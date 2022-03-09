@@ -35,8 +35,8 @@ public class Flywheel extends SubsystemBase {
         leftLaunch.setNeutralMode(NeutralMode.Coast);
         rightLaunch.setNeutralMode(NeutralMode.Coast);
 
-        leftLaunch.setInverted(true);
-        rightLaunch.setInverted(false);
+        leftLaunch.setInverted(false);
+        rightLaunch.setInverted(true);
     }
 
     /** @return the current falcon-reported velocity in rotations per second. */

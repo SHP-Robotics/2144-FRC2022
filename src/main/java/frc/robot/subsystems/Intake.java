@@ -3,17 +3,20 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
-    public TalonSRX motor = new TalonSRX(7);
+    private TalonSRX motor = new TalonSRX(7);
+    private SlewRateLimiter ramp = new SlewRateLimiter(0.8);
+
 
     // public Intake() {
 
     // }
 
     public void set(double power) {
-        motor.set(TalonSRXControlMode.PercentOutput, power);
+        motor.set(TalonSRXControlMode.PercentOutput, ramp.calculate(power));
     }
 
     @Override
