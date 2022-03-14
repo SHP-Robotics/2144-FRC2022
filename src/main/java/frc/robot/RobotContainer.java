@@ -6,6 +6,8 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.commands.ShootBall;
+import frc.robot.commands.SpinFlywheel;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Flywheel;
 import frc.robot.subsystems.Indexer;
@@ -34,11 +36,11 @@ public class RobotContainer {
     // private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 
     private final Drive drive = new Drive();
-//     private final Flywheel flywheel = new Flywheel();
-//     private final Vision vision = new Vision();
-//     private final Turret turret = new Turret();
-    // private final Intake intake = new Intake();
-//     private final Indexer indexer = new Indexer();
+    private final Flywheel flywheel = new Flywheel();
+    private final Vision vision = new Vision();
+    private final Turret turret = new Turret();
+    private final Intake intake = new Intake();
+    private final Indexer indexer = new Indexer();
 
     // private final PneumaticSubsystem pneumaticSubsystem = new
     // PneumaticSubsystem();
@@ -49,19 +51,45 @@ public class RobotContainer {
     // ExampleCommand(m_exampleSubsystem);
 
     // Controllers
-    public final XboxController driver = new XboxController(0);
+    private final XboxController driver = new XboxController(0);
 
     // use flywheel is ready trigger to tell indexer to move
-    // Trigger flywheelReady = new Trigger(flywheel::isAtSetpoint);
-    // Trigger ballIndexed = new Trigger(Indexer::isBallIndexed);
-    // Trigger targetAcquired = new Trigger(vision:isTarget);
+    private final Trigger ballIndexed = new Trigger(indexer::ballIndexed);
+    private final Trigger targetAcquired = new Trigger(vision::isTarget);
+
+    /**
+     * 
+     * TODO
+     * 
+     * - getDistance() in Vision
+     * - ballIndexed() in Indexer
+     * - Interpolation table
+     * - Drivetrain drift compensation using navX
+     * 
+     */
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-        // cnofigure logger
+        // configure logger
         Logger.configureLoggingAndConfig(this, false);
+
+        /**
+         * TRIGGERS
+         */
+
+        // when a ball is not indexed (regardless of camera targeting hub), stop
+        // spinning the flywheel to save power
+        ballIndexed.whenInactive(new RunCommand(() -> flywheel.setVelocityRotationsPerSecond(0), flywheel));
+
+        // when a ball is indexed and the camera is targeting the hub, get the flywheel
+        // to its setpoint and shoot the ball
+        ballIndexed.and(targetAcquired).whenActive(new SpinFlywheel(flywheel, vision).andThen(new ShootBall(indexer)));
+
+        /**
+         * DEFAULT COMMANDS
+         */
 
         drive.setDefaultCommand(
                 new RunCommand(
@@ -69,24 +97,23 @@ public class RobotContainer {
                         drive));
 
         // flywheel.setDefaultCommand(
-        //         new RunCommand(
-        //                 () -> flywheel.setVelocityRotationsPerSecond(
-        //                         (driver.getRightTriggerAxis() - driver.getLeftTriggerAxis())
-        //                                 * Constants.Flywheel.kMaxRPS),
-        //                 flywheel));
+        // new RunCommand(
+        // () -> flywheel.setVelocityRotationsPerSecond(
+        // (driver.getRightTriggerAxis() - driver.getLeftTriggerAxis())
+        // * Constants.Flywheel.kMaxRPS),
+        // flywheel));
 
         // indexer.setDefaultCommand(
-        //         new RunCommand(
-        //                 () -> indexer.set(flywheel.isAtSetpoint() && flywheel.desiredVelocityRPS >= 30 ? 0.3 : 0),
-        //                 indexer));
+        // new RunCommand(
+        // () -> indexer.set(flywheel.isAtSetpoint() && flywheel.desiredVelocityRPS >=
+        // 30 ? 0.3 : 0),
+        // indexer));
 
         // turret.setDefaultCommand(
-        //         new RunCommand(
-        //                 () -> turret.adjust(vision.isTarget(),
-        //                         vision.getTx()),
-        //                 turret));
-
-        // flywheelReady.and(ballIndexed).whenActive(new StartEndCommand());
+        // new RunCommand(
+        // () -> turret.adjust(vision.isTarget(),
+        // vision.getTx()),
+        // turret));
 
         // launcherSubsystem.setDefaultCommand(new RunCommand(() -> {
         // launcherSubsystem.set((driver.getRightTriggerAxis() -
@@ -94,7 +121,7 @@ public class RobotContainer {
         // }, launcherSubsystem));
 
         // intake.setDefaultCommand(new RunCommand(() -> {
-        //     intake.set(0);
+        // intake.set(0);
         // }, intake));
 
         // exampleSubsystem.setDefaultCommand(
@@ -132,32 +159,32 @@ public class RobotContainer {
         // () -> drive.switchMode(), drive));
 
         // new JoystickButton(driver, Constants.Control.kRBumper)
-        //         .whenPressed(new InstantCommand(
-        //                 () -> intake.set(1.0), intake));
+        // .whenPressed(new InstantCommand(
+        // () -> intake.set(1.0), intake));
 
         // new JoystickButton(driver, Constants.Control.kLBumper)
-        //         .whenPressed(new InstantCommand(
-        //                 () -> intake.set(-1.0), intake));
+        // .whenPressed(new InstantCommand(
+        // () -> intake.set(-1.0), intake));
 
         // // move turret right
         // new POVButton(driver, 90)
-        //         .whileHeld(new InstantCommand(
-        //                 () -> turret.openLoop(0.1), turret));
+        // .whileHeld(new InstantCommand(
+        // () -> turret.openLoop(0.1), turret));
 
         // // move turret left
         // new POVButton(driver, 270)
-        //         .whileHeld(new InstantCommand(
-        //                 () -> turret.openLoop(-0.1), turret));
+        // .whileHeld(new InstantCommand(
+        // () -> turret.openLoop(-0.1), turret));
 
         // // reset turret position
         // new JoystickButton(driver, Constants.Control.kXButton)
-        //         .whenPressed(new InstantCommand(
-        //                 () -> turret.resetPosition(), turret));
+        // .whenPressed(new InstantCommand(
+        // () -> turret.resetPosition(), turret));
 
         // // toggle turret control
         // new JoystickButton(driver, Constants.Control.kBButton)
-        //         .whenPressed(new InstantCommand(
-        //                 () -> turret.toggleLoop(), turret));
+        // .whenPressed(new InstantCommand(
+        // () -> turret.toggleLoop(), turret));
 
         // // test
         // new JoystickButton(driver, Constants.Control.kYButton)

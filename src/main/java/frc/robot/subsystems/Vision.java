@@ -143,46 +143,61 @@ public class Vision extends SubsystemBase implements Loggable {
 		return table.getTable("limelight").getEntry(key);
 	}
 
-	public double[] getCorners() {
-		double[] placeHoler = new double[8]; // temporary fix for returning corners.
-		return getValue("tcornxy").getDoubleArray(placeHoler); // returns array of corner cordinates x0, y0...
-	}
+	// public double[] getCorners() {
+	// double[] placeHoler = new double[8]; // temporary fix for returning corners.
+	// return getValue("tcornxy").getDoubleArray(placeHoler); // returns array of
+	// corner cordinates x0, y0...
+	// }
 
-	public double pixelsToAngle(double pixelXValue) {
-		if (pixelXValue > 160)
-			pixelXValue -= 160;
-		return pixelXValue / (320 / 59.6); // returns angle from center, center is 0 degrees
-	}
+	// public double pixelsToAngle(double pixelXValue) {
+	// if (pixelXValue > 160)
+	// pixelXValue -= 160;
+	// return pixelXValue / (320 / 59.6); // returns angle from center, center is 0
+	// degrees
+	// }
 
-	public double getHypotenuse(double triangulationLength) { // finds the hypotenuse
-		double distance;
-		double a, b; // angles for triangulation
-		double[] corners = getCorners();
+	// public double getHypotenuse(double triangulationLength) { // finds the
+	// hypotenuse
+	// double distance;
+	// double a, b; // angles for triangulation
+	// double[] corners = getCorners();
 
-		a = 90 - pixelsToAngle(corners[0]); // hopefully these corners are the top left and right
-		b = 90 - pixelsToAngle(corners[4]);
+	// a = 90 - pixelsToAngle(corners[0]); // hopefully these corners are the top
+	// left and right
+	// b = 90 - pixelsToAngle(corners[4]);
 
-		distance = (triangulationLength * Math.sin(a) * Math.sin(b)) / Math.sin(a + b);
+	// distance = (triangulationLength * Math.sin(a) * Math.sin(b)) / Math.sin(a +
+	// b);
 
-		return distance;
-	}
+	// return distance;
+	// }
 
-	public double getAngle(double knownHeight) { // gets angle from ground (0 degrees) to angle from camera to
-													// top of reflective tape
-		double sideC = getHypotenuse(reflectiveTapeLength); // length of reflective tape
+	// public double getAngle(double knownHeight) { // gets angle from ground (0
+	// degrees) to angle from camera to
+	// // top of reflective tape
+	// double sideC = getHypotenuse(reflectiveTapeLength); // length of reflective
+	// tape
 
-		return Math.asin(knownHeight / sideC);
-	}
+	// return Math.asin(knownHeight / sideC);
+	// }
 
-	public double getDistance(double knownHeight) { // distance from camera to net thing with the tape
-		double sideC = getHypotenuse(reflectiveTapeLength); // length of reflective tape
+	// public double getDistance(double knownHeight) { // distance from camera to
+	// net thing with the tape
+	// double sideC = getHypotenuse(reflectiveTapeLength); // length of reflective
+	// tape
 
-		return Math.sqrt((sideC * sideC) - (knownHeight * knownHeight));
+	// return Math.sqrt((sideC * sideC) - (knownHeight * knownHeight));
+	// }
+
+	// inches
+	public double getDistance() {
+		// calculate here
+		return 0; // for now
 	}
 
 	// @Override
 	// public void periodic() {
-	// 	SmartDashboard.putBoolean("Target found?", isTarget());
-	// 	SmartDashboard.putNumber("Offset", getTx());
+	// SmartDashboard.putBoolean("Target found?", isTarget());
+	// SmartDashboard.putNumber("Offset", getTx());
 	// }
 }

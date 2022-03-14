@@ -6,6 +6,8 @@ package frc.robot;
 
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
+import frc.robot.utils.InterpolatingTreeMap;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean
@@ -53,6 +55,7 @@ public final class Constants {
         public static final int kVelocityMeasurementWindow = 32;
 
         public static final double kMaxRPS = 30;
+        public static final double kDefaultRPS = 10;
 
         public static final int kTicksPerRevolution = 2048;
         public static final double kRotationsPerTick = 1.0 / kTicksPerRevolution;
@@ -74,6 +77,15 @@ public final class Constants {
         // public static final double kVelocityTolerance = 0.5;
 
         public static final double kFlywheelDiameterMeters = 0.102;
+
+        public static final class InterpolationTable {
+            public static final InterpolatingTreeMap<Number, Number> table = new InterpolatingTreeMap<>();
+
+            public InterpolationTable() {
+                // Distance (Inches) : Rotations Per Second
+                table.put(0, 0);
+            }
+        }
     }
 
     public static final class Turret {
@@ -87,5 +99,9 @@ public final class Constants {
 
         public static final double ratio = kTicksPerRevolution / 27400; // input : output
 
+    }
+
+    public static final class Indexer {
+        public static final double kDefaultSpeed = 0.3;
     }
 }
