@@ -4,8 +4,7 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -37,7 +36,7 @@ public final class Constants {
 
     public static final class Drive {
         public static final double kForwardThreshold = 0.6;
-        public static final double kTurnThreshold = 0.5;
+        public static final double kTurnThreshold = 0.4;
 
         public static final double kTurningSensitivity = 1.5;
     }
@@ -47,10 +46,13 @@ public final class Constants {
         public static final int kPeakCurrentLimit = 60;
         public static final double kPeakCurrentDuration = 0.1;
 
-        public static final double kVoltageSaturation = 12;
-        public static final int kVoltageMeasurementSamples = 32;
+        // public static final double kVoltageSaturation = 12;
+        // public static final int kVoltageMeasurementSamples = 32;
 
-        public static final double kMaxRPS = 50;
+        public static final SensorVelocityMeasPeriod kVelocityMeasurementPeriod = SensorVelocityMeasPeriod.Period_50Ms;
+        public static final int kVelocityMeasurementWindow = 32;
+
+        public static final double kMaxRPS = 30;
 
         public static final int kTicksPerRevolution = 2048;
         public static final double kRotationsPerTick = 1.0 / kTicksPerRevolution;
@@ -61,9 +63,13 @@ public final class Constants {
         // public static final double kA = 0.013781;
 
         // 1.0 : 2.5
-        public static final double kS = 0.65454;
-        public static final double kV = 0.13604;
-        public static final double kA = 0.023556;
+        // public static final double kS = 0.65454;
+        // public static final double kV = 0.13604;
+        // public static final double kA = 0.023556;
+
+        public static final double kS = 0.58276;
+        public static final double kV = 0.13622;
+        public static final double kA = 0.025538;
 
         // public static final double kVelocityTolerance = 0.5;
 

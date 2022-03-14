@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,7 +20,7 @@ public class Flywheel extends SubsystemBase {
     private final SimpleMotorFeedforward flywheelFeedforward = new SimpleMotorFeedforward(kS, kV, kA);
     private final BangBangController bangBangController = new BangBangController();
 
-    private double desiredVelocityRPS;
+    public double desiredVelocityRPS;
 
     /**
      * Creates a new Flywheel. Controlled with a feedforward and a bang-bang
@@ -27,21 +28,22 @@ public class Flywheel extends SubsystemBase {
      */
     public Flywheel() {
         TalonFXConfiguration talonConfig = new TalonFXConfiguration();
-        talonConfig.supplyCurrLimit.enable = true;
         talonConfig.supplyCurrLimit = new SupplyCurrentLimitConfiguration(
                 true,
                 kContinuousCurrentLimit,
                 kPeakCurrentLimit,
                 kPeakCurrentDuration);
-        talonConfig.voltageCompSaturation = kVoltageSaturation;
+        // talonConfig.voltageCompSaturation = kVoltageSaturation;
         // talonConfig.voltageMeasurementFilter = kVoltageMeasurementSamples;
-        talonConfig.openloopRamp = 0.2;
+        talonConfig.velocityMeasurementPeriod = kVelocityMeasurementPeriod;
+        talonConfig.velocityMeasurementWindow = kVelocityMeasurementWindow;
+        talonConfig.openloopRamp = 0.1;
 
         leftLaunch.configAllSettings(talonConfig);
         rightLaunch.configAllSettings(talonConfig);
 
-        leftLaunch.enableVoltageCompensation(true);
-        rightLaunch.enableVoltageCompensation(true);
+        // leftLaunch.enableVoltageCompensation(false);
+        // rightLaunch.enableVoltageCompensation(false);
 
         leftLaunch.setNeutralMode(NeutralMode.Coast);
         rightLaunch.setNeutralMode(NeutralMode.Coast);
@@ -99,13 +101,14 @@ public class Flywheel extends SubsystemBase {
         // Feedforward is scaled down to prevent overshoot since bang-bang can't
         // correct for overshoot.
 
+        double velocityRPS = this.getTalonVelocityRPS();
+
+
         // if trying to go backwards
-        if (desiredVelocityRPS < 0) {
+        if (desiredVelocityRPS < 0 && velocityRPS <= 0) {
             this.set(-0.1);
             return;
         }
-
-        double velocityRPS = this.getTalonVelocityRPS();
 
         // make motor stop if reversing before returning to ff + bb
         if (velocityRPS < 0) {
@@ -113,7 +116,7 @@ public class Flywheel extends SubsystemBase {
             return;
         }
 
-        this.setVoltage(0.85 * flywheelFeedforward.calculate(desiredVelocityRPS)
+        this.setVoltage(0.9 * flywheelFeedforward.calculate(desiredVelocityRPS)
                 + bangBangController.calculate(velocityRPS, desiredVelocityRPS)
                         * kNominalVoltage);
 

@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.MathUtil;
 // import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.SPI;
 
@@ -26,12 +26,7 @@ public class Drive extends SubsystemBase {
   private MotorControllerGroup leftDrive;
   private MotorControllerGroup rightDrive;
 
-  private AHRS navx;
-
-  private int mode = 1;
-
-  private SlewRateLimiter leftRamp = new SlewRateLimiter(0.5);
-  private SlewRateLimiter rightRamp = new SlewRateLimiter(0.5);
+  // private AHRS navx;
 
   // private double previousAngle = 0;
 
@@ -42,7 +37,7 @@ public class Drive extends SubsystemBase {
 
     for (int i = 0; i < 4; i++) {
       motors[i] = new WPI_TalonFX(i);
-      motors[i].configOpenloopRamp(0);
+      motors[i].configOpenloopRamp(0.8);
       motors[i].setNeutralMode(NeutralMode.Coast);
     }
 
@@ -54,47 +49,50 @@ public class Drive extends SubsystemBase {
 
     driveBase = new DifferentialDrive(leftDrive, rightDrive);
 
-    navx = new AHRS(SPI.Port.kMXP);
+    // navx = new AHRS(SPI.Port.kMXP);
   }
 
-  public void drive(double leftY, double rightY, double rightX) {
-    double driftCompensation = 0;
+  public void drive(double leftY, double rightX) {
+    if (leftY < 0.1 && leftY > -0.1)
+      leftY = 0;
+    if (rightX < 0.1 && rightX > -0.1)
+      rightX = 0;
+
+    // double driftCompensation = 0;
     // double angle = navx.getAngle();
     // if (rightX < 0.1 && rightX > -0.1) { // driving forward
     // rightX = 0;
     // driftCompensation = pid.calculate(angle, previousAngle);
     // } else previousAngle = angle; // turning
 
-    rightX = Math.max(-kTurnThreshold, Math.min(kTurnThreshold, Math.pow(rightX, 3) * kTurningSensitivity));
+    leftY = MathUtil.clamp(leftY, -kForwardThreshold, kForwardThreshold);
+    rightX = MathUtil.clamp(Math.pow(rightX, 3) * kTurningSensitivity, -kTurnThreshold, kTurnThreshold);
 
     // rightX = Math.pow(rightX, 5) / Math.abs(Math.pow(rightX, 3));
 
-    double leftSpeed = mode == 0 ? leftY : leftY - rightX;
-    double rightSpeed = mode == 0 ? rightY : leftY + rightX;
+    double leftSpeed = leftY - rightX;
+    double rightSpeed = leftY + rightX;
 
-    leftSpeed = Math.max(-kForwardThreshold, Math.min(kForwardThreshold, leftSpeed));
-    rightSpeed = Math.max(-kForwardThreshold, Math.min(kForwardThreshold, rightSpeed));
+    leftSpeed = MathUtil.clamp(leftSpeed, -kForwardThreshold, kForwardThreshold);
+    rightSpeed = MathUtil.clamp(rightSpeed, -kForwardThreshold, kForwardThreshold);
 
     // System.out.println(leftSpeed);
+
     // System.out.println(rightSpeed);
 
-    driveBase.tankDrive(leftRamp.calculate(leftSpeed + driftCompensation), rightRamp.calculate(rightSpeed));
+    // driveBase.tankDrive(leftRamp.calculate(leftSpeed + driftCompensation),
+    // rightRamp.calculate(rightSpeed));
+    driveBase.tankDrive(leftSpeed, rightSpeed);
   }
 
-  public void brake() {
-    driveBase.tankDrive(0, 0);
-    leftRamp.reset(0);
-    rightRamp.reset(0);
-  }
-
-  public void switchMode() {
-    mode = Math.abs(mode - 1);
-    System.out.println("Switched to: " + mode);
-  }
+  // public void switchMode() {
+  // mode = Math.abs(mode - 1);
+  // System.out.println("Switched to: " + mode);
+  // }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("navx angle", navx.getAngle());
+    // SmartDashboard.putNumber("navx angle", navx.getAngle());
   }
 }
