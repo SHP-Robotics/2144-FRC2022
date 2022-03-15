@@ -67,7 +67,7 @@ public class RobotContainer {
      * - Stop command (removes all scheduled comamnds and sets all motors to 0)
      * - Drivetrain drift compensation using navX
      * - Refactor code to remove nested Constant class references
-     * (e.g. Constant.Control.kAButton -> kAButton)
+     * (e.g. Constants.Control.kAButton -> kAButton)
      * - Move controller IDs to Constants
      * 
      */
