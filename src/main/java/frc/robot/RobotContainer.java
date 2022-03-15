@@ -54,8 +54,8 @@ public class RobotContainer {
     private final XboxController driver = new XboxController(0);
 
     // use flywheel is ready trigger to tell indexer to move
-    private final Trigger ballIndexed = new Trigger(indexer::ballIndexed);
-    private final Trigger targetAcquired = new Trigger(vision::isTarget);
+    private final Trigger ballIndexed = new Trigger(indexer::isBallIndexed);
+    private final Trigger targetLocked = new Trigger(vision::isTargetLocked);
 
     /**
      * 
@@ -85,7 +85,7 @@ public class RobotContainer {
 
         // when a ball is indexed and the camera is targeting the hub, get the flywheel
         // to its setpoint and shoot the ball
-        ballIndexed.and(targetAcquired).whenActive(new SpinFlywheel(flywheel, vision).andThen(new ShootBall(indexer)));
+        ballIndexed.and(targetLocked).whenActive(new SpinFlywheel(flywheel, vision).andThen(new ShootBall(indexer)));
 
         /**
          * DEFAULT COMMANDS

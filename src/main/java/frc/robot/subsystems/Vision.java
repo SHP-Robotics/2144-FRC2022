@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
@@ -126,6 +127,11 @@ public class Vision extends SubsystemBase implements Loggable {
 	 */
 	public void setPipeline(int number) {
 		getValue("pipeline").setNumber(number);
+	}
+
+	public boolean isTargetLocked() {
+		double offset = getTx();
+		return isTarget() && offset < Constants.Vision.kDeadzone && offset > -Constants.Vision.kDeadzone;
 	}
 
 	/**

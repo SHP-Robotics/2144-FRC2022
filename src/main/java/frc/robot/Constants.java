@@ -88,6 +88,10 @@ public final class Constants {
         }
     }
 
+    public static final class Vision {
+        public static final double kDeadzone = 5; // margin of acceptance for error
+    }
+
     public static final class Turret {
         // pid gains
         public static final double kP = 0.3; // 0.3

@@ -29,7 +29,7 @@ public class Indexer extends SubsystemBase {
         motor.set(TalonFXControlMode.PercentOutput, 0);
     }
 
-    public boolean ballIndexed() {
+    public boolean isBallIndexed() {
         return false; // for now
     }
 
