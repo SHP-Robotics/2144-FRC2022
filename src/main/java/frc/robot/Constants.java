@@ -90,6 +90,10 @@ public final class Constants {
 
     public static final class Vision {
         public static final double kDeadzone = 5; // margin of acceptance for error
+
+        public static final double kMountAngleDegrees = 0; // need to find (degrees rotated on mount)
+        public static final double kCameraHeightInches = 0; // need to find (center of lens to floor)
+        public static final double kTargetHeightInches = 0; // need to find (target to floor)
     }
 
     public static final class Turret {

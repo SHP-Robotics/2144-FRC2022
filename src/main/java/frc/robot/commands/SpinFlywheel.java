@@ -25,10 +25,10 @@ public class SpinFlywheel extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        double distance = vision.getDistance();
+        double distanceInches = vision.getDistanceInches();
         flywheel.setVelocityRotationsPerSecond(
-                distance == 0 ? Constants.Flywheel.kDefaultRPS
-                        : Constants.Flywheel.InterpolationTable.table.get(distance));
+                distanceInches == 0 ? Constants.Flywheel.kDefaultRPS
+                        : Constants.Flywheel.InterpolationTable.table.get(distanceInches));
     }
 
     // Called once the command ends or is interrupted.

@@ -4,10 +4,11 @@
 
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.Vision.*;
+
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
@@ -22,8 +23,9 @@ public class Vision extends SubsystemBase implements Loggable {
 	private NetworkTableInstance table = null;
 
 	// UNITS: INCHES
-	double reflectiveTapeLength = 5;
-	double knownHeight = 10; // TODO: find value from top height of reflective tape - height of camera point
+	// double reflectiveTapeLength = 5;
+	// double knownHeight = 10; // TODO: find value from top height of reflective
+	// tape - height of camera point
 
 	/**
 	 * Light modes for Limelight.
@@ -131,7 +133,7 @@ public class Vision extends SubsystemBase implements Loggable {
 
 	public boolean isTargetLocked() {
 		double offset = getTx();
-		return isTarget() && offset < Constants.Vision.kDeadzone && offset > -Constants.Vision.kDeadzone;
+		return isTarget() && offset < kDeadzone && offset > -kDeadzone;
 	}
 
 	/**
@@ -195,10 +197,11 @@ public class Vision extends SubsystemBase implements Loggable {
 	// return Math.sqrt((sideC * sideC) - (knownHeight * knownHeight));
 	// }
 
-	// inches
-	public double getDistance() {
-		// calculate here
-		return 0; // for now
+	// https://docs.limelightvision.io/en/latest/cs_estimating_distance.html#using-a-fixed-angle-camera
+	public double getDistanceInches() {
+		double offset = getTy();
+		double angleToGoalRadians = Math.toRadians(kMountAngleDegrees + offset);
+		return (kTargetHeightInches - kCameraHeightInches) / Math.tan(angleToGoalRadians);
 	}
 
 	// @Override

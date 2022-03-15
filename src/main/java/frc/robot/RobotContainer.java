@@ -61,7 +61,7 @@ public class RobotContainer {
      * 
      * TODO
      * 
-     * - getDistance() in Vision
+     * - Vision constants
      * - ballIndexed() in Indexer
      * - Interpolation table
      * - Stop command (removes all scheduled comamnds and sets all motors to 0)
