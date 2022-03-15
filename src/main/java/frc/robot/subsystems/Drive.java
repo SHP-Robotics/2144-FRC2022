@@ -84,11 +84,6 @@ public class Drive extends SubsystemBase {
     driveBase.tankDrive(leftSpeed, rightSpeed);
   }
 
-  // public void switchMode() {
-  // mode = Math.abs(mode - 1);
-  // System.out.println("Switched to: " + mode);
-  // }
-
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

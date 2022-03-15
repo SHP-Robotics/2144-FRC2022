@@ -64,7 +64,10 @@ public class RobotContainer {
      * - getDistance() in Vision
      * - ballIndexed() in Indexer
      * - Interpolation table
+     * - Stop command (removes all scheduled comamnds and sets all motors to 0)
      * - Drivetrain drift compensation using navX
+     * - Refactor code to remove nested Constant class references
+     * (e.g. Constant.Control.kAButton -> kAButton)
      * 
      */
 
@@ -143,20 +146,15 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        // kill switch
-        // new JoystickButton(driver, Constants.Control.kSelect)
-        // .whenPressed(new InstantCommand(
-        // () -> CommandScheduler.getInstance().disable()));
 
-        // // enable switch
-        // new JoystickButton(driver, Constants.Control.kStart)
-        // .whenPressed(new InstantCommand(
-        // () -> CommandScheduler.getInstance().enable()));
+        /**
+         * need to add stop command here (removes all scheduled commands and sets all
+         * motors to 0)
+         */
 
-        // switch drive mode
+        // manually shoot ball
         // new JoystickButton(driver, Constants.Control.kAButton)
-        // .whenPressed(new InstantCommand(
-        // () -> drive.switchMode(), drive));
+        // .whenPressed(new ShootBall(indexer));
 
         // new JoystickButton(driver, Constants.Control.kRBumper)
         // .whenPressed(new InstantCommand(
