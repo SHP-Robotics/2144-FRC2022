@@ -11,34 +11,34 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Indexer extends SubsystemBase {
-    private final TalonFX motor = new TalonFX(8);
-    private final SlewRateLimiter ramp = new SlewRateLimiter(0.8);
+    // private final TalonFX motor = new TalonFX(8);
+    // private final SlewRateLimiter ramp = new SlewRateLimiter(0.8);
     private final DigitalInput topSwitch = new DigitalInput(0);
 
     public Indexer() {
-        motor.setInverted(true);
-        motor.setNeutralMode(NeutralMode.Coast);
+        // motor.setInverted(true);
+        // motor.setNeutralMode(NeutralMode.Coast);
     }
 
     public void set(double power) {
-        motor.set(TalonFXControlMode.PercentOutput, ramp.calculate(power));
+        // motor.set(TalonFXControlMode.PercentOutput, ramp.calculate(power));
     }
 
     public void moveIndexedBallIntoTurret() {
-        motor.set(TalonFXControlMode.PercentOutput, Constants.Indexer.kDefaultSpeed);
+        // motor.set(TalonFXControlMode.PercentOutput, Constants.Indexer.kDefaultSpeed);
     }
 
     public void stop() {
-        motor.set(TalonFXControlMode.PercentOutput, 0);
+        // motor.set(TalonFXControlMode.PercentOutput, 0);
     }
 
     public boolean isBallIndexed() {
-        return false; // for now
+        return topSwitch.get();
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("beam break", topSwitch.get());
+        SmartDashboard.putBoolean("is ball indexed?", isBallIndexed());
         // This method will be called once per scheduler run
     }
 }
