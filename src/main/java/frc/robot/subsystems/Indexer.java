@@ -5,12 +5,15 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Indexer extends SubsystemBase {
-    private TalonFX motor = new TalonFX(8);
-    private SlewRateLimiter ramp = new SlewRateLimiter(0.8);
+    private final TalonFX motor = new TalonFX(8);
+    private final SlewRateLimiter ramp = new SlewRateLimiter(0.8);
+    private final DigitalInput topSwitch = new DigitalInput(0);
 
     public Indexer() {
         motor.setInverted(true);
@@ -35,6 +38,7 @@ public class Indexer extends SubsystemBase {
 
     @Override
     public void periodic() {
+        SmartDashboard.putBoolean("beam break", topSwitch.get());
         // This method will be called once per scheduler run
     }
 }

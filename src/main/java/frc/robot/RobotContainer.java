@@ -68,6 +68,7 @@ public class RobotContainer {
      * - Drivetrain drift compensation using navX
      * - Refactor code to remove nested Constant class references
      * (e.g. Constant.Control.kAButton -> kAButton)
+     * - Move controller IDs to Constants
      * 
      */
 

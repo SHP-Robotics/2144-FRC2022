@@ -22,8 +22,6 @@ public class Robot extends TimedRobot {
 
   private RobotContainer robotContainer;
 
-  // private final DigitalInput testSwitch = new DigitalInput(0);
-
   /**
    * This function is run when the robot is first started up and should be used
    * for any
@@ -61,23 +59,6 @@ public class Robot extends TimedRobot {
 
     // update logger
     Logger.updateEntries();
-
-    // NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-    // NetworkTableEntry tx = table.getEntry("tx");
-    // NetworkTableEntry ty = table.getEntry("ty");
-    // NetworkTableEntry ta = table.getEntry("ta");
-
-    // // read values periodically
-    // double x = tx.getDouble(0.0);
-    // double y = ty.getDouble(0.0);
-    // double area = ta.getDouble(0.0);
-
-    // // post to smart dashboard periodically
-    // SmartDashboard.putNumber("LimelightX", x);
-    // SmartDashboard.putNumber("LimelightY", y);
-    // SmartDashboard.putNumber("LimelightArea", area);
-
-    // SmartDashboard.putBoolean("switch", !testSwitch.get());
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
