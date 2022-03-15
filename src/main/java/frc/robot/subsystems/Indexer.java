@@ -33,7 +33,7 @@ public class Indexer extends SubsystemBase {
     }
 
     public boolean isBallIndexed() {
-        return topSwitch.get();
+        return !topSwitch.get();
     }
 
     @Override
