@@ -11,22 +11,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Example extends SubsystemBase {
-  /** Creates a new ExampleSubsystem. */
 
-  private CANSparkMax motor = new CANSparkMax(6, MotorType.kBrushed);
-
-  // public ExampleSubsystem() {
-
+  // public Example() {
   // }
 
-  public void set(double speed) {
-    motor.set(speed);
-  }
-
-  @Override
-  public void periodic() {
-    SmartDashboard.putNumber("mag enc", motor.getEncoder().getPosition());
-  }
+  // @Override
+  // public void periodic() {
+  // }
 
   // @Override
   // public void simulationPeriodic() {
