@@ -35,6 +35,6 @@ public class ShootBall extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return !indexer.isBallIndexed();
+        return !indexer.isBallIndexedFirst();
     }
 }

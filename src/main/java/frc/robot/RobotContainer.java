@@ -55,7 +55,7 @@ public class RobotContainer {
     private final XboxController driver = new XboxController(0);
 
     // use flywheel is ready trigger to tell indexer to move
-    // private final Trigger ballIndexed = new Trigger(indexer::isBallIndexed);
+    // private final Trigger ballIndexed = new Trigger(indexer::isBallIndexedFirst);
     // private final Trigger targetLocked = new Trigger(vision::isTargetLocked);
 
     /**
