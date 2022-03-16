@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Indexer extends SubsystemBase {
-    // private final TalonFX motor = new TalonFX(8);
+    private final TalonFX shooterFeeder = new TalonFX(8);
     // private final SlewRateLimiter ramp = new SlewRateLimiter(0.8);
     private final DigitalInput firstSwitch = new DigitalInput(0);
     private final DigitalInput secondSwitch = new DigitalInput(1);
@@ -29,11 +29,11 @@ public class Indexer extends SubsystemBase {
     }
 
     public void moveIndexedBallIntoTurret() {
-        // motor.set(TalonFXControlMode.PercentOutput, Constants.Indexer.kDefaultSpeed);
+        shooterFeeder.set(TalonFXControlMode.PercentOutput, Constants.Indexer.kDefaultSpeed);
     }
 
-    public void stop() {
-        // motor.set(TalonFXControlMode.PercentOutput, 0);
+    public void stopShooting() {
+        shooterFeeder.set(TalonFXControlMode.PercentOutput, 0);
     }
 
     public boolean isBallIndexedFirst() {
@@ -77,8 +77,5 @@ public class Indexer extends SubsystemBase {
                 ballMoving = true;
             }
         }
-
-        // potentially odd case where there is no ball in first index, ball in index,
-        // and ball moving towards second index and intake switch is not being triggered
     }
 }

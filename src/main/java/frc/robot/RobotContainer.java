@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ShootBall;
 import frc.robot.commands.SpinFlywheel;
+import frc.robot.commands.StopShooting;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Flywheel;
 import frc.robot.subsystems.Indexer;
@@ -37,10 +38,10 @@ public class RobotContainer {
     // private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 
     private final Drive drive = new Drive();
-    // private final Flywheel flywheel = new Flywheel();
-    // private final Vision vision = new Vision();
-    // private final Turret turret = new Turret();
-    // private final Intake intake = new Intake();
+    private final Flywheel flywheel = new Flywheel();
+    private final Vision vision = new Vision();
+    private final Turret turret = new Turret();
+    private final Intake intake = new Intake();
     private final Indexer indexer = new Indexer();
 
     // private final PneumaticSubsystem pneumaticSubsystem = new
@@ -55,8 +56,8 @@ public class RobotContainer {
     private final XboxController driver = new XboxController(0);
 
     // use flywheel is ready trigger to tell indexer to move
-    // private final Trigger ballIndexed = new Trigger(indexer::isBallIndexedFirst);
-    // private final Trigger targetLocked = new Trigger(vision::isTargetLocked);
+    private final Trigger ballIndexed = new Trigger(indexer::isBallIndexedFirst);
+    private final Trigger targetLocked = new Trigger(vision::isTargetLocked);
 
     /**
      * 
@@ -91,15 +92,16 @@ public class RobotContainer {
 
         // when a ball is indexed and the camera is targeting the hub, get the flywheel
         // to its setpoint and shoot the ball
-        // ballIndexed.and(targetLocked)
-        //         .whenActive(
-        //                 new SpinFlywheel(flywheel, vision)
-        //                         .andThen(
-        //                                 new ShootBall(indexer),
-        //                                 new WaitCommand(2),
-        //                                 new RunCommand(() -> flywheel.setVelocityRotationsPerSecond(0), flywheel)
-        //                                         .alongWith(
-        //                                                 new RunCommand(() -> indexer.stop(), indexer))));
+        ballIndexed.and(targetLocked)
+                .whenActive(
+                        new SpinFlywheel(flywheel, vision)
+                                .andThen(
+                                        new ShootBall(indexer),
+                                        new WaitCommand(2),
+                                        new StopShooting(flywheel, indexer)));
+                                        // new RunCommand(() -> flywheel.setVelocityRotationsPerSecond(0), flywheel)
+                                        //         .alongWith(
+                                        //                 new RunCommand(() -> indexer.stopShooting(), indexer))));
 
         /**
          * DEFAULT COMMANDS
