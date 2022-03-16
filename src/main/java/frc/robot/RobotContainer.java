@@ -15,6 +15,7 @@ import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.Vision.LightMode;
 import io.github.oblarg.oblog.Logger;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -37,11 +38,11 @@ public class RobotContainer {
     // Subsystems
     // private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
     private final Drive drive = new Drive();
-    private final Flywheel flywheel = new Flywheel();
-    private final Vision vision = new Vision();
-    private final Turret turret = new Turret();
-    private final Intake intake = new Intake();
-    private final Indexer indexer = new Indexer();
+    // private final Flywheel flywheel = new Flywheel();
+    // private final Vision vision = new Vision();
+    // private final Turret turret = new Turret();
+    // private final Intake intake = new Intake();
+    // private final Indexer indexer = new Indexer();
 
     // private final PneumaticSubsystem pneumaticSubsystem = new
     // PneumaticSubsystem();
@@ -55,8 +56,8 @@ public class RobotContainer {
     private final XboxController driver = new XboxController(0);
 
     // use flywheel is ready trigger to tell indexer to move
-    private final Trigger ballIndexed = new Trigger(indexer::isBallIndexedFirst);
-    private final Trigger targetLocked = new Trigger(vision::isTargetLocked);
+    // private final Trigger ballIndexed = new Trigger(indexer::isBallIndexedFirst);
+    // private final Trigger targetLocked = new Trigger(vision::isTargetLocked);
 
     /**
      * 
@@ -91,16 +92,16 @@ public class RobotContainer {
 
         // when a ball is indexed and the camera is targeting the hub, get the flywheel
         // to its setpoint and shoot the ball
-        ballIndexed.and(targetLocked)
-                .whenActive(
-                        new SpinFlywheel(flywheel, vision)
-                                .andThen(
-                                        new ShootBall(indexer),
-                                        new WaitCommand(2),
-                                        new StopShooting(flywheel, indexer)));
-                                        // new RunCommand(() -> flywheel.setVelocityRotationsPerSecond(0), flywheel)
-                                        //         .alongWith(
-                                        //                 new RunCommand(() -> indexer.stopShooting(), indexer))));
+        // ballIndexed.and(targetLocked)
+        //         .whenActive(
+        //                 new SpinFlywheel(flywheel, vision)
+        //                         .andThen(
+        //                                 new ShootBall(indexer),
+        //                                 new WaitCommand(2),
+        //                                 new StopShooting(flywheel, indexer)));
+        // new RunCommand(() -> flywheel.setVelocityRotationsPerSecond(0), flywheel)
+        // .alongWith(
+        // new RunCommand(() -> indexer.stopShooting(), indexer))));
 
         /**
          * DEFAULT COMMANDS
@@ -164,6 +165,14 @@ public class RobotContainer {
          * motors to 0)
          */
 
+        // turn off limelight LEDs
+        // new JoystickButton(driver, Constants.Control.kSelect)
+        //         .whenPressed(new InstantCommand(() -> vision.setLedMode(LightMode.eOff), vision));
+
+        // turn on limelight LEDs
+        // new JoystickButton(driver, Constants.Control.kStart)
+        //         .whenPressed(new InstantCommand(() -> vision.setLedMode(LightMode.eOn), vision));
+
         // manually shoot ball
         // new JoystickButton(driver, Constants.Control.kAButton)
         // .whenPressed(new ShootBall(indexer));
@@ -178,8 +187,8 @@ public class RobotContainer {
 
         // // move turret right
         // new POVButton(driver, 90)
-        // .whileHeld(new InstantCommand(
-        // () -> turret.openLoop(0.1), turret));
+        //         .whileHeld(new InstantCommand(
+        //                 () -> turret.openLoop(0.1), turret));
 
         // // move turret left
         // new POVButton(driver, 270)
