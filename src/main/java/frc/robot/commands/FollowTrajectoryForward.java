@@ -1,10 +1,16 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Example;
-import edu.wpi.first.wpilibj2.TrajectoryConfig;
-import edu.wpi.first.wpilibj2.Pose2d;
-import edu.wpi.first.wpilibj2.Translation2d;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.Timer;
 
 public class FollowTrajectoryForward extends CommandBase {
   //@SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
@@ -41,7 +47,7 @@ public class FollowTrajectoryForward extends CommandBase {
                 4,
                 4)
             // Add kinematics to ensure max speed is actually obeyed
-            .setKinematics(drive.getKinematics())
+            .setKinematics(drive.getKinematics());
             // Apply the voltage constraint
             //.addConstraint(autoVoltageConstraint);
 
