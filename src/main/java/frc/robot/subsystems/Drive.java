@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.util.Units;
 
 public class Drive extends SubsystemBase {
   private DifferentialDrive driveBase;
@@ -35,6 +37,8 @@ public class Drive extends SubsystemBase {
   // private final PIDController pid = new PIDController(0.01, 0, 0);
 
   private final DifferentialDriveOdometry odometry;
+
+  DifferentialDriveKinematics kinematics; 
   public Drive() {
     motors = new WPI_TalonFX[4];
 
@@ -54,6 +58,7 @@ public class Drive extends SubsystemBase {
 
     navx = new AHRS(SPI.Port.kMXP);
     odometry = new DifferentialDriveOdometry(navx.getRotation2d());
+    kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(27.0));
   }
 
   public void drive(double leftY, double rightX) {
@@ -110,6 +115,10 @@ public class Drive extends SubsystemBase {
     driveBase.feed();
   }
 
+  public DifferentialDriveKinematics getKinematics() {
+    return kinematics;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -120,3 +129,4 @@ public class Drive extends SubsystemBase {
       (motors[2].getSelectedSensorPosition() + motors[3].getSelectedSensorPosition()) / 2);
   }
 }
+
