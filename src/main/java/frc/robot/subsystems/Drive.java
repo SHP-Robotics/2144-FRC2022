@@ -12,6 +12,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.MathUtil;
 // import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 
 public class Drive extends SubsystemBase {
   private DifferentialDrive driveBase;
@@ -24,13 +27,14 @@ public class Drive extends SubsystemBase {
 
   private MotorControllerGroup leftDrive;
   private MotorControllerGroup rightDrive;
-
-  // private AHRS navx;
+ 
+  private AHRS navx;
 
   // private double previousAngle = 0;
 
   // private final PIDController pid = new PIDController(0.01, 0, 0);
 
+  private final DifferentialDriveOdometry odometry;
   public Drive() {
     motors = new WPI_TalonFX[4];
 
@@ -48,7 +52,8 @@ public class Drive extends SubsystemBase {
 
     driveBase = new DifferentialDrive(leftDrive, rightDrive);
 
-    // navx = new AHRS(SPI.Port.kMXP);
+    navx = new AHRS(SPI.Port.kMXP);
+    odometry = new DifferentialDriveOdometry(navx.getRotation2d());
   }
 
   public void drive(double leftY, double rightX) {
@@ -84,9 +89,34 @@ public class Drive extends SubsystemBase {
     driveBase.tankDrive(leftSpeed, rightSpeed);
   }
 
+  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    return new DifferentialDriveWheelSpeeds(
+      (motors[0].getSelectedSensorVelocity() + motors[1].getSelectedSensorVelocity()) / 2, 
+      (motors[2].getSelectedSensorVelocity() + motors[3].getSelectedSensorVelocity()) / 2);
+      
+  }
+
+  public double getHeading() {
+    return navx.getAngle();
+  }
+
+  public Pose2d getPose() {
+    return odometry.getPoseMeters();
+  }
+
+  public void tankDriveVolts(double leftVolts, double rightVolts) {
+    leftDrive.setVoltage(leftVolts);
+    rightDrive.setVoltage(rightVolts);
+    driveBase.feed();
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     // SmartDashboard.putNumber("navx angle", navx.getAngle());
+    odometry.update(
+      navx.getRotation2d(), 
+      (motors[0].getSelectedSensorPosition() + motors[1].getSelectedSensorPosition()) / 2, 
+      (motors[2].getSelectedSensorPosition() + motors[3].getSelectedSensorPosition()) / 2);
   }
 }
