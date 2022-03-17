@@ -3,9 +3,14 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Example;
+
+import java.util.ArrayList;
+
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
@@ -53,15 +58,15 @@ public class FollowTrajectoryForward extends CommandBase {
 
     Pose2d startPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
     Pose2d endPose = new Pose2d(2, 0, Rotation2d.fromDegrees(0));
-    //var interiorWaypoints = new ArrayList<Translation2d>();
+    var interiorWaypoints = new ArrayList<Translation2d>();
     //interiorWaypoints.add(new Translation2d(0.5, 0.1);
     //interiorWaypoints.add(new Translation2d(1.5, 0.3));
     drive.resetOdometry(trajectory.getInitialPose());
 
     trajectory = TrajectoryGenerator.generateTrajectory(
         startPose, 
+        interiorWaypoints, 
         endPose, 
-        //interiorWaypoints, 
         config);
     controller = new RamseteController();
   }
@@ -71,10 +76,10 @@ public class FollowTrajectoryForward extends CommandBase {
   public void execute() {
     drive.updateOdometry();
 
-    Trajectory.State goal = trajectory.sample(time) // TODO replace time with appropriate value
-    ChassisSpeeds adjustedSpeeds = controller.calculate(currentRobotPose, goal);
-    DifferentialDriveWheelSpeeds wheelSpeeds = kinematics.toWheelSpeeds(adjustedSpeeds);
-    drive.drive(wheelSpeeds.leftMetersPerSecond(), wheelSpeeds.rightMetersPerSecond());
+    Trajectory.State goal = trajectory.sample(timer.get());
+    ChassisSpeeds adjustedSpeeds = controller.calculate(drive.getPose(), goal);
+    DifferentialDriveWheelSpeeds wheelSpeeds = drive.getKinematics().toWheelSpeeds(adjustedSpeeds);
+    drive.drive(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
   }
 
 
