@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
+import edu.wpi.first.math.util.Units;
 import frc.robot.utils.InterpolatingTreeMap;
 
 /**
@@ -37,6 +38,9 @@ public final class Constants {
         public static final double kForwardThreshold = 0.6;
         public static final double kTurnThreshold = 0.4;
         public static final double kTurningSensitivity = 1.5;
+
+        public static final double kTrackWidthInches = 23;
+        public static final double kTrackWidthMeters = Units.inchesToMeters(kTrackWidthInches);
 
         public static final double kWheelDiameterMeters = 0; // need to get
         public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;

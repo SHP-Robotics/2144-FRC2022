@@ -49,9 +49,10 @@ public class Drive extends SubsystemBase {
 
     for (int i = 0; i < 4; i++) {
       motors[i] = new WPI_TalonFX(i);
-      motors[i].configOpenloopRamp(0.8);
       motors[i].setNeutralMode(NeutralMode.Coast);
     }
+
+    this.enableRamp();
 
     leftDrive = new MotorControllerGroup(motors[0], motors[1]);
     rightDrive = new MotorControllerGroup(motors[2], motors[3]);
@@ -66,7 +67,17 @@ public class Drive extends SubsystemBase {
     navx = new AHRS(SPI.Port.kMXP);
 
     odometry = new DifferentialDriveOdometry(navx.getRotation2d());
-    kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(27.0));
+    kinematics = new DifferentialDriveKinematics(kTrackWidthMeters);
+  }
+
+  public void enableRamp() {
+    for (WPI_TalonFX motor : motors)
+      motor.configOpenloopRamp(0.8);
+  }
+
+  public void disableRamp() {
+    for (WPI_TalonFX motor : motors)
+      motor.configOpenloopRamp(0);
   }
 
   public void openLoop(double straight, double turn) {
@@ -140,6 +151,10 @@ public class Drive extends SubsystemBase {
     leftDrive.setVoltage(leftVolts);
     rightDrive.setVoltage(rightVolts);
     // driveBase.feed();
+  }
+
+  public SimpleMotorFeedforward getFeedforward() {
+    return feedforward;
   }
 
   public DifferentialDriveKinematics getKinematics() {

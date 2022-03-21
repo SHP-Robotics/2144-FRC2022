@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import static frc.robot.Constants.*;
 import static frc.robot.Constants.Drive.*;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -16,20 +17,12 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.Timer;
 
 public class FollowTrajectoryForward extends CommandBase {
   // @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  /*
-   * var autoVoltageConstraint =
-   * new DifferentialDriveVoltageConstraint(
-   * new SimpleMotorFeedforward(
-   * DriveConstants.ksVolts,
-   * DriveConstants.kvVoltSecondsPerMeter,
-   * DriveConstants.kaVoltSecondsSquaredPerMeter),
-   * DriveConstants.kDriveKinematics,
-   * 10);
-   */
+
   private final Drive drive;
   private Trajectory trajectory;
   private RamseteController controller;
@@ -48,13 +41,18 @@ public class FollowTrajectoryForward extends CommandBase {
     timer = new Timer();
     timer.stop();
 
+    drive.disableRamp();
+
+    DifferentialDriveVoltageConstraint autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
+        drive.getFeedforward(),
+        drive.getKinematics(),
+        kNominalVoltage - 2);
+
     TrajectoryConfig config = new TrajectoryConfig(
         kMaxVelocity,
         kMaxAcceleration)
-            // Add kinematics to ensure max speed is actually obeyed
-            .setKinematics(drive.getKinematics());
-    // Apply the voltage constraint
-    // .addConstraint(autoVoltageConstraint);
+            .setKinematics(drive.getKinematics())
+            .addConstraint(autoVoltageConstraint);
 
     Pose2d startPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
     Pose2d endPose = new Pose2d(2, 0, Rotation2d.fromDegrees(0));
@@ -94,11 +92,12 @@ public class FollowTrajectoryForward extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     drive.stop();
+    drive.enableRamp();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return timer.get() > trajectory.getTotalTimeSeconds();
+    return timer.get() >= trajectory.getTotalTimeSeconds();
   }
 }
