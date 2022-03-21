@@ -111,7 +111,7 @@ public class RobotContainer {
 
         drive.setDefaultCommand(
                 new RunCommand(
-                        () -> drive.drive(driver.getLeftY(), -driver.getRightX()),
+                        () -> drive.openLoop(driver.getLeftY(), -driver.getRightX()),
                         drive));
 
         // flywheel.setDefaultCommand(

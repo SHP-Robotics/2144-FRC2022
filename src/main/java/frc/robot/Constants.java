@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
@@ -22,6 +18,7 @@ import frc.robot.utils.InterpolatingTreeMap;
  */
 public final class Constants {
     public static final double kNominalVoltage = 12.0;
+    public static final double kTalonTicksPerRevolution = 2048;
 
     public static final class Control {
         public static final int kAButton = 1;
@@ -39,8 +36,21 @@ public final class Constants {
     public static final class Drive {
         public static final double kForwardThreshold = 0.6;
         public static final double kTurnThreshold = 0.4;
-
         public static final double kTurningSensitivity = 1.5;
+
+        public static final double kWheelDiameterMeters = 0; // need to get
+        public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
+
+        public static final double kMetersPerTick = kWheelCircumferenceMeters / kTalonTicksPerRevolution;
+
+        // imposed limits (not theoretical maximums)
+        public static final double kMaxVelocity = 1; // m/s
+        public static final double kMaxAcceleration = 1; // m/s^2
+
+        // feedforward gains
+        public static final double kS = 0;
+        public static final double kV = 0;
+        public static final double kA = 0;
     }
 
     public static final class Flywheel {
@@ -57,8 +67,7 @@ public final class Constants {
         public static final double kMaxRPS = 30;
         public static final double kDefaultRPS = 10;
 
-        public static final int kTicksPerRevolution = 2048;
-        public static final double kRotationsPerTick = 1.0 / kTicksPerRevolution;
+        public static final double kRotationsPerTick = 1.0 / kTalonTicksPerRevolution;
 
         // 1.5 : 1.0
         // public static final double kS = 0.59083;
@@ -102,10 +111,9 @@ public final class Constants {
         public static final double kI = 0;// 0.0002;
         public static final double kD = 10;
 
-        public static final double kTicksPerRevolution = 2048;
         public static final double kThresholdDegrees = 30; // for now
 
-        public static final double ratio = kTicksPerRevolution / 27400; // input : output
+        public static final double ratio = kTalonTicksPerRevolution / 27400; // input : output
 
     }
 

@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.Drive.*;
+import static frc.robot.Constants.kNominalVoltage;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 // import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -22,23 +24,26 @@ import edu.wpi.first.math.util.Units;
 public class Drive extends SubsystemBase {
   private DifferentialDrive driveBase;
 
-  public WPI_TalonFX[] motors;
+  public final WPI_TalonFX[] motors;
   // new WPI_TalonFX(0), // Left Front
   // new WPI_TalonFX(1), // Left Back
   // new WPI_TalonFX(2), // Right Front
   // new WPI_TalonFX(3) // Right Back
 
-  private MotorControllerGroup leftDrive;
-  private MotorControllerGroup rightDrive;
-  private AHRS navx;
+  private final MotorControllerGroup leftDrive;
+  private final MotorControllerGroup rightDrive;
+
+  private final AHRS navx;
+
+  private final SimpleMotorFeedforward feedforward;
 
   // private double previousAngle = 0;
 
   // private final PIDController pid = new PIDController(0.01, 0, 0);
 
   private final DifferentialDriveOdometry odometry;
+  private final DifferentialDriveKinematics kinematics;
 
-  DifferentialDriveKinematics kinematics; 
   public Drive() {
     motors = new WPI_TalonFX[4];
 
@@ -56,17 +61,24 @@ public class Drive extends SubsystemBase {
 
     driveBase = new DifferentialDrive(leftDrive, rightDrive);
 
+    feedforward = new SimpleMotorFeedforward(kS, kV, kA);
+
     navx = new AHRS(SPI.Port.kMXP);
+
     odometry = new DifferentialDriveOdometry(navx.getRotation2d());
     kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(27.0));
   }
 
-  public void drive(double leftY, double rightX) {
+  public void openLoop(double straight, double turn) {
     // prevent stick drift
-    if (leftY < 0.1 && leftY > -0.1)
-      leftY = 0;
-    if (rightX < 0.1 && rightX > -0.1)
-      rightX = 0;
+    if (straight < 0.1 && straight > -0.1)
+      straight = 0;
+    if (turn < 0.1 && turn > -0.1)
+      turn = 0;
+
+    // if moving forward more than 30%, halve turn bias
+    if (straight > 0.3)
+      turn /= 2;
 
     // double driftCompensation = 0;
     // double angle = navx.getAngle();
@@ -76,13 +88,13 @@ public class Drive extends SubsystemBase {
     // } else previousAngle = angle; // turning
     // SmartDashboard.putNumber("drift compensation", driftCompensation);
 
-    leftY = MathUtil.clamp(leftY, -kForwardThreshold, kForwardThreshold);
-    rightX = MathUtil.clamp(Math.pow(rightX, 3) * kTurningSensitivity, -kTurnThreshold, kTurnThreshold);
+    straight = MathUtil.clamp(straight, -kForwardThreshold, kForwardThreshold);
+    turn = MathUtil.clamp(Math.pow(turn, 3) * kTurningSensitivity, -kTurnThreshold, kTurnThreshold);
 
     // rightX = Math.pow(rightX, 5) / Math.abs(Math.pow(rightX, 3));
 
-    double leftSpeed = leftY - rightX;
-    double rightSpeed = leftY + rightX;
+    double leftSpeed = straight - turn;
+    double rightSpeed = straight + turn;
 
     leftSpeed = MathUtil.clamp(leftSpeed, -kForwardThreshold, kForwardThreshold);
     rightSpeed = MathUtil.clamp(rightSpeed, -kForwardThreshold, kForwardThreshold);
@@ -96,11 +108,24 @@ public class Drive extends SubsystemBase {
     driveBase.tankDrive(leftSpeed, rightSpeed);
   }
 
+  public void closedLoop(double leftMetersPerSecond, double rightMetersPerSecond) {
+    leftDrive.setVoltage(feedforward.calculate(leftMetersPerSecond) * kNominalVoltage);
+    leftDrive.setVoltage(feedforward.calculate(rightMetersPerSecond) * kNominalVoltage);
+  }
+
+  public void stop() {
+    leftDrive.set(0);
+    rightDrive.set(0);
+  }
+
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    double leftAverageTicksPerSecond = (motors[0].getSelectedSensorVelocity() + motors[1].getSelectedSensorVelocity())
+        / 2 * 10;
+    double rightAverageTicksPerSecond = (motors[2].getSelectedSensorVelocity() + motors[3].getSelectedSensorVelocity())
+        / 2 * 10;
     return new DifferentialDriveWheelSpeeds(
-      (motors[0].getSelectedSensorVelocity() + motors[1].getSelectedSensorVelocity()) / 2, 
-      (motors[2].getSelectedSensorVelocity() + motors[3].getSelectedSensorVelocity()) / 2);
-      
+        leftAverageTicksPerSecond * kMetersPerTick,
+        rightAverageTicksPerSecond * kMetersPerTick);
   }
 
   public double getHeading() {
@@ -114,7 +139,7 @@ public class Drive extends SubsystemBase {
   public void tankDriveVolts(double leftVolts, double rightVolts) {
     leftDrive.setVoltage(leftVolts);
     rightDrive.setVoltage(rightVolts);
-    driveBase.feed();
+    // driveBase.feed();
   }
 
   public DifferentialDriveKinematics getKinematics() {
@@ -126,9 +151,10 @@ public class Drive extends SubsystemBase {
     // This method will be called once per scheduler run
     // SmartDashboard.putNumber("navx angle", navx.getAngle());
     odometry.update(
-      navx.getRotation2d(), 
-      (motors[0].getSelectedSensorPosition() + motors[1].getSelectedSensorPosition()) / 2, 
-      (motors[2].getSelectedSensorPosition() + motors[3].getSelectedSensorPosition()) / 2);
+        navx.getRotation2d(),
+        (motors[0].getSelectedSensorPosition() + motors[1].getSelectedSensorPosition()) / 2,
+        (motors[2].getSelectedSensorPosition() + motors[3].getSelectedSensorPosition()) / 2);
+
     SmartDashboard.putNumber("navx pitch", navx.getPitch());
     SmartDashboard.putNumber("navx roll", navx.getRoll());
     SmartDashboard.putNumber("navx yaw", navx.getYaw());
@@ -136,4 +162,3 @@ public class Drive extends SubsystemBase {
 
   }
 }
-

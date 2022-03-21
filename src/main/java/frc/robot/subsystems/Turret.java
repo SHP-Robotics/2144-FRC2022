@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.*;
 import static frc.robot.Constants.Turret.*;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -45,7 +46,7 @@ public class Turret extends SubsystemBase implements Loggable {
     @Log(name = "turret degrees")
     public double getDegrees() {
         // turret positon / ticks per revolution * 360
-        return this.getEncoderPosition() * ratio / kTicksPerRevolution * 360;
+        return this.getEncoderPosition() * ratio / kTalonTicksPerRevolution * 360;
     }
 
     public double getRadians(double pulses) {
@@ -54,7 +55,7 @@ public class Turret extends SubsystemBase implements Loggable {
 
     public double convertDegreesToTicks(double degrees) {
         // degrees / 360 * ticks per turret revolution
-        return degrees / 360 * kTicksPerRevolution / ratio;
+        return degrees / 360 * kTalonTicksPerRevolution / ratio;
     }
 
     public void resetPosition() {
