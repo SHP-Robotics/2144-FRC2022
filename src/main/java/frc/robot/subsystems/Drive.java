@@ -176,14 +176,24 @@ public class Drive extends SubsystemBase {
     return kinematics;
   }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    // SmartDashboard.putNumber("navx angle", navx.getAngle());
+  public void resetOdometry(Pose2d position)
+  {
+    odometry.resetPosition(position, position.getRotation());
+  }
+
+  public void updateOdometry()
+  {
     odometry.update(
         navx.getRotation2d(),
         (motors[0].getSelectedSensorPosition() + motors[1].getSelectedSensorPosition()) / 2,
         (motors[2].getSelectedSensorPosition() + motors[3].getSelectedSensorPosition()) / 2);
+  }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    // SmartDashboard.putNumber("navx angle", navx.getAngle());
+    updateOdometry();
 
     SmartDashboard.putNumber("navx pitch", navx.getPitch());
     SmartDashboard.putNumber("navx roll", navx.getRoll());
