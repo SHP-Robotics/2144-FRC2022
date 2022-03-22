@@ -34,6 +34,8 @@ public class Drive extends SubsystemBase {
   private final MotorControllerGroup rightDrive;
 
   private final AHRS navx;
+  private double previousLinearAccelX;
+  private double previousLinearAccelY;
 
   private final SimpleMotorFeedforward feedforward;
 
@@ -68,6 +70,19 @@ public class Drive extends SubsystemBase {
 
     odometry = new DifferentialDriveOdometry(navx.getRotation2d());
     kinematics = new DifferentialDriveKinematics(kTrackWidthMeters);
+  }
+
+  public boolean collisionDetected() {
+    double currentLinearAccelX = navx.getWorldLinearAccelX();
+    double currentJerkX = currentLinearAccelX - previousLinearAccelX;
+    previousLinearAccelX = currentLinearAccelX;
+
+    double currentLinearAccelY = navx.getWorldLinearAccelY();
+    double currentJerkY = currentLinearAccelY - previousLinearAccelY;
+    previousLinearAccelY = currentLinearAccelY;
+
+    return Math.abs(currentJerkX) > kCollisionThresholdDeltaG ||
+        Math.abs(currentJerkY) > kCollisionThresholdDeltaG;
   }
 
   public void enableRamp() {

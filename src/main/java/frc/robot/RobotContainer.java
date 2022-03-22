@@ -1,20 +1,20 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
+import static frc.robot.Constants.Control.*;
+
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.commands.CycleBall;
 import frc.robot.commands.FollowTrajectoryForward;
 import frc.robot.commands.ShootBall;
 import frc.robot.commands.SpinFlywheel;
-import frc.robot.commands.StopShooting;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Flywheel;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LedIndicator;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Vision.LightMode;
@@ -40,11 +40,12 @@ public class RobotContainer {
     // Subsystems
     // private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
     private final Drive drive = new Drive();
-    // private final Flywheel flywheel = new Flywheel();
-    // private final Vision vision = new Vision();
-    // private final Turret turret = new Turret();
-    // private final Intake intake = new Intake();
-    // private final Indexer indexer = new Indexer();
+    private final Flywheel flywheel = new Flywheel();
+    private final Vision vision = new Vision();
+    private final Turret turret = new Turret();
+    private final Intake intake = new Intake();
+    private final Indexer indexer = new Indexer();
+    private final LedIndicator ledIndicator = new LedIndicator();
 
     // private final PneumaticSubsystem pneumaticSubsystem = new
     // PneumaticSubsystem();
@@ -55,11 +56,13 @@ public class RobotContainer {
     // ExampleCommand(m_exampleSubsystem);
 
     // Controllers
-    private final XboxController driver = new XboxController(0);
+    private final XboxController controller = new XboxController(0);
 
     // use flywheel is ready trigger to tell indexer to move
-    // private final Trigger ballIndexed = new Trigger(indexer::isBallIndexedFirst);
+    private final Trigger ballIndexed = new Trigger(indexer::isBallIndexedFirst);
     // private final Trigger targetLocked = new Trigger(vision::isTargetLocked);
+    // private final Trigger driverOverrideDisabled = new
+    // Trigger(turret::isClosedLoop);
 
     /**
      * 
@@ -84,35 +87,19 @@ public class RobotContainer {
         Logger.configureLoggingAndConfig(this, false);
 
         /**
-         * TRIGGERS
-         */
-
-        // when a ball is not indexed (regardless of camera targeting hub), stop
-        // spinning the flywheel to save power
-        // ballIndexed.whenInactive(new RunCommand(() ->
-        // flywheel.setVelocityRotationsPerSecond(0), flywheel));
-
-        // when a ball is indexed and the camera is targeting the hub, get the flywheel
-        // to its setpoint and shoot the ball
-        // ballIndexed.and(targetLocked)
-        //         .whenActive(
-        //                 new SpinFlywheel(flywheel, vision)
-        //                         .andThen(
-        //                                 new ShootBall(indexer),
-        //                                 new WaitCommand(2),
-        //                                 new StopShooting(flywheel, indexer)));
-        // new RunCommand(() -> flywheel.setVelocityRotationsPerSecond(0), flywheel)
-        // .alongWith(
-        // new RunCommand(() -> indexer.stopShooting(), indexer))));
-
-        /**
          * DEFAULT COMMANDS
          */
 
         drive.setDefaultCommand(
                 new RunCommand(
-                        () -> drive.openLoop(driver.getLeftY(), -driver.getRightX()),
+                        () -> drive.openLoop(controller.getLeftY(), -controller.getRightX()),
                         drive));
+
+        ledIndicator.setDefaultCommand(
+                new RunCommand(
+                        () -> ledIndicator.update(indexer.isBallIndexedFirst(), vision.isTargetLocked(),
+                                !turret.isClosedLoop()),
+                        ledIndicator, indexer, vision, turret));
 
         // flywheel.setDefaultCommand(
         // new RunCommand(
@@ -148,8 +135,9 @@ public class RobotContainer {
         // driver.getLeftTriggerAxis()),
         // exampleSubsystem));
 
-        // Configure the button bindings
+        // Configure the button and trigger bindings
         configureButtonBindings();
+        configureTriggerBindings();
     }
 
     /**
@@ -161,23 +149,28 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
+        // initialization of all JoystickButtons and POVButtons
+        initButtons(controller);
 
         /**
          * need to add stop command here (removes all scheduled commands and sets all
          * motors to 0)
          */
 
-        // turn off limelight LEDs
-        // new JoystickButton(driver, Constants.Control.kSelect)
-        //         .whenPressed(new InstantCommand(() -> vision.setLedMode(LightMode.eOff), vision));
+        // shoot ball
+        kAButton.debounce(0.1, DebounceType.kBoth)
+                .and(ballIndexed)
+                // .and(targetLocked)
+                // .and(driverOverrideDisabled)
+                .whenActive(new CycleBall(flywheel, vision, indexer));
 
         // turn on limelight LEDs
-        // new JoystickButton(driver, Constants.Control.kStart)
-        //         .whenPressed(new InstantCommand(() -> vision.setLedMode(LightMode.eOn), vision));
+        // kStartButton.whenPressed(new InstantCommand(() ->
+        // vision.setLedMode(LightMode.eOn), vision));
 
-        // manually shoot ball
-        // new JoystickButton(driver, Constants.Control.kAButton)
-        // .whenPressed(new ShootBall(indexer));
+        // // turn off limelight LEDs
+        // kSelectButton.whenPressed(new InstantCommand(() ->
+        // vision.setLedMode(LightMode.eOff), vision));
 
         // new JoystickButton(driver, Constants.Control.kRBumper)
         // .whenPressed(new InstantCommand(
@@ -189,8 +182,8 @@ public class RobotContainer {
 
         // // move turret right
         // new POVButton(driver, 90)
-        //         .whileHeld(new InstantCommand(
-        //                 () -> turret.openLoop(0.1), turret));
+        // .whileHeld(new InstantCommand(
+        // () -> turret.openLoop(0.1), turret));
 
         // // move turret left
         // new POVButton(driver, 270)
@@ -211,18 +204,10 @@ public class RobotContainer {
         // new JoystickButton(driver, Constants.Control.kYButton)
         // .whenPressed(new InstantCommand(
         // () -> turret.adjust(true, 30), turret));
+    }
 
-        // new JoystickButton(driver, Constants.Control.kXButton)
-        // .whenPressed(new InstantCommand(
-        // () -> pneumaticSubsystem.forward(), pneumaticSubsystem));
+    public void configureTriggerBindings() {
 
-        // new JoystickButton(driver, Constants.Control.kYButton)
-        // .whenPressed(new InstantCommand(
-        // () -> pneumaticSubsystem.reverse(), pneumaticSubsystem));
-
-        // new JoystickButton(driver, Constants.Control.kBButton)
-        // .whenPressed(new InstantCommand(
-        // () -> pneumaticSubsystem.off(), pneumaticSubsystem));
     }
 
     /**
@@ -231,7 +216,7 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-    // // An ExampleCommand will run in autonomous
+        // // An ExampleCommand will run in autonomous
         return new FollowTrajectoryForward(drive);
     }
 }

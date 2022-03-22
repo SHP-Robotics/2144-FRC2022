@@ -3,6 +3,9 @@ package frc.robot;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.utils.InterpolatingTreeMap;
 
 /**
@@ -22,19 +25,50 @@ public final class Constants {
     public static final double kTalonTicksPerRevolution = 2048;
 
     public static final class Control {
-        public static final int kAButton = 1;
-        public static final int kBButton = 2;
-        public static final int kXButton = 3;
-        public static final int kYButton = 4;
-        public static final int kLBumper = 5;
-        public static final int kRBumper = 6;
-        public static final int kSelect = 7;
-        public static final int kStart = 8;
-        public static final int kLeftThumbPush = 9;
-        public static final int kRightThumbPush = 10;
+        public static JoystickButton kAButton;
+        public static JoystickButton kBButton;
+        public static JoystickButton kXButton;
+        public static JoystickButton kYButton;
+
+        public static JoystickButton kLBumper;
+        public static JoystickButton kRBumper;
+
+        public static JoystickButton kSelectButton;
+        public static JoystickButton kStartButton;
+
+        public static JoystickButton kLeftThumbPush;
+        public static JoystickButton kRightThumbPush;
+
+        public static POVButton kDpadUp;
+        public static POVButton kDpadRight;
+        public static POVButton kDpadDown;
+        public static POVButton kDpadLeft;
+
+        public static final void initButtons(XboxController controller) {
+            kAButton = new JoystickButton(controller, 1);
+            kBButton = new JoystickButton(controller, 2);
+            kXButton = new JoystickButton(controller, 3);
+            kYButton = new JoystickButton(controller, 4);
+
+            kLBumper = new JoystickButton(controller, 5);
+            kRBumper = new JoystickButton(controller, 6);
+
+            kSelectButton = new JoystickButton(controller, 7);
+            kStartButton = new JoystickButton(controller, 8);
+
+            kLeftThumbPush = new JoystickButton(controller, 9);
+            kRightThumbPush = new JoystickButton(controller, 10);
+
+            kDpadUp = new POVButton(controller, 0);
+            kDpadRight = new POVButton(controller, 90);
+            kDpadDown = new POVButton(controller, 180);
+            kDpadLeft = new POVButton(controller, 270);
+        }
     }
 
     public static final class Drive {
+        public static final double kCollisionThresholdDeltaG = 0.5;
+
         public static final double kForwardThreshold = 0.6;
         public static final double kTurnThreshold = 0.4;
         public static final double kTurningSensitivity = 1.5;
@@ -91,10 +125,10 @@ public final class Constants {
 
         public static final double kFlywheelDiameterMeters = 0.102;
 
-        public static final class InterpolationTable {
+        public static final class Interpolation {
             public static final InterpolatingTreeMap<Number, Number> table = new InterpolatingTreeMap<>();
 
-            public InterpolationTable() {
+            static {
                 // Distance (Inches) : Rotations Per Second
                 table.put(0, 0);
             }

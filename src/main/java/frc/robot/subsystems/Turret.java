@@ -15,7 +15,7 @@ public class Turret extends SubsystemBase implements Loggable {
     private final WPI_TalonFX motor = new WPI_TalonFX(6);
 
     @Log(name = "auto enabled")
-    private boolean isClosedLoop = false;
+    private boolean closedLoop = false;
     private double panPower = 0.1;
 
     // double power = 0;
@@ -63,7 +63,7 @@ public class Turret extends SubsystemBase implements Loggable {
     }
 
     public void toggleLoop() {
-        isClosedLoop = !isClosedLoop;
+        closedLoop = !closedLoop;
     }
 
     public void panTurret() {
@@ -81,7 +81,7 @@ public class Turret extends SubsystemBase implements Loggable {
     // }
 
     public void adjust(boolean isTarget, double degrees) {
-        if (!isClosedLoop) {
+        if (!closedLoop) {
             motor.set(ControlMode.PercentOutput, 0);
             return;
         }
@@ -103,8 +103,8 @@ public class Turret extends SubsystemBase implements Loggable {
     }
 
     public void openLoop(double power) {
-        if (isClosedLoop)
-            isClosedLoop = false;
+        if (closedLoop)
+            closedLoop = false;
 
         double degrees = this.getDegrees();
         if ((degrees > kThresholdDegrees && power > 0) || (degrees < -kThresholdDegrees && power < 0))
@@ -113,9 +113,13 @@ public class Turret extends SubsystemBase implements Loggable {
         motor.set(ControlMode.PercentOutput, power);
     }
 
+    public boolean isClosedLoop() {
+        return closedLoop;
+    }
+
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("driver override", !isClosedLoop);
+        SmartDashboard.putBoolean("driver override", !closedLoop);
         SmartDashboard.putNumber("current degrees", this.getDegrees());
         SmartDashboard.putNumber("turret encoder", this.getEncoderPosition());
         // SmartDashboard.putNumber("turret power", power);

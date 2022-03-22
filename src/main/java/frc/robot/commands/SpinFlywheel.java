@@ -1,7 +1,8 @@
 package frc.robot.commands;
 
+import static frc.robot.Constants.Flywheel.*;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 import frc.robot.subsystems.Flywheel;
 import frc.robot.subsystems.Vision;
 
@@ -25,10 +26,9 @@ public class SpinFlywheel extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        double distanceInches = vision.getDistanceInches();
         flywheel.setVelocityRotationsPerSecond(
-                distanceInches == 0 ? Constants.Flywheel.kDefaultRPS
-                        : Constants.Flywheel.InterpolationTable.table.get(distanceInches));
+                vision.isTargetLocked() ? Interpolation.table.get(vision.getDistanceInches())
+                        : kDefaultRPS);
     }
 
     // Called once the command ends or is interrupted.
