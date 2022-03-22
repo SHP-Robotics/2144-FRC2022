@@ -69,12 +69,9 @@ public class RobotContainer {
      * TODO
      * 
      * - Vision constants
-     * - ballIndexed() in Indexer
      * - Interpolation table
      * - Stop command (removes all scheduled comamnds and sets all motors to 0)
      * - Drivetrain drift compensation using navX
-     * - Refactor code to remove nested Constant class references
-     * (e.g. Constants.Control.kAButton -> kAButton)
      * - Move controller IDs to Constants
      * 
      */
@@ -165,45 +162,38 @@ public class RobotContainer {
                 .whenActive(new CycleBall(flywheel, vision, indexer));
 
         // turn on limelight LEDs
-        // kStartButton.whenPressed(new InstantCommand(() ->
-        // vision.setLedMode(LightMode.eOn), vision));
+        kStartButton.whenPressed(new InstantCommand(
+                () -> vision.setLedMode(LightMode.eOn), vision));
 
-        // // turn off limelight LEDs
-        // kSelectButton.whenPressed(new InstantCommand(() ->
-        // vision.setLedMode(LightMode.eOff), vision));
+        // turn off limelight LEDs
+        kSelectButton.whenPressed(new InstantCommand(
+                () -> vision.setLedMode(LightMode.eOff), vision));
 
-        // new JoystickButton(driver, Constants.Control.kRBumper)
-        // .whenPressed(new InstantCommand(
-        // () -> intake.set(1.0), intake));
+        kRBumper.whileHeld(new InstantCommand(
+                () -> intake.set(1.0), intake));
 
-        // new JoystickButton(driver, Constants.Control.kLBumper)
-        // .whenPressed(new InstantCommand(
-        // () -> intake.set(-1.0), intake));
+        kLBumper.whileHeld(new InstantCommand(
+                () -> intake.set(-1.0), intake));
 
-        // // move turret right
-        // new POVButton(driver, 90)
-        // .whileHeld(new InstantCommand(
-        // () -> turret.openLoop(0.1), turret));
+        // move turret right
+        kDpadRight.whileHeld(new InstantCommand(
+                () -> turret.openLoop(0.1), turret));
 
-        // // move turret left
-        // new POVButton(driver, 270)
-        // .whileHeld(new InstantCommand(
-        // () -> turret.openLoop(-0.1), turret));
+        // move turret left
+        kDpadLeft.whileHeld(new InstantCommand(
+                () -> turret.openLoop(-0.1), turret));
 
-        // // reset turret position
-        // new JoystickButton(driver, Constants.Control.kXButton)
-        // .whenPressed(new InstantCommand(
-        // () -> turret.resetPosition(), turret));
+        // reset turret position
+        kXButton.whenPressed(new InstantCommand(
+                () -> turret.resetPosition(), turret));
 
-        // // toggle turret control
-        // new JoystickButton(driver, Constants.Control.kBButton)
-        // .whenPressed(new InstantCommand(
-        // () -> turret.toggleLoop(), turret));
+        // toggle turret control
+        kBButton.whenPressed(new InstantCommand(
+                () -> turret.toggleLoop(), turret));
 
-        // // test
-        // new JoystickButton(driver, Constants.Control.kYButton)
-        // .whenPressed(new InstantCommand(
-        // () -> turret.adjust(true, 30), turret));
+        // test
+        kYButton.whenPressed(new InstantCommand(
+                () -> turret.adjust(true, 30), turret));
     }
 
     public void configureTriggerBindings() {
