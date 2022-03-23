@@ -60,8 +60,7 @@ public class FollowTrajectoryForward extends CommandBase {
     // interiorWaypoints.add(new Translation2d(0.5, 0.1));
     // interiorWaypoints.add(new Translation2d(1.5, 0.3));
 
-    // no method declaration
-    // drive.resetOdometry(trajectory.getInitialPose());
+    drive.resetOdometry(trajectory.getInitialPose());
 
     trajectory = TrajectoryGenerator.generateTrajectory(
         startPose,
@@ -78,9 +77,6 @@ public class FollowTrajectoryForward extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // no method declaration (im assuming it auto-updates in periodic)
-    // drive.updateOdometry();
-
     Trajectory.State goal = trajectory.sample(timer.get());
     ChassisSpeeds adjustedSpeeds = controller.calculate(drive.getPose(), goal);
     DifferentialDriveWheelSpeeds wheelSpeeds = drive.getKinematics().toWheelSpeeds(adjustedSpeeds);

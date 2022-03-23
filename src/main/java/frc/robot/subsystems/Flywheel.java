@@ -17,14 +17,13 @@ public class Flywheel extends SubsystemBase {
     private final WPI_TalonFX leftLaunch = new WPI_TalonFX(4);
     private final WPI_TalonFX rightLaunch = new WPI_TalonFX(5);
 
-    private final SimpleMotorFeedforward flywheelFeedforward = new SimpleMotorFeedforward(kS, kV, kA);
-    private final BangBangController bangBangController = new BangBangController();
+    private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);
+    private final BangBangController bangbang = new BangBangController();
 
     public double desiredVelocityRPS;
 
     /**
-     * Creates a new Flywheel. Controlled with a feedforward and a bang-bang
-     * controler.
+     * Creates a new Flywheel controlled by a feedforward and bang-bang controller.
      */
     public Flywheel() {
         TalonFXConfiguration talonConfig = new TalonFXConfiguration();
@@ -37,7 +36,7 @@ public class Flywheel extends SubsystemBase {
         // talonConfig.voltageMeasurementFilter = kVoltageMeasurementSamples;
         talonConfig.velocityMeasurementPeriod = kVelocityMeasurementPeriod;
         talonConfig.velocityMeasurementWindow = kVelocityMeasurementWindow;
-        talonConfig.openloopRamp = 0.1;
+        talonConfig.openloopRamp = kRampSeconds;
 
         leftLaunch.configAllSettings(talonConfig);
         rightLaunch.configAllSettings(talonConfig);
@@ -52,16 +51,34 @@ public class Flywheel extends SubsystemBase {
         rightLaunch.setInverted(true);
     }
 
-    /** @return the current falcon-reported velocity in rotations per second. */
+    /**
+     * Enables acceleration ramp.
+     */
+    public void enableRamp() {
+        leftLaunch.configOpenloopRamp(kRampSeconds);
+        rightLaunch.configOpenloopRamp(kRampSeconds);
+    }
+
+    /**
+     * Disables acceleration ramp.
+     */
+    public void disableRamp() {
+        leftLaunch.configOpenloopRamp(0);
+        rightLaunch.configOpenloopRamp(0);
+    }
+
+    /**
+     * @return The current falcon-reported velocity in rotations per second.
+     */
     public double getTalonVelocityRPS() {
-        // units/100ms * 10 = units/second
-        // units/second * rotations/units = rotations/second
+        // ticks/100ms * 10 = units/second
+        // ticks/second * rotations/tick = rotations/second
         return leftLaunch.getSelectedSensorVelocity() * 10 * kRotationsPerTick;
     }
 
     /**
-     * @param rps
-     * @return the velocity in meters per second
+     * @param rps Rotations per second.
+     * @return The current falcon-reported velocity in meters per second.
      */
     public double calculateVelocityMeters(double rps) {
         return Math.PI * kFlywheelDiameterMeters * rps; // circumference * rotations per second
@@ -70,39 +87,42 @@ public class Flywheel extends SubsystemBase {
     /**
      * Sets the velocity setpoint for the flywheel.
      *
-     * @param rotationsPerSecond velocity setpoint
+     * @param rps Rotations per second.
      */
-    public void setVelocityRotationsPerSecond(double rotationsPerSecond) {
-        desiredVelocityRPS = rotationsPerSecond;
+    public void setDesiredVelocityRPS(double rps) {
+        desiredVelocityRPS = rps;
     }
 
     /**
      * Applies the given voltage to the falcons.
      *
-     * @param voltage what voltage to apply
+     * @param voltage The voltage to apply.
      */
     public void setVoltage(double voltage) {
         leftLaunch.setVoltage(voltage);
         rightLaunch.setVoltage(voltage);
     }
 
+    /**
+     * Sets the open-loop speed for the flywheel.
+     * 
+     * @param speed The speed to set, between 1.0 and -1.0.
+     */
     public void set(double speed) {
         leftLaunch.set(speed);
         rightLaunch.set(speed);
     }
 
+    /**
+     * @return Whether the flywheel is at the setpoint or not.
+     */
     public boolean isAtSetpoint() {
         return this.getTalonVelocityRPS() >= desiredVelocityRPS;
     }
 
     @Override
     public void periodic() {
-        // Calculates voltage to apply.
-        // Feedforward is scaled down to prevent overshoot since bang-bang can't
-        // correct for overshoot.
-
         double velocityRPS = this.getTalonVelocityRPS();
-
 
         // if trying to go backwards
         if (desiredVelocityRPS < 0 && velocityRPS <= 0) {
@@ -116,8 +136,8 @@ public class Flywheel extends SubsystemBase {
             return;
         }
 
-        this.setVoltage(0.9 * flywheelFeedforward.calculate(desiredVelocityRPS)
-                + bangBangController.calculate(velocityRPS, desiredVelocityRPS)
+        this.setVoltage(0.9 * feedforward.calculate(desiredVelocityRPS)
+                + bangbang.calculate(velocityRPS, desiredVelocityRPS)
                         * kNominalVoltage);
 
         SmartDashboard.putNumber("velocity (m/s)", this.calculateVelocityMeters(velocityRPS));

@@ -107,6 +107,8 @@ public final class Constants {
 
         public static final double kRotationsPerTick = 1.0 / kTalonTicksPerRevolution;
 
+        public static final double kRampSeconds = 0.2;
+
         // 1.5 : 1.0
         // public static final double kS = 0.59083;
         // public static final double kV = 0.50399;
@@ -139,8 +141,10 @@ public final class Constants {
         public static final double kDeadzone = 5; // margin of acceptance for error
 
         public static final double kMountAngleDegrees = 0; // need to find (degrees rotated on mount)
+
         public static final double kCameraHeightInches = 0; // need to find (center of lens to floor)
-        public static final double kTargetHeightInches = 0; // need to find (target to floor)
+        public static final double kTargetHeightInches = 104; // need to find (target to floor)
+        public static final double kHeightDifference = kTargetHeightInches - kCameraHeightInches;
     }
 
     public static final class Turret {
@@ -157,5 +161,8 @@ public final class Constants {
 
     public static final class Indexer {
         public static final double kDefaultSpeed = 0.3;
+
+        public static final double kVoltageSaturation = 12;
+        public static final int kVoltageMeasurementSamples = 32;
     }
 }

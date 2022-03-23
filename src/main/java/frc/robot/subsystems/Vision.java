@@ -199,9 +199,8 @@ public class Vision extends SubsystemBase implements Loggable {
 
 	// https://docs.limelightvision.io/en/latest/cs_estimating_distance.html#using-a-fixed-angle-camera
 	public double getDistanceInches() {
-		double offset = getTy();
-		double angleToGoalRadians = Math.toRadians(kMountAngleDegrees + offset);
-		return (kTargetHeightInches - kCameraHeightInches) / Math.tan(angleToGoalRadians);
+		double angleToGoalRadians = Math.toRadians(kMountAngleDegrees + getTy());
+		return kHeightDifference / Math.tan(angleToGoalRadians);
 	}
 
 	// @Override
