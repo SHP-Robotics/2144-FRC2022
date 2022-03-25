@@ -13,8 +13,8 @@ import frc.robot.commands.SpinFlywheel;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Flywheel;
 import frc.robot.subsystems.Indexer;
-import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LedIndicator;
+import frc.robot.subsystems.MotorTest;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Vision.LightMode;
@@ -39,13 +39,14 @@ public class RobotContainer {
 
     // Subsystems
     // private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
-    private final Drive drive = new Drive();
-    private final Flywheel flywheel = new Flywheel();
-    private final Vision vision = new Vision();
-    private final Turret turret = new Turret();
-    private final Intake intake = new Intake();
+    // private final Drive drive = new Drive();
+    // private final Flywheel flywheel = new Flywheel();
+    // private final Vision vision = new Vision();
+    // private final Turret turret = new Turret();
     private final Indexer indexer = new Indexer();
     private final LedIndicator ledIndicator = new LedIndicator();
+
+    // private final MotorTest motorTest = new MotorTest();
 
     // private final PneumaticSubsystem pneumaticSubsystem = new
     // PneumaticSubsystem();
@@ -59,7 +60,7 @@ public class RobotContainer {
     private final XboxController controller = new XboxController(0);
 
     // use flywheel is ready trigger to tell indexer to move
-    private final Trigger ballIndexed = new Trigger(indexer::isBallIndexedFirst);
+    // private final Trigger ballIndexed = new Trigger(indexer::isBallIndexedFirst);
     // private final Trigger targetLocked = new Trigger(vision::isTargetLocked);
     // private final Trigger driverOverrideDisabled = new
     // Trigger(turret::isClosedLoop);
@@ -87,16 +88,17 @@ public class RobotContainer {
          * DEFAULT COMMANDS
          */
 
-        drive.setDefaultCommand(
-                new RunCommand(
-                        () -> drive.openLoop(controller.getLeftY(), -controller.getRightX()),
-                        drive));
+        // drive.setDefaultCommand(
+        // new RunCommand(
+        // () -> drive.openLoop(controller.getLeftY(), -controller.getRightX()),
+        // drive));
 
         ledIndicator.setDefaultCommand(
                 new RunCommand(
-                        () -> ledIndicator.update(indexer.isBallIndexedFirst(), vision.isTargetLocked(),
-                                !turret.isClosedLoop()),
-                        ledIndicator, indexer, vision, turret));
+                        () -> ledIndicator.update(false, // indexer.isBallIndexedFirst(),
+                                true, // vision.isTargetLocked(),
+                                false), // !turret.isClosedLoop()),
+                        ledIndicator));// , indexer, vision, turret));
 
         // flywheel.setDefaultCommand(
         // new RunCommand(
@@ -122,9 +124,9 @@ public class RobotContainer {
         // driver.getLeftTriggerAxis()) * 0.8);
         // }, launcherSubsystem));
 
-        // intake.setDefaultCommand(new RunCommand(() -> {
-        // intake.set(0);
-        // }, intake));
+        indexer.setDefaultCommand(new RunCommand(() -> {
+            indexer.intake(0);
+        }, indexer));
 
         // exampleSubsystem.setDefaultCommand(
         // new RunCommand(
@@ -155,45 +157,47 @@ public class RobotContainer {
          */
 
         // shoot ball
-        kAButton.debounce(0.1, DebounceType.kBoth)
-                .and(ballIndexed)
-                // .and(targetLocked)
-                // .and(driverOverrideDisabled)
-                .whenActive(new CycleBall(flywheel, vision, indexer));
+        // kAButton.debounce(0.1, DebounceType.kBoth)
+        // .and(ballIndexed)
+        // // .and(targetLocked)
+        // // .and(driverOverrideDisabled)
+        // .whenActive(new CycleBall(flywheel, vision, indexer));
 
-        // turn on limelight LEDs
-        kStartButton.whenPressed(new InstantCommand(
-                () -> vision.setLedMode(LightMode.eOn), vision));
+        // // turn on limelight LEDs
+        // kStartButton.whenPressed(new InstantCommand(
+        // () -> vision.setLedMode(LightMode.eOn), vision));
 
-        // turn off limelight LEDs
-        kSelectButton.whenPressed(new InstantCommand(
-                () -> vision.setLedMode(LightMode.eOff), vision));
+        // // turn off limelight LEDs
+        // kSelectButton.whenPressed(new InstantCommand(
+        // () -> vision.setLedMode(LightMode.eOff), vision));
 
+        // intake
         kRBumper.whileHeld(new InstantCommand(
-                () -> intake.set(1.0), intake));
+                () -> indexer.intake(1.0), indexer));
 
+        // outtake
         kLBumper.whileHeld(new InstantCommand(
-                () -> intake.set(-1.0), intake));
+                () -> indexer.intake(-1.0), indexer));
 
-        // move turret right
-        kDpadRight.whileHeld(new InstantCommand(
-                () -> turret.openLoop(0.1), turret));
+        // // move turret right
+        // kDpadRight.whileHeld(new InstantCommand(
+        // () -> turret.openLoop(0.1), turret));
 
-        // move turret left
-        kDpadLeft.whileHeld(new InstantCommand(
-                () -> turret.openLoop(-0.1), turret));
+        // // move turret left
+        // kDpadLeft.whileHeld(new InstantCommand(
+        // () -> turret.openLoop(-0.1), turret));
 
-        // reset turret position
-        kXButton.whenPressed(new InstantCommand(
-                () -> turret.resetPosition(), turret));
+        // // reset turret position
+        // kXButton.whenPressed(new InstantCommand(
+        // () -> turret.resetPosition(), turret));
 
-        // toggle turret control
-        kBButton.whenPressed(new InstantCommand(
-                () -> turret.toggleLoop(), turret));
+        // // toggle turret control
+        // kBButton.whenPressed(new InstantCommand(
+        // () -> turret.toggleLoop(), turret));
 
-        // test
-        kYButton.whenPressed(new InstantCommand(
-                () -> turret.adjust(true, 30), turret));
+        // // test
+        // kYButton.whenPressed(new InstantCommand(
+        // () -> turret.adjust(true, 30), turret));
     }
 
     public void configureTriggerBindings() {
@@ -207,6 +211,7 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // // An ExampleCommand will run in autonomous
-        return new FollowTrajectoryForward(drive);
+        // return new FollowTrajectoryForward(drive);
+        return null;
     }
 }

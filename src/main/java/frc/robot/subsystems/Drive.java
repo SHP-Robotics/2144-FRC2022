@@ -19,7 +19,6 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.math.util.Units;
 
 public class Drive extends SubsystemBase {
   private DifferentialDrive driveBase;
@@ -176,13 +175,11 @@ public class Drive extends SubsystemBase {
     return kinematics;
   }
 
-  public void resetOdometry(Pose2d position)
-  {
+  public void resetOdometry(Pose2d position) {
     odometry.resetPosition(position, position.getRotation());
   }
 
-  public void updateOdometry()
-  {
+  public void updateOdometry() {
     odometry.update(
         navx.getRotation2d(),
         (motors[0].getSelectedSensorPosition() + motors[1].getSelectedSensorPosition()) / 2,
@@ -195,10 +192,11 @@ public class Drive extends SubsystemBase {
     // SmartDashboard.putNumber("navx angle", navx.getAngle());
     updateOdometry();
 
+    SmartDashboard.putBoolean("collision detected", collisionDetected());
+
     SmartDashboard.putNumber("navx pitch", navx.getPitch());
     SmartDashboard.putNumber("navx roll", navx.getRoll());
     SmartDashboard.putNumber("navx yaw", navx.getYaw());
     SmartDashboard.putNumber("navx angle", navx.getAngle());
-
   }
 }
