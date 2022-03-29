@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static frc.robot.RobotContainer.*;
+
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
 import edu.wpi.first.math.util.Units;
@@ -44,7 +46,7 @@ public final class Constants {
         public static POVButton kDpadDown;
         public static POVButton kDpadLeft;
 
-        public static final void initButtons(XboxController controller) {
+        public static final void initButtons() {
             kAButton = new JoystickButton(controller, 1);
             kBButton = new JoystickButton(controller, 2);
             kXButton = new JoystickButton(controller, 3);
@@ -164,5 +166,9 @@ public final class Constants {
 
         public static final double kVoltageSaturation = 12;
         public static final int kVoltageMeasurementSamples = 32;
+    }
+
+    public static final class Indicator {
+        public static final double kRumbleValue = 0.5;
     }
 }

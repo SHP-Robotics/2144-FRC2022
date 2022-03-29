@@ -1,5 +1,9 @@
 package frc.robot.subsystems;
 
+import static frc.robot.RobotContainer.*;
+import static frc.robot.Constants.Indicator.*;
+
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.BlinkinLedDriver;
 import frc.robot.utils.BlinkinLedDriver.BlinkinLedMode;
@@ -9,19 +13,35 @@ public class Indicator extends SubsystemBase {
 
     public void update(boolean ballIndexed, boolean targetLocked, boolean driverOverride) {
         if (driverOverride) {
-            this.setBlue();
+            stopRumble();
+            setBlue();
             return;
         }
 
         if (ballIndexed && targetLocked) {
-            // add rumble
+            startRumble();
             setGreenBlinking();
-        } else if (ballIndexed && !targetLocked) {
+            return;
+        } else
+            stopRumble();
+
+        if (ballIndexed && !targetLocked) {
             setGreenSolid();
         } else if (!ballIndexed && targetLocked) {
             setRedBlinking();
         } else
             setRedSolid();
+
+    }
+
+    private void startRumble() {
+        controller.setRumble(RumbleType.kLeftRumble, kRumbleValue);
+        controller.setRumble(RumbleType.kRightRumble, kRumbleValue);
+    }
+
+    private void stopRumble() {
+        controller.setRumble(RumbleType.kLeftRumble, 0);
+        controller.setRumble(RumbleType.kRightRumble, 0);
     }
 
     private void setBlue() {

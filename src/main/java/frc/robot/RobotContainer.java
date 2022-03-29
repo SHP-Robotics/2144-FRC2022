@@ -57,7 +57,7 @@ public class RobotContainer {
     // ExampleCommand(m_exampleSubsystem);
 
     // Controllers
-    private final XboxController controller = new XboxController(0);
+    public static final XboxController controller = new XboxController(0);
 
     // use flywheel is ready trigger to tell indexer to move
     // private final Trigger ballIndexed = new Trigger(indexer::isBallIndexedFirst);
@@ -146,7 +146,7 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         // initialization JoystickButtons and POVButtons
-        initButtons(controller);
+        initButtons();
 
         /**
          * need to add stop command here (removes all scheduled commands and sets all
