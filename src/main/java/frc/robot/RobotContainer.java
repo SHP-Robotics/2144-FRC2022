@@ -13,7 +13,7 @@ import frc.robot.commands.SpinFlywheel;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Flywheel;
 import frc.robot.subsystems.Indexer;
-import frc.robot.subsystems.LedIndicator;
+import frc.robot.subsystems.Indicator;
 import frc.robot.subsystems.MotorTest;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
@@ -44,7 +44,7 @@ public class RobotContainer {
     // private final Vision vision = new Vision();
     private final Turret turret = new Turret();
     private final Indexer indexer = new Indexer();
-    private final LedIndicator ledIndicator = new LedIndicator();
+    private final Indicator indicator = new Indicator();
 
     // private final MotorTest motorTest = new MotorTest();
 
@@ -92,12 +92,12 @@ public class RobotContainer {
         // () -> drive.openLoop(controller.getLeftY(), -controller.getRightX()),
         // drive));
 
-        ledIndicator.setDefaultCommand(
+        indicator.setDefaultCommand(
                 new RunCommand(
-                        () -> ledIndicator.update(false, // indexer.isBallIndexedFirst(),
+                        () -> indicator.update(false, // indexer.isBallIndexedFirst(),
                                 true, // vision.isTargetLocked(),
-                                !turret.isClosedLoop()),
-                        ledIndicator));// , indexer, vision, turret));
+                                false), // !turret.isClosedLoop()),
+                        indicator));// , indexer, vision, turret));
 
         // flywheel.setDefaultCommand(
         // new RunCommand(

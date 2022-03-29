@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.BlinkinLedDriver;
 import frc.robot.utils.BlinkinLedDriver.BlinkinLedMode;
 
-public class LedIndicator extends SubsystemBase {
+public class Indicator extends SubsystemBase {
     private final BlinkinLedDriver led = new BlinkinLedDriver(0);
 
     public void update(boolean ballIndexed, boolean targetLocked, boolean driverOverride) {
@@ -14,12 +14,14 @@ public class LedIndicator extends SubsystemBase {
         }
 
         if (ballIndexed && targetLocked) {
+            // add rumble
             setGreenBlinking();
         } else if (ballIndexed && !targetLocked) {
             setGreenSolid();
         } else if (!ballIndexed && targetLocked) {
             setRedBlinking();
-        } else setRedSolid();
+        } else
+            setRedSolid();
     }
 
     private void setBlue() {
