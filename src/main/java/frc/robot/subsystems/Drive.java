@@ -46,7 +46,7 @@ public class Drive extends SubsystemBase {
   private final DifferentialDriveOdometry odometry;
   private final DifferentialDriveKinematics kinematics;
 
-  public final Field2d field;
+  private final Field2d field;
 
   public Drive() {
     motors = new WPI_TalonFX[4];
@@ -180,6 +180,10 @@ public class Drive extends SubsystemBase {
 
   public DifferentialDriveKinematics getKinematics() {
     return kinematics;
+  }
+
+  public Field2d getField() {
+    return field;
   }
 
   public void resetEncoders() {

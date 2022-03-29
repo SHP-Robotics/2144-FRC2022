@@ -65,7 +65,7 @@ public class FollowTrajectoryForward extends CommandBase {
         interiorWaypoints,
         endPose,
         config);
-    drive.field.getObject("traj").setTrajectory(trajectory);
+    drive.getField().getObject("traj").setTrajectory(trajectory);
 
     // potentential jerking if something doesnt match up properly
     drive.resetOdometry(trajectory.getInitialPose());
