@@ -51,8 +51,8 @@ public class FollowTrajectoryForward extends CommandBase {
     TrajectoryConfig config = new TrajectoryConfig(
         kMaxVelocity,
         kMaxAcceleration)
-            .setKinematics(drive.getKinematics())
-            .addConstraint(autoVoltageConstraint);
+        .setKinematics(drive.getKinematics())
+        .addConstraint(autoVoltageConstraint);
 
     Pose2d startPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
     Pose2d endPose = new Pose2d(2, 0, Rotation2d.fromDegrees(0));
@@ -60,13 +60,15 @@ public class FollowTrajectoryForward extends CommandBase {
     // interiorWaypoints.add(new Translation2d(0.5, 0.1));
     // interiorWaypoints.add(new Translation2d(1.5, 0.3));
 
-    drive.resetOdometry(trajectory.getInitialPose());
-
     trajectory = TrajectoryGenerator.generateTrajectory(
         startPose,
         interiorWaypoints,
         endPose,
         config);
+    drive.field.getObject("traj").setTrajectory(trajectory);
+
+    // potentential jerking if something doesnt match up properly
+    drive.resetOdometry(trajectory.getInitialPose());
 
     controller = new RamseteController();
 

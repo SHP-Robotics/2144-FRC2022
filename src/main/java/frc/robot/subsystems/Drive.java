@@ -9,6 +9,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.MathUtil;
@@ -45,6 +46,8 @@ public class Drive extends SubsystemBase {
   private final DifferentialDriveOdometry odometry;
   private final DifferentialDriveKinematics kinematics;
 
+  public final Field2d field;
+
   public Drive() {
     motors = new WPI_TalonFX[4];
 
@@ -69,6 +72,9 @@ public class Drive extends SubsystemBase {
 
     odometry = new DifferentialDriveOdometry(navx.getRotation2d());
     kinematics = new DifferentialDriveKinematics(kTrackWidthMeters);
+
+    field = new Field2d();
+    SmartDashboard.putData("Field", field);
   }
 
   public boolean collisionDetected() {
@@ -144,6 +150,7 @@ public class Drive extends SubsystemBase {
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    // ticks/100ms * 10 = ticks/second
     double leftAverageTicksPerSecond = (motors[0].getSelectedSensorVelocity() + motors[1].getSelectedSensorVelocity())
         / 2 * 10;
     double rightAverageTicksPerSecond = (motors[2].getSelectedSensorVelocity() + motors[3].getSelectedSensorVelocity())
@@ -175,22 +182,36 @@ public class Drive extends SubsystemBase {
     return kinematics;
   }
 
-  public void resetOdometry(Pose2d position) {
-    odometry.resetPosition(position, position.getRotation());
+  public void resetEncoders() {
+    for (WPI_TalonFX motor : motors)
+      motor.setSelectedSensorPosition(0);
+  }
+
+  public void resetOdometry() {
+    this.resetEncoders();
+    odometry.resetPosition(new Pose2d(), navx.getRotation2d());
+  }
+
+  public void resetOdometry(Pose2d pose) {
+    this.resetEncoders();
+    odometry.resetPosition(pose, navx.getRotation2d());
   }
 
   public void updateOdometry() {
+    double leftAverageTicks = (motors[0].getSelectedSensorPosition() + motors[1].getSelectedSensorPosition()) / 2;
+    double rightAverageTicks = (motors[2].getSelectedSensorPosition() + motors[3].getSelectedSensorPosition()) / 2;
     odometry.update(
         navx.getRotation2d(),
-        (motors[0].getSelectedSensorPosition() + motors[1].getSelectedSensorPosition()) / 2,
-        (motors[2].getSelectedSensorPosition() + motors[3].getSelectedSensorPosition()) / 2);
+        leftAverageTicks * kMetersPerTick,
+        rightAverageTicks * kMetersPerTick);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     // SmartDashboard.putNumber("navx angle", navx.getAngle());
-    updateOdometry();
+    this.updateOdometry();
+    field.setRobotPose(odometry.getPoseMeters());
 
     SmartDashboard.putBoolean("collision detected", collisionDetected());
 
