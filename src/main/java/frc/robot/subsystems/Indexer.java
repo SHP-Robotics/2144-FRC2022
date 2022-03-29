@@ -2,12 +2,12 @@ package frc.robot.subsystems;
 
 import static frc.robot.Constants.Indexer.*;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Indexer extends SubsystemBase {
     private final TalonSRX intake = new TalonSRX(7);
     // private final TalonFX shooterFeeder = new TalonFX(8);
-    private final SlewRateLimiter ramp = new SlewRateLimiter(1);
 
     // private final DigitalInput firstSwitch = new DigitalInput(0);
     // private final DigitalInput secondSwitch = new DigitalInput(1);
@@ -26,10 +25,20 @@ public class Indexer extends SubsystemBase {
     public Indexer() {
         // shooterFeeder.configVoltageCompSaturation(kVoltageSaturation);
         // shooterFeeder.configVoltageMeasurementFilter(kVoltageMeasurementSamples);
+        intake.configOpenloopRamp(0.5);
+        intake.setNeutralMode(NeutralMode.Coast);
     }
 
-    public void intake(double power) {
-        intake.set(TalonSRXControlMode.PercentOutput, ramp.calculate(power));
+    public void intake() {
+        intake.set(TalonSRXControlMode.PercentOutput, 0.8);
+    }
+
+    public void outtake() {
+        intake.set(TalonSRXControlMode.PercentOutput, -0.8);
+    }
+
+    public void stopIntake() {
+        intake.set(TalonSRXControlMode.PercentOutput, 0);
     }
 
     // public void set(double power) {

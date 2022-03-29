@@ -42,7 +42,7 @@ public class RobotContainer {
     // private final Drive drive = new Drive();
     // private final Flywheel flywheel = new Flywheel();
     // private final Vision vision = new Vision();
-    // private final Turret turret = new Turret();
+    private final Turret turret = new Turret();
     private final Indexer indexer = new Indexer();
     private final LedIndicator ledIndicator = new LedIndicator();
 
@@ -62,8 +62,7 @@ public class RobotContainer {
     // use flywheel is ready trigger to tell indexer to move
     // private final Trigger ballIndexed = new Trigger(indexer::isBallIndexedFirst);
     // private final Trigger targetLocked = new Trigger(vision::isTargetLocked);
-    // private final Trigger driverOverrideDisabled = new
-    // Trigger(turret::isClosedLoop);
+    // private final Trigger driverOverrideDisabled = new Trigger(turret::isClosedLoop);
 
     /**
      * 
@@ -97,7 +96,7 @@ public class RobotContainer {
                 new RunCommand(
                         () -> ledIndicator.update(false, // indexer.isBallIndexedFirst(),
                                 true, // vision.isTargetLocked(),
-                                false), // !turret.isClosedLoop()),
+                                !turret.isClosedLoop()),
                         ledIndicator));// , indexer, vision, turret));
 
         // flywheel.setDefaultCommand(
@@ -124,9 +123,7 @@ public class RobotContainer {
         // driver.getLeftTriggerAxis()) * 0.8);
         // }, launcherSubsystem));
 
-        indexer.setDefaultCommand(new RunCommand(() -> {
-            indexer.intake(0);
-        }, indexer));
+        indexer.setDefaultCommand(new RunCommand(() -> indexer.stopIntake(), indexer));
 
         // exampleSubsystem.setDefaultCommand(
         // new RunCommand(
@@ -140,7 +137,7 @@ public class RobotContainer {
     }
 
     /**
-     * Use this method to define your button->command mappings. Buttons can be
+     * Use this method to define your button -> command mappings. Buttons can be
      * created by
      * instantiating a {@link GenericHID} or one of its subclasses ({@link
      * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
@@ -173,27 +170,27 @@ public class RobotContainer {
 
         // intake
         kRBumper.whileHeld(new InstantCommand(
-                () -> indexer.intake(1.0), indexer));
+                () -> indexer.intake(), indexer));
 
         // outtake
         kLBumper.whileHeld(new InstantCommand(
-                () -> indexer.intake(-1.0), indexer));
+                () -> indexer.outtake(), indexer));
 
-        // // move turret right
-        // kDpadRight.whileHeld(new InstantCommand(
-        // () -> turret.openLoop(0.1), turret));
+        // move turret right
+        kDpadRight.whileHeld(new InstantCommand(
+        () -> turret.openLoop(0.1), turret));
 
-        // // move turret left
-        // kDpadLeft.whileHeld(new InstantCommand(
-        // () -> turret.openLoop(-0.1), turret));
+        // move turret left
+        kDpadLeft.whileHeld(new InstantCommand(
+        () -> turret.openLoop(-0.1), turret));
 
-        // // reset turret position
-        // kXButton.whenPressed(new InstantCommand(
-        // () -> turret.resetPosition(), turret));
+        // reset turret position
+        kXButton.whenPressed(new InstantCommand(
+        () -> turret.resetPosition(), turret));
 
-        // // toggle turret control
-        // kBButton.whenPressed(new InstantCommand(
-        // () -> turret.toggleLoop(), turret));
+        // toggle turret control
+        kBButton.whenPressed(new InstantCommand(
+        () -> turret.toggleLoop(), turret));
 
         // // test
         // kYButton.whenPressed(new InstantCommand(

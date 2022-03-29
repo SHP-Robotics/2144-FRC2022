@@ -27,7 +27,7 @@ public class LedIndicator extends SubsystemBase {
     }
 
     private void setGreenBlinking() {
-        led.setMode(BlinkinLedMode.ONE_HEARTBEAT_FAST);
+        led.setMode(BlinkinLedMode.ONE_STROBE);
     }
 
     private void setGreenSolid() {
@@ -39,7 +39,7 @@ public class LedIndicator extends SubsystemBase {
     }
 
     private void setRedBlinking() {
-        led.setMode(BlinkinLedMode.TWO_HEARTBEAT_FAST);
+        led.setMode(BlinkinLedMode.TWO_STROBE);
     }
 
     // @Override
