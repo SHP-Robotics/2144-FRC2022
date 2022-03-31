@@ -117,7 +117,8 @@ public class Flywheel extends SubsystemBase {
      * @return Whether the flywheel is at the setpoint or not.
      */
     public boolean isAtSetpoint() {
-        return this.getTalonVelocityRPS() >= desiredVelocityRPS;
+        double velocityRPS = this.getTalonVelocityRPS();
+        return velocityRPS >= desiredVelocityRPS && velocityRPS <= desiredVelocityRPS + kRPSDeadzone;
     }
 
     @Override
@@ -136,7 +137,7 @@ public class Flywheel extends SubsystemBase {
             return;
         }
 
-        this.setVoltage(0.9 * feedforward.calculate(desiredVelocityRPS)
+        this.setVoltage(0.95 * feedforward.calculate(desiredVelocityRPS)
                 + bangbang.calculate(velocityRPS, desiredVelocityRPS)
                         * kNominalVoltage);
 

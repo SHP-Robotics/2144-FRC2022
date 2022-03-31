@@ -106,6 +106,7 @@ public final class Constants {
 
         public static final double kMaxRPS = 30;
         public static final double kDefaultRPS = 10;
+        public static final double kRPSDeadzone = 10; // need to change
 
         public static final double kRotationsPerTick = 1.0 / kTalonTicksPerRevolution;
 
@@ -155,7 +156,7 @@ public final class Constants {
         public static final double kI = 0;// 0.0002;
         public static final double kD = 10;
 
-        public static final double kThresholdDegrees = 30; // for now
+        public static final double kThresholdDegrees = 70; // for now
 
         public static final double ratio = kTalonTicksPerRevolution / 27400; // input : output
 

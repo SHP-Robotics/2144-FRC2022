@@ -38,9 +38,6 @@ public class FollowTrajectoryForward extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    timer = new Timer();
-    timer.stop();
-
     drive.disableRamp();
 
     DifferentialDriveVoltageConstraint autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
@@ -51,8 +48,8 @@ public class FollowTrajectoryForward extends CommandBase {
     TrajectoryConfig config = new TrajectoryConfig(
         kMaxVelocity,
         kMaxAcceleration)
-        .setKinematics(drive.getKinematics())
-        .addConstraint(autoVoltageConstraint);
+            .setKinematics(drive.getKinematics())
+            .addConstraint(autoVoltageConstraint);
 
     Pose2d startPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
     Pose2d endPose = new Pose2d(2, 0, Rotation2d.fromDegrees(0));
@@ -72,7 +69,7 @@ public class FollowTrajectoryForward extends CommandBase {
 
     controller = new RamseteController();
 
-    timer.reset();
+    timer = new Timer();
     timer.start();
   }
 
@@ -89,6 +86,7 @@ public class FollowTrajectoryForward extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    timer.stop();
     drive.stop();
     drive.enableRamp();
   }

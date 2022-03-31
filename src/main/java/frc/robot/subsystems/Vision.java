@@ -8,6 +8,7 @@ import static frc.robot.Constants.Vision.*;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
@@ -133,6 +134,7 @@ public class Vision extends SubsystemBase implements Loggable {
 
 	public boolean isTargetLocked() {
 		double offset = getTx();
+		SmartDashboard.putNumber("offset degrees", offset);
 		return isTarget() && offset < kDeadzone && offset > -kDeadzone;
 	}
 

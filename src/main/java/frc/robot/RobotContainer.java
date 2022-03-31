@@ -39,11 +39,11 @@ public class RobotContainer {
 
     // Subsystems
     // private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
-    // private final Drive drive = new Drive();
-    // private final Flywheel flywheel = new Flywheel();
-    // private final Vision vision = new Vision();
+    private final Drive drive = new Drive();
+    private final Flywheel flywheel = new Flywheel();
+    private final Vision vision = new Vision();
     private final Turret turret = new Turret();
-    private final Indexer indexer = new Indexer();
+    // private final Indexer indexer = new Indexer();
     private final Indicator indicator = new Indicator();
 
     // private final MotorTest motorTest = new MotorTest();
@@ -62,7 +62,8 @@ public class RobotContainer {
     // use flywheel is ready trigger to tell indexer to move
     // private final Trigger ballIndexed = new Trigger(indexer::isBallIndexedFirst);
     // private final Trigger targetLocked = new Trigger(vision::isTargetLocked);
-    // private final Trigger driverOverrideDisabled = new Trigger(turret::isClosedLoop);
+    // private final Trigger driverOverrideDisabled = new
+    // Trigger(turret::isClosedLoop);
 
     /**
      * 
@@ -87,24 +88,24 @@ public class RobotContainer {
          * DEFAULT COMMANDS
          */
 
-        // drive.setDefaultCommand(
-        // new RunCommand(
-        // () -> drive.openLoop(controller.getLeftY(), -controller.getRightX()),
-        // drive));
+        drive.setDefaultCommand(
+                new RunCommand(
+                        () -> drive.openLoop(controller.getLeftY(), -controller.getRightX()),
+                        drive));
 
         indicator.setDefaultCommand(
                 new RunCommand(
                         () -> indicator.update(false, // indexer.isBallIndexedFirst(),
-                                true, // vision.isTargetLocked(),
-                                false), // !turret.isClosedLoop()),
+                                vision.isTargetLocked(),
+                                /* false), */ !turret.isClosedLoop()),
                         indicator));// , indexer, vision, turret));
 
-        // flywheel.setDefaultCommand(
-        // new RunCommand(
-        // () -> flywheel.setVelocityRotationsPerSecond(
-        // (driver.getRightTriggerAxis() - driver.getLeftTriggerAxis())
-        // * Constants.Flywheel.kMaxRPS),
-        // flywheel));
+        flywheel.setDefaultCommand(
+                new RunCommand(
+                        () -> flywheel.setDesiredVelocityRPS(
+                                (controller.getRightTriggerAxis() - controller.getLeftTriggerAxis())
+                                        * Constants.Flywheel.kMaxRPS),
+                        flywheel));
 
         // indexer.setDefaultCommand(
         // new RunCommand(
@@ -112,18 +113,19 @@ public class RobotContainer {
         // 30 ? 0.3 : 0),
         // indexer));
 
-        // turret.setDefaultCommand(
-        // new RunCommand(
-        // () -> turret.adjust(vision.isTarget(),
-        // vision.getTx()),
-        // turret));
+        turret.setDefaultCommand(
+                new RunCommand(
+                        () -> turret.adjust(vision.isTarget(),
+                                vision.getTx()),
+                        turret));
 
         // launcherSubsystem.setDefaultCommand(new RunCommand(() -> {
         // launcherSubsystem.set((driver.getRightTriggerAxis() -
         // driver.getLeftTriggerAxis()) * 0.8);
         // }, launcherSubsystem));
 
-        indexer.setDefaultCommand(new RunCommand(() -> indexer.stopIntake(), indexer));
+        // indexer.setDefaultCommand(new RunCommand(() -> indexer.stopIntake(),
+        // indexer));
 
         // exampleSubsystem.setDefaultCommand(
         // new RunCommand(
@@ -169,28 +171,28 @@ public class RobotContainer {
         // () -> vision.setLedMode(LightMode.eOff), vision));
 
         // intake
-        kRBumper.whileHeld(new InstantCommand(
-                () -> indexer.intake(), indexer));
+        // kRBumper.whileHeld(new InstantCommand(
+        // () -> indexer.intake(), indexer));
 
-        // outtake
-        kLBumper.whileHeld(new InstantCommand(
-                () -> indexer.outtake(), indexer));
+        // // outtake
+        // kLBumper.whileHeld(new InstantCommand(
+        // () -> indexer.outtake(), indexer));
 
         // move turret right
         kDpadRight.whileHeld(new InstantCommand(
-        () -> turret.openLoop(0.1), turret));
+                () -> turret.openLoop(0.1), turret));
 
         // move turret left
         kDpadLeft.whileHeld(new InstantCommand(
-        () -> turret.openLoop(-0.1), turret));
+                () -> turret.openLoop(-0.1), turret));
 
         // reset turret position
         kXButton.whenPressed(new InstantCommand(
-        () -> turret.resetPosition(), turret));
+                () -> turret.resetPosition(), turret));
 
         // toggle turret control
         kBButton.whenPressed(new InstantCommand(
-        () -> turret.toggleLoop(), turret));
+                () -> turret.toggleLoop(), turret));
 
         // // test
         // kYButton.whenPressed(new InstantCommand(

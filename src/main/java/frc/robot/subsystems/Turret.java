@@ -3,7 +3,7 @@ package frc.robot.subsystems;
 import static frc.robot.Constants.*;
 import static frc.robot.Constants.Turret.*;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -71,7 +71,7 @@ public class Turret extends SubsystemBase implements Loggable {
             panPower = -Math.abs(panPower);
         else if (this.getDegrees() <= -kThresholdDegrees)
             panPower = Math.abs(panPower);
-        motor.set(ControlMode.PercentOutput, panPower);
+        motor.set(TalonFXControlMode.PercentOutput, panPower);
     }
 
     // @Log(name = "turret power")
@@ -82,7 +82,7 @@ public class Turret extends SubsystemBase implements Loggable {
 
     public void adjust(boolean isTarget, double degrees) {
         if (!closedLoop) {
-            motor.set(ControlMode.PercentOutput, 0);
+            motor.set(TalonFXControlMode.PercentOutput, 0);
             return;
         }
 
@@ -97,7 +97,7 @@ public class Turret extends SubsystemBase implements Loggable {
         else if (desiredDegrees < -kThresholdDegrees)
             desiredDegrees = -kThresholdDegrees;
 
-        motor.set(ControlMode.Position, this.convertDegreesToTicks(desiredDegrees));
+        motor.set(TalonFXControlMode.MotionMagic, this.convertDegreesToTicks(desiredDegrees));
 
         // this.getPower(this.convertDegreesToTicks(desiredDegrees));
     }
@@ -110,7 +110,7 @@ public class Turret extends SubsystemBase implements Loggable {
         if ((degrees > kThresholdDegrees && power > 0) || (degrees < -kThresholdDegrees && power < 0))
             return;
 
-        motor.set(ControlMode.PercentOutput, power);
+        motor.set(TalonFXControlMode.PercentOutput, power);
     }
 
     public boolean isClosedLoop() {
