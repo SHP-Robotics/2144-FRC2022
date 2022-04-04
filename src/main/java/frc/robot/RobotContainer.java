@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.CycleBall;
 import frc.robot.commands.FollowTrajectoryForward;
+import frc.robot.commands.ForwardTimeBased;
 import frc.robot.commands.ShootBall;
 import frc.robot.commands.SpinFlywheel;
 import frc.robot.subsystems.Drive;
@@ -194,6 +195,7 @@ public class RobotContainer {
         // test
         kYButton.whenPressed(new InstantCommand(
                 () -> turret.adjust(true, 30), turret));
+                
     }
 
     public void configureTriggerBindings() {
@@ -207,6 +209,6 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // // An ExampleCommand will run in autonomous
-        return new FollowTrajectoryForward(drive);
+        return new ForwardTimeBased(drive);
     }
 }

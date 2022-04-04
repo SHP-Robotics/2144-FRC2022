@@ -76,10 +76,16 @@ public final class Constants {
         public static final double kTrackWidthInches = 23;
         public static final double kTrackWidthMeters = Units.inchesToMeters(kTrackWidthInches);
 
-        public static final double kWheelDiameterMeters = 0; // need to get
+        public static final double kWheelDiameterInches = 6;
+        public static final double kWheelDiameterMeters = Units.inchesToMeters(kWheelDiameterInches);
         public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
 
-        public static final double kMetersPerTick = kWheelCircumferenceMeters / kTalonTicksPerRevolution;
+        public static final double kGearRatio = 10.75;
+
+        public static final double kMetersPerTick = kWheelCircumferenceMeters * kGearRatio / kTalonTicksPerRevolution;
+        public static final double kVelMetersToEnc = Constants.kTalonTicksPerRevolution / kGearRatio / kWheelCircumferenceMeters / 10;   
+        public static final double kMomentOfInertia = 7.5; //kgm^2
+        public static final double kMassKg = 100;
 
         // imposed limits (not theoretical maximums)
         public static final double kMaxVelocity = 1; // m/s

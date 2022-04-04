@@ -9,20 +9,29 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.simulation.AnalogGyroSim;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.AnalogGyro;
+import edu.wpi.first.wpilibj.RobotBase;
 // import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.math.util.Units;
+import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
 
 public class Drive extends SubsystemBase {
   private DifferentialDrive driveBase;
+
+  //private final DifferentialDrivetrainSim drivetrainSim;
 
   public final WPI_TalonFX[] motors;
   // new WPI_TalonFX(0), // Left Front
@@ -46,6 +55,13 @@ public class Drive extends SubsystemBase {
   private final DifferentialDriveOdometry odometry;
   private final DifferentialDriveKinematics kinematics;
 
+  //simulation
+  private TalonFXSimCollection leftFrontSim, leftBackSim, rightBackSim, rightFrontSim;
+  private AnalogGyro gyro;
+  private AnalogGyroSim gyroSim;
+  private DifferentialDrivetrainSim driveSim;
+  private Field2d fieldSim;
+
   public Drive() {
     motors = new WPI_TalonFX[4];
 
@@ -67,12 +83,43 @@ public class Drive extends SubsystemBase {
     feedforward = new SimpleMotorFeedforward(kS, kV, kA);
 
     navx = new AHRS(SPI.Port.kMXP);
-
-    odometry = new DifferentialDriveOdometry(navx.getRotation2d());
+    
     kinematics = new DifferentialDriveKinematics(kTrackWidthMeters);
+    fieldSim = new Field2d();
+    SmartDashboard.putData("Field", fieldSim);
+    
+    if (RobotBase.isReal())
+    {
+      odometry = new DifferentialDriveOdometry(navx.getRotation2d());
+    }
+    else {
+      gyro = new AnalogGyro(1);
+      odometry = new DifferentialDriveOdometry(gyro.getRotation2d());
+      gyroSim = new AnalogGyroSim(gyro);
+      leftFrontSim = motors[0].getSimCollection();
+      leftBackSim = motors[1].getSimCollection();
+      rightFrontSim = motors[2].getSimCollection();
+      rightBackSim = motors[3].getSimCollection();
+      driveSim = new DifferentialDrivetrainSim(
+        DCMotor.getFalcon500(2),       // 2 Falcon 500 motors on each side of the drivetrain.
+        kGearRatio,            
+        kMomentOfInertia,
+        kMassKg, 
+        kWheelDiameterMeters/2,
+        kTrackWidthMeters,
+
+        // The standard deviations for measurement noise:
+        // x and y:          0.001 m
+        // heading:          0.001 rad
+        // l and r velocity: 0.1   m/s
+        // l and r position: 0.005 m
+        null//VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005)
+      );
+    }
   }
 
   public boolean collisionDetected() {
+    if (RobotBase.isSimulation()) return false;
     double currentLinearAccelX = navx.getWorldLinearAccelX();
     double currentJerkX = currentLinearAccelX - previousLinearAccelX;
     previousLinearAccelX = currentLinearAccelX;
@@ -155,7 +202,10 @@ public class Drive extends SubsystemBase {
   }
 
   public double getHeading() {
-    return navx.getAngle();
+    if (RobotBase.isReal())
+      return navx.getAngle();
+    else 
+      return gyro.getAngle();
   }
 
   public Pose2d getPose() {
@@ -184,7 +234,7 @@ public class Drive extends SubsystemBase {
   public void updateOdometry()
   {
     odometry.update(
-        navx.getRotation2d(),
+        RobotBase.isReal() ? navx.getRotation2d() : gyro.getRotation2d(),
         (motors[0].getSelectedSensorPosition() + motors[1].getSelectedSensorPosition()) / 2,
         (motors[2].getSelectedSensorPosition() + motors[3].getSelectedSensorPosition()) / 2);
   }
@@ -200,5 +250,51 @@ public class Drive extends SubsystemBase {
     SmartDashboard.putNumber("navx yaw", navx.getYaw());
     SmartDashboard.putNumber("navx angle", navx.getAngle());
 
+    fieldSim.setRobotPose(odometry.getPoseMeters());
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    driveSim.setInputs(leftFrontSim.getMotorOutputLeadVoltage(),
+                         -rightFrontSim.getMotorOutputLeadVoltage());
+    driveSim.update(0.02);
+
+    // From NavX example
+    //int dev = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
+    //SimDouble angle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(dev, "Yaw"));
+    // NavX expects clockwise positive, but sim outputs clockwise negative
+    //angle.set(Math.IEEEremainder(-driveSim.getHeading().getDegrees(), 360));
+    // navxSimAngle = -drivetrainSim.getHeading().getDegrees();
+
+    updateSimEncoderPositions();
+    updateSimEncoderVelocities();
+    gyroSim.setAngle(-driveSim.getHeading().getDegrees());
+  }
+
+  private void updateSimEncoderPositions()
+  {
+    int leftPosition = (int)(driveSim.getLeftPositionMeters()/kMetersPerTick);
+    leftFrontSim.setIntegratedSensorRawPosition(leftPosition);
+    leftBackSim.setIntegratedSensorRawPosition(leftPosition);
+
+    int rightPosition = (int)(driveSim.getRightPositionMeters()/kMetersPerTick);
+    rightFrontSim.setIntegratedSensorRawPosition(rightPosition);
+    rightBackSim.setIntegratedSensorRawPosition(rightPosition);
+  }
+
+  private void updateSimEncoderVelocities()
+  {
+    int leftVelocity = (int)velocityToNativeUnits(
+      driveSim.getLeftVelocityMetersPerSecond());
+    leftFrontSim.setIntegratedSensorVelocity(leftVelocity);
+    leftBackSim.setIntegratedSensorVelocity(leftVelocity);
+    int rightVelocity = (int)velocityToNativeUnits(
+      driveSim.getLeftVelocityMetersPerSecond());
+    rightFrontSim.setIntegratedSensorVelocity(rightVelocity);
+    rightBackSim.setIntegratedSensorVelocity(rightVelocity);
+  }
+  
+  private double velocityToNativeUnits(double velocityMetersPerSecond){
+    return velocityMetersPerSecond * kVelMetersToEnc;
   }
 }
