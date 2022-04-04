@@ -38,9 +38,6 @@ public class FollowTrajectoryForward extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    timer = new Timer();
-    timer.stop();
-
     drive.disableRamp();
 
     DifferentialDriveVoltageConstraint autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
@@ -60,27 +57,25 @@ public class FollowTrajectoryForward extends CommandBase {
     // interiorWaypoints.add(new Translation2d(0.5, 0.1));
     // interiorWaypoints.add(new Translation2d(1.5, 0.3));
 
-    // no method declaration
-    // drive.resetOdometry(trajectory.getInitialPose());
-
     trajectory = TrajectoryGenerator.generateTrajectory(
         startPose,
         interiorWaypoints,
         endPose,
         config);
+    drive.getField().getObject("traj").setTrajectory(trajectory);
+
+    // potentential jerking if something doesnt match up properly
+    drive.resetOdometry(trajectory.getInitialPose());
 
     controller = new RamseteController();
 
-    timer.reset();
+    timer = new Timer();
     timer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // no method declaration (im assuming it auto-updates in periodic)
-    // drive.updateOdometry();
-
     Trajectory.State goal = trajectory.sample(timer.get());
     ChassisSpeeds adjustedSpeeds = controller.calculate(drive.getPose(), goal);
     DifferentialDriveWheelSpeeds wheelSpeeds = drive.getKinematics().toWheelSpeeds(adjustedSpeeds);
@@ -91,6 +86,7 @@ public class FollowTrajectoryForward extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    timer.stop();
     drive.stop();
     drive.enableRamp();
   }

@@ -19,22 +19,24 @@ public class SpinFlywheel extends CommandBase {
     }
 
     // Called when the command is initially scheduled.
-    // @Override
-    // public void initialize() {
-    // }
+    @Override
+    public void initialize() {
+        flywheel.enableRamp();
+    }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        flywheel.setVelocityRotationsPerSecond(
-                vision.isTargetLocked() ? Interpolation.table.get(vision.getDistanceInches())
-                        : kDefaultRPS);
+        flywheel.setDesiredVelocityRPS(25);
+                // vision.isTargetLocked() ? Interpolation.table.get(vision.getDistanceInches())
+                //         : kDefaultRPS);
     }
 
     // Called once the command ends or is interrupted.
-    // @Override
-    // public void end(boolean interrupted) {
-    // }
+    @Override
+    public void end(boolean interrupted) {
+        flywheel.disableRamp();
+    }
 
     // Returns true when the command should end.
     @Override

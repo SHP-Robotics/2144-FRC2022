@@ -27,6 +27,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class Drive extends SubsystemBase {
   private DifferentialDrive driveBase;
@@ -60,7 +61,7 @@ public class Drive extends SubsystemBase {
   private AnalogGyro gyro;
   private AnalogGyroSim gyroSim;
   private DifferentialDrivetrainSim driveSim;
-  private Field2d fieldSim;
+  private final Field2d field;
 
   public Drive() {
     motors = new WPI_TalonFX[4];
@@ -85,9 +86,7 @@ public class Drive extends SubsystemBase {
     navx = new AHRS(SPI.Port.kMXP);
     
     kinematics = new DifferentialDriveKinematics(kTrackWidthMeters);
-    fieldSim = new Field2d();
-    SmartDashboard.putData("Field", fieldSim);
-    
+
     if (RobotBase.isReal())
     {
       odometry = new DifferentialDriveOdometry(navx.getRotation2d());
@@ -116,6 +115,9 @@ public class Drive extends SubsystemBase {
         null//VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005)
       );
     }
+
+    field = new Field2d();
+    SmartDashboard.putData("Field", field);
   }
 
   public boolean collisionDetected() {
@@ -149,8 +151,8 @@ public class Drive extends SubsystemBase {
     if (turn < 0.1 && turn > -0.1)
       turn = 0;
 
-    // if moving forward more than 30%, halve turn bias
-    if (straight > 0.3)
+    // if moving forward more than 20%, halve turn bias
+    if (straight > 0.2)
       turn /= 2;
 
     // double driftCompensation = 0;
@@ -162,8 +164,9 @@ public class Drive extends SubsystemBase {
     // SmartDashboard.putNumber("drift compensation", driftCompensation);
 
     straight = MathUtil.clamp(straight, -kForwardThreshold, kForwardThreshold);
-    turn = MathUtil.clamp(Math.pow(turn, 3) * kTurningSensitivity, -kTurnThreshold, kTurnThreshold);
-
+    boolean turnNegative = turn < 0;
+    turn = MathUtil.clamp(Math.pow(turn, 2) * kTurningSensitivity, -kTurnThreshold, kTurnThreshold);
+    if (turnNegative) turn  = -turn;
     // rightX = Math.pow(rightX, 5) / Math.abs(Math.pow(rightX, 3));
 
     double leftSpeed = straight - turn;
@@ -191,7 +194,16 @@ public class Drive extends SubsystemBase {
     rightDrive.set(0);
   }
 
+  public boolean isStopped() {
+    return this.getChassisSpeeds().vxMetersPerSecond <= kSpeedThreshold;
+  }
+
+  public ChassisSpeeds getChassisSpeeds() {
+    return kinematics.toChassisSpeeds(this.getWheelSpeeds());
+  }
+
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    // ticks/100ms * 10 = ticks/second
     double leftAverageTicksPerSecond = (motors[0].getSelectedSensorVelocity() + motors[1].getSelectedSensorVelocity())
         / 2 * 10;
     double rightAverageTicksPerSecond = (motors[2].getSelectedSensorVelocity() + motors[3].getSelectedSensorVelocity())
@@ -226,31 +238,49 @@ public class Drive extends SubsystemBase {
     return kinematics;
   }
 
-  public void resetOdometry(Pose2d position)
-  {
-    odometry.resetPosition(position, position.getRotation());
+  public Field2d getField() {
+    return field;
   }
 
-  public void updateOdometry()
-  {
+  public void resetEncoders() {
+    for (WPI_TalonFX motor : motors)
+      motor.setSelectedSensorPosition(0);
+  }
+
+  public void resetOdometry() {
+    this.resetEncoders();
+    odometry.resetPosition(new Pose2d(), navx.getRotation2d());
+  }
+
+  public void resetOdometry(Pose2d pose) {
+    this.resetEncoders();
+    odometry.resetPosition(pose, navx.getRotation2d());
+  }
+
+  public void updateOdometry() {
+    double leftAverageTicks = (motors[0].getSelectedSensorPosition() + motors[1].getSelectedSensorPosition()) / 2;
+    double rightAverageTicks = (motors[2].getSelectedSensorPosition() + motors[3].getSelectedSensorPosition()) / 2;
     odometry.update(
         RobotBase.isReal() ? navx.getRotation2d() : gyro.getRotation2d(),
-        (motors[0].getSelectedSensorPosition() + motors[1].getSelectedSensorPosition()) / 2,
-        (motors[2].getSelectedSensorPosition() + motors[3].getSelectedSensorPosition()) / 2);
+        leftAverageTicks * kMetersPerTick,
+        rightAverageTicks * kMetersPerTick);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     // SmartDashboard.putNumber("navx angle", navx.getAngle());
-    updateOdometry();
+    this.updateOdometry();
+    field.setRobotPose(odometry.getPoseMeters());
+
+    SmartDashboard.putBoolean("collision detected", collisionDetected());
 
     SmartDashboard.putNumber("navx pitch", navx.getPitch());
     SmartDashboard.putNumber("navx roll", navx.getRoll());
     SmartDashboard.putNumber("navx yaw", navx.getYaw());
     SmartDashboard.putNumber("navx angle", navx.getAngle());
 
-    fieldSim.setRobotPose(odometry.getPoseMeters());
+    field.setRobotPose(odometry.getPoseMeters());
   }
 
   @Override

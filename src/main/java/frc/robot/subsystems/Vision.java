@@ -8,6 +8,7 @@ import static frc.robot.Constants.Vision.*;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
@@ -20,12 +21,18 @@ import java.lang.Math;
  * @author Dan Waxman
  */
 public class Vision extends SubsystemBase implements Loggable {
-	private NetworkTableInstance table = null;
+	private final NetworkTableInstance table;
 
 	// UNITS: INCHES
 	// double reflectiveTapeLength = 5;
 	// double knownHeight = 10; // TODO: find value from top height of reflective
 	// tape - height of camera point
+
+	public Vision() {
+		table = NetworkTableInstance.getDefault();
+
+		this.setPipeline(kPipeline);
+	}
 
 	/**
 	 * Light modes for Limelight.
@@ -133,6 +140,7 @@ public class Vision extends SubsystemBase implements Loggable {
 
 	public boolean isTargetLocked() {
 		double offset = getTx();
+		SmartDashboard.putNumber("offset degrees", offset);
 		return isTarget() && offset < kDeadzone && offset > -kDeadzone;
 	}
 
@@ -144,10 +152,6 @@ public class Vision extends SubsystemBase implements Loggable {
 	 * @return NetworkTableEntry of given entry.
 	 */
 	private NetworkTableEntry getValue(String key) {
-		if (table == null) {
-			table = NetworkTableInstance.getDefault();
-		}
-
 		return table.getTable("limelight").getEntry(key);
 	}
 
@@ -199,9 +203,8 @@ public class Vision extends SubsystemBase implements Loggable {
 
 	// https://docs.limelightvision.io/en/latest/cs_estimating_distance.html#using-a-fixed-angle-camera
 	public double getDistanceInches() {
-		double offset = getTy();
-		double angleToGoalRadians = Math.toRadians(kMountAngleDegrees + offset);
-		return (kTargetHeightInches - kCameraHeightInches) / Math.tan(angleToGoalRadians);
+		double angleToGoalRadians = Math.toRadians(kMountAngleDegrees + getTy());
+		return kHeightDifference / Math.tan(angleToGoalRadians);
 	}
 
 	// @Override

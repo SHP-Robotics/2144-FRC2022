@@ -1,9 +1,10 @@
 package frc.robot;
 
+import static frc.robot.RobotContainer.*;
+
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.utils.InterpolatingTreeMap;
@@ -22,48 +23,35 @@ import frc.robot.utils.InterpolatingTreeMap;
  */
 public final class Constants {
     public static final double kNominalVoltage = 12.0;
-    public static final double kTalonTicksPerRevolution = 2048;
+    public static final double kFalconTicksPerRevolution = 2048;
+
+    public static final int kFalconContinuousCurrentLimit = 40;
+    public static final int kFalconPeakCurrentLimit = 60;
+    public static final double kFalconPeakCurrentDuration = 0.1;
+
+    public static final int kTalonContinuousCurrentLimit = 30;
+    public static final int kTalonPeakCurrentLimit = 40;
+    public static final int kTalonPeakCurrentDuration = 100;
 
     public static final class Control {
-        public static JoystickButton kAButton;
-        public static JoystickButton kBButton;
-        public static JoystickButton kXButton;
-        public static JoystickButton kYButton;
+        public static JoystickButton kAButton = new JoystickButton(controller, 1);
+        public static JoystickButton kBButton = new JoystickButton(controller, 2);
+        public static JoystickButton kXButton = new JoystickButton(controller, 3);
+        public static JoystickButton kYButton = new JoystickButton(controller, 4);
 
-        public static JoystickButton kLBumper;
-        public static JoystickButton kRBumper;
+        public static JoystickButton kLBumper = new JoystickButton(controller, 5);
+        public static JoystickButton kRBumper = new JoystickButton(controller, 6);
 
-        public static JoystickButton kSelectButton;
-        public static JoystickButton kStartButton;
+        public static JoystickButton kSelectButton = new JoystickButton(controller, 7);
+        public static JoystickButton kStartButton = new JoystickButton(controller, 8);
 
-        public static JoystickButton kLeftThumbPush;
-        public static JoystickButton kRightThumbPush;
+        public static JoystickButton kLeftThumbPush = new JoystickButton(controller, 9);
+        public static JoystickButton kRightThumbPush = new JoystickButton(controller, 10);
 
-        public static POVButton kDpadUp;
-        public static POVButton kDpadRight;
-        public static POVButton kDpadDown;
-        public static POVButton kDpadLeft;
-
-        public static final void initButtons(XboxController controller) {
-            kAButton = new JoystickButton(controller, 1);
-            kBButton = new JoystickButton(controller, 2);
-            kXButton = new JoystickButton(controller, 3);
-            kYButton = new JoystickButton(controller, 4);
-
-            kLBumper = new JoystickButton(controller, 5);
-            kRBumper = new JoystickButton(controller, 6);
-
-            kSelectButton = new JoystickButton(controller, 7);
-            kStartButton = new JoystickButton(controller, 8);
-
-            kLeftThumbPush = new JoystickButton(controller, 9);
-            kRightThumbPush = new JoystickButton(controller, 10);
-
-            kDpadUp = new POVButton(controller, 0);
-            kDpadRight = new POVButton(controller, 90);
-            kDpadDown = new POVButton(controller, 180);
-            kDpadLeft = new POVButton(controller, 270);
-        }
+        public static POVButton kDpadUp = new POVButton(controller, 0);
+        public static POVButton kDpadRight = new POVButton(controller, 90);
+        public static POVButton kDpadDown = new POVButton(controller, 180);
+        public static POVButton kDpadLeft = new POVButton(controller, 270);
     }
 
     public static final class Drive {
@@ -71,7 +59,7 @@ public final class Constants {
 
         public static final double kForwardThreshold = 0.6;
         public static final double kTurnThreshold = 0.4;
-        public static final double kTurningSensitivity = 1.5;
+        public static final double kTurningSensitivity = 1;
 
         public static final double kTrackWidthInches = 23;
         public static final double kTrackWidthMeters = Units.inchesToMeters(kTrackWidthInches);
@@ -82,10 +70,11 @@ public final class Constants {
 
         public static final double kGearRatio = 10.75;
 
-        public static final double kMetersPerTick = kWheelCircumferenceMeters * kGearRatio / kTalonTicksPerRevolution;
-        public static final double kVelMetersToEnc = Constants.kTalonTicksPerRevolution / kGearRatio / kWheelCircumferenceMeters / 10;   
+        public static final double kMetersPerTick = kWheelCircumferenceMeters * kGearRatio / kFalconTicksPerRevolution;
+        public static final double kVelMetersToEnc = kFalconTicksPerRevolution / kGearRatio / kWheelCircumferenceMeters / 10;   
         public static final double kMomentOfInertia = 7.5; //kgm^2
         public static final double kMassKg = 100;
+        public static final double kSpeedThreshold = 0.1; // m/s
 
         // imposed limits (not theoretical maximums)
         public static final double kMaxVelocity = 1; // m/s
@@ -98,10 +87,6 @@ public final class Constants {
     }
 
     public static final class Flywheel {
-        public static final int kContinuousCurrentLimit = 40;
-        public static final int kPeakCurrentLimit = 60;
-        public static final double kPeakCurrentDuration = 0.1;
-
         // public static final double kVoltageSaturation = 12;
         // public static final int kVoltageMeasurementSamples = 32;
 
@@ -110,8 +95,11 @@ public final class Constants {
 
         public static final double kMaxRPS = 30;
         public static final double kDefaultRPS = 10;
+        public static final double kRPSDeadzone = 5; // need to change
 
-        public static final double kRotationsPerTick = 1.0 / kTalonTicksPerRevolution;
+        public static final double kRotationsPerTick = 1.0 / kFalconTicksPerRevolution;
+
+        public static final double kRampSeconds = 0.1;
 
         // 1.5 : 1.0
         // public static final double kS = 0.59083;
@@ -145,8 +133,12 @@ public final class Constants {
         public static final double kDeadzone = 5; // margin of acceptance for error
 
         public static final double kMountAngleDegrees = 0; // need to find (degrees rotated on mount)
+
         public static final double kCameraHeightInches = 0; // need to find (center of lens to floor)
-        public static final double kTargetHeightInches = 0; // need to find (target to floor)
+        public static final double kTargetHeightInches = 104; // need to find (target to floor)
+        public static final double kHeightDifference = kTargetHeightInches - kCameraHeightInches;
+
+        public static final int kPipeline = 0;
     }
 
     public static final class Turret {
@@ -155,13 +147,26 @@ public final class Constants {
         public static final double kI = 0;// 0.0002;
         public static final double kD = 10;
 
-        public static final double kThresholdDegrees = 30; // for now
+        public static final double kCruiseVelocity = 6000;
+        public static final double kAcceleration = 6000;
 
-        public static final double ratio = kTalonTicksPerRevolution / 27400; // input : output
+        public static final double kThresholdDegrees = 70; // for now
+
+        public static final double ratio = kFalconTicksPerRevolution / 27400; // input : output
 
     }
 
     public static final class Indexer {
-        public static final double kDefaultSpeed = 0.3;
+        public static final double kRampSeconds = 0.1;
+
+        public static final double kIntakeSpeed = 0.8;
+        public static final double kIndexerSpeed = 0.4;
+
+        public static final double kVoltageSaturation = 12;
+        public static final int kVoltageMeasurementSamples = 32;
+    }
+
+    public static final class Indicator {
+        public static final double kRumbleValue = 0.5;
     }
 }
