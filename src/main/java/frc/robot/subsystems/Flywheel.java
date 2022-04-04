@@ -20,7 +20,7 @@ public class Flywheel extends SubsystemBase {
     private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);
     private final BangBangController bangbang = new BangBangController();
 
-    public double desiredVelocityRPS;
+    private double desiredVelocityRPS;
 
     /**
      * Creates a new Flywheel controlled by a feedforward and bang-bang controller.
@@ -29,9 +29,9 @@ public class Flywheel extends SubsystemBase {
         TalonFXConfiguration talonConfig = new TalonFXConfiguration();
         talonConfig.supplyCurrLimit = new SupplyCurrentLimitConfiguration(
                 true,
-                kContinuousCurrentLimit,
-                kPeakCurrentLimit,
-                kPeakCurrentDuration);
+                kFalconContinuousCurrentLimit,
+                kFalconPeakCurrentLimit,
+                kFalconPeakCurrentDuration);
         // talonConfig.voltageCompSaturation = kVoltageSaturation;
         // talonConfig.voltageMeasurementFilter = kVoltageMeasurementSamples;
         talonConfig.velocityMeasurementPeriod = kVelocityMeasurementPeriod;
@@ -82,6 +82,15 @@ public class Flywheel extends SubsystemBase {
      */
     public double calculateVelocityMeters(double rps) {
         return Math.PI * kFlywheelDiameterMeters * rps; // circumference * rotations per second
+    }
+
+    /**
+     * Changes the desired velocity setpoint by the given setpoint.
+     * 
+     * @param rps Rotations per second.
+     */
+    public void changeDesiredVelocityRPS(double rps) {
+        desiredVelocityRPS += rps;
     }
 
     /**

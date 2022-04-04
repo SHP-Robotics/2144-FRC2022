@@ -32,8 +32,8 @@ public class Turret extends SubsystemBase implements Loggable {
         // motor.config_kI(0, 0);
         // motor.config_kD(0, 0);
 
-        motor.configMotionCruiseVelocity(5000);
-        motor.configMotionAcceleration(5000);
+        motor.configMotionCruiseVelocity(kCruiseVelocity);
+        motor.configMotionAcceleration(kAcceleration);
 
         motor.setInverted(true);
     }
@@ -46,7 +46,7 @@ public class Turret extends SubsystemBase implements Loggable {
     @Log(name = "turret degrees")
     public double getDegrees() {
         // turret positon / ticks per revolution * 360
-        return this.getEncoderPosition() * ratio / kTalonTicksPerRevolution * 360;
+        return this.getEncoderPosition() * ratio / kFalconTicksPerRevolution * 360;
     }
 
     public double getRadians(double pulses) {
@@ -55,7 +55,7 @@ public class Turret extends SubsystemBase implements Loggable {
 
     public double convertDegreesToTicks(double degrees) {
         // degrees / 360 * ticks per turret revolution
-        return degrees / 360 * kTalonTicksPerRevolution / ratio;
+        return degrees / 360 * kFalconTicksPerRevolution / ratio;
     }
 
     public void resetPosition() {

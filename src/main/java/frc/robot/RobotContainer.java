@@ -43,7 +43,7 @@ public class RobotContainer {
     private final Flywheel flywheel = new Flywheel();
     private final Vision vision = new Vision();
     private final Turret turret = new Turret();
-    // private final Indexer indexer = new Indexer();
+    private final Indexer indexer = new Indexer();
     private final Indicator indicator = new Indicator();
 
     // private final MotorTest motorTest = new MotorTest();
@@ -60,10 +60,10 @@ public class RobotContainer {
     public static final XboxController controller = new XboxController(0);
 
     // use flywheel is ready trigger to tell indexer to move
-    // private final Trigger ballIndexed = new Trigger(indexer::isBallIndexedFirst);
+    private final Trigger ballIndexed = new Trigger(indexer::ballIndexedFirst);
     // private final Trigger targetLocked = new Trigger(vision::isTargetLocked);
-    // private final Trigger driverOverrideDisabled = new
-    // Trigger(turret::isClosedLoop);
+    // private final Trigger robotStopped = new Trigger(drive::isStopped);
+    // private final Trigger driverOverrideDisabled = new Trigger(turret::isClosedLoop);
 
     /**
      * 
@@ -74,6 +74,8 @@ public class RobotContainer {
      * - Stop command (removes all scheduled comamnds and sets all motors to 0)
      * - Drivetrain drift compensation using navX
      * - Move controller IDs to Constants
+     * - Move instantiations to constructor
+     * - Replace SmartDashboard logs with Oblog
      * 
      */
 
@@ -95,23 +97,26 @@ public class RobotContainer {
 
         indicator.setDefaultCommand(
                 new RunCommand(
-                        () -> indicator.update(false, // indexer.isBallIndexedFirst(),
-                                vision.isTargetLocked(),
+                        () -> indicator.update(indexer.ballIndexedFirst(),
+                                true, // vision.isTargetLocked(),
                                 /* false), */ !turret.isClosedLoop()),
                         indicator));// , indexer, vision, turret));
 
-        flywheel.setDefaultCommand(
-                new RunCommand(
-                        () -> flywheel.setDesiredVelocityRPS(
-                                (controller.getRightTriggerAxis() - controller.getLeftTriggerAxis())
-                                        * Constants.Flywheel.kMaxRPS),
-                        flywheel));
-
-        // indexer.setDefaultCommand(
+        // flywheel.setDefaultCommand(
         // new RunCommand(
-        // () -> indexer.set(flywheel.isAtSetpoint() && flywheel.desiredVelocityRPS >=
-        // 30 ? 0.3 : 0),
-        // indexer));
+        // () -> flywheel.setDesiredVelocityRPS(
+        // (controller.getRightTriggerAxis() - controller.getLeftTriggerAxis())
+        // * Constants.Flywheel.kMaxRPS),
+        // flywheel));
+
+        indexer.setDefaultCommand(
+                new RunCommand(
+                        () -> {
+                            // indexer.setIndexer(0);
+                            indexer.setGuide(0);
+                            indexer.setIntake(0);
+                            indexer.setWinch(controller.getRightTriggerAxis() - controller.getLeftTriggerAxis());
+                        }, indexer));
 
         turret.setDefaultCommand(
                 new RunCommand(
@@ -147,8 +152,6 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        // initialization JoystickButtons and POVButtons
-        initButtons();
 
         /**
          * need to add stop command here (removes all scheduled commands and sets all
@@ -157,26 +160,33 @@ public class RobotContainer {
 
         // shoot ball
         // kAButton.debounce(0.1, DebounceType.kBoth)
-        // .and(ballIndexed)
-        // // .and(targetLocked)
-        // // .and(driverOverrideDisabled)
-        // .whenActive(new CycleBall(flywheel, vision, indexer));
+        kAButton.and(ballIndexed)
+                // .and(targetLocked)
+                .whenActive(new CycleBall(flywheel, vision, indexer), false);
 
         // // turn on limelight LEDs
-        // kStartButton.whenPressed(new InstantCommand(
-        // () -> vision.setLedMode(LightMode.eOn), vision));
+        kStartButton.whenPressed(new InstantCommand(
+                () -> vision.setLedMode(LightMode.eOn), vision));
 
-        // // turn off limelight LEDs
-        // kSelectButton.whenPressed(new InstantCommand(
-        // () -> vision.setLedMode(LightMode.eOff), vision));
+        // turn off limelight LEDs
+        kSelectButton.whenPressed(new InstantCommand(
+                () -> vision.setLedMode(LightMode.eOff), vision));
 
         // intake
-        // kRBumper.whileHeld(new InstantCommand(
-        // () -> indexer.intake(), indexer));
+        kRBumper.whileHeld(new InstantCommand(
+                () -> {
+                    // indexer.setIndexer(0.4);
+                    indexer.setGuide(0.8);
+                    indexer.intake();
+                }, indexer));
 
-        // // outtake
-        // kLBumper.whileHeld(new InstantCommand(
-        // () -> indexer.outtake(), indexer));
+        // outtake
+        kLBumper.whileHeld(new InstantCommand(
+                () -> {
+                    // indexer.setIndexer(-0.4);
+                    indexer.setGuide(-0.8);
+                    indexer.outtake();
+                }, indexer));
 
         // move turret right
         kDpadRight.whileHeld(new InstantCommand(
@@ -193,6 +203,18 @@ public class RobotContainer {
         // toggle turret control
         kBButton.whenPressed(new InstantCommand(
                 () -> turret.toggleLoop(), turret));
+
+        // increase desired rps by 1
+        kDpadUp.whileHeld(new InstantCommand(
+                () -> flywheel.changeDesiredVelocityRPS(1), flywheel));
+
+        // decrease desired rps by 1
+        kDpadDown.whileHeld(new InstantCommand(
+                () -> flywheel.changeDesiredVelocityRPS(-1), flywheel));
+
+        // set desired rps to 0
+        kYButton.whenPressed(new InstantCommand(
+                () -> flywheel.setDesiredVelocityRPS(0), flywheel));
 
         // // test
         // kYButton.whenPressed(new InstantCommand(

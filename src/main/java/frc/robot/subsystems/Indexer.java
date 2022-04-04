@@ -1,12 +1,15 @@
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.*;
 import static frc.robot.Constants.Indexer.*;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -14,53 +17,87 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
     private final TalonSRX intake = new TalonSRX(7);
-    // private final TalonFX shooterFeeder = new TalonFX(8);
+    private final TalonFX indexMotor = new TalonFX(8);
+    private final TalonSRX guide = new TalonSRX(10);
+    private final TalonSRX winch = new TalonSRX(9);
 
-    // private final DigitalInput firstSwitch = new DigitalInput(0);
-    // private final DigitalInput secondSwitch = new DigitalInput(1);
+    private final DigitalInput firstSwitch = new DigitalInput(0);
+    private final DigitalInput secondSwitch = new DigitalInput(2);
     // private final DigitalInput intakeSwitch = new DigitalInput(2);
 
-    // private boolean ballMoving = false;
+    private boolean ballMoving = false;
 
     public Indexer() {
-        // shooterFeeder.configVoltageCompSaturation(kVoltageSaturation);
-        // shooterFeeder.configVoltageMeasurementFilter(kVoltageMeasurementSamples);
-        intake.configOpenloopRamp(0.5);
+        indexMotor.configVoltageCompSaturation(kVoltageSaturation);
+        indexMotor.configVoltageMeasurementFilter(kVoltageMeasurementSamples);
+        indexMotor.enableVoltageCompensation(true);
+        indexMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(
+                true,
+                kFalconContinuousCurrentLimit,
+                kFalconPeakCurrentLimit,
+                kFalconPeakCurrentDuration));
+        indexMotor.setNeutralMode(NeutralMode.Brake);
+
+        TalonSRXConfiguration talonConfig = new TalonSRXConfiguration();
+        talonConfig.continuousCurrentLimit = kTalonContinuousCurrentLimit;
+        talonConfig.peakCurrentLimit = kTalonPeakCurrentLimit;
+        talonConfig.peakCurrentDuration = kTalonPeakCurrentDuration;
+        talonConfig.openloopRamp = kRampSeconds;
+
+        intake.configAllSettings(talonConfig);
         intake.setNeutralMode(NeutralMode.Coast);
+
+        guide.configAllSettings(talonConfig);
+        guide.setNeutralMode(NeutralMode.Coast);
+
+        guide.setInverted(true);
+        // guide.follow(intake);
+    }
+
+    public void setIndexer(double speed) {
+        indexMotor.set(ControlMode.PercentOutput, speed);
+    }
+
+    public void setGuide(double speed) {
+        guide.set(ControlMode.PercentOutput, speed);
+    }
+
+    public void setIntake(double speed) {
+        intake.set(ControlMode.PercentOutput, speed);
+    }
+
+    public void setWinch(double speed) {
+        winch.set(ControlMode.PercentOutput, speed);
     }
 
     public void intake() {
-        intake.set(TalonSRXControlMode.PercentOutput, 0.8);
+        if (this.ballIndexedFirst() && this.ballIndexedSecond())
+            this.stopIntake();
+        else
+            this.setIntake(kIntakeSpeed);
     }
 
     public void outtake() {
-        intake.set(TalonSRXControlMode.PercentOutput, -0.8);
+        this.setIntake(-kIntakeSpeed);
     }
 
     public void stopIntake() {
         intake.set(TalonSRXControlMode.PercentOutput, 0);
     }
 
-    // public void set(double power) {
-    // motor.set(TalonFXControlMode.PercentOutput, ramp.calculate(power));
-    // }
-
-    public void moveIndexedBallIntoTurret() {
-        // shooterFeeder.set(TalonFXControlMode.PercentOutput, kDefaultSpeed);
+    public boolean ballIndexedFirst() {
+        return !firstSwitch.get();
+        // return false;
     }
 
-    public void stopShooting() {
-        // shooterFeeder.set(TalonFXControlMode.PercentOutput, 0);
+    public boolean ballIndexedSecond() {
+        // return false;
+        return !secondSwitch.get();
     }
 
-    public boolean isBallIndexedFirst() {
-        // return !firstSwitch.get();
-        return false;
+    public boolean twoBallsIndexed() {
+        return this.ballIndexedFirst() && this.ballIndexedSecond();
     }
-
-    // public boolean isBallindexedSecond() {
-    // return !secondSwitch.get();
-    // }
 
     // public boolean isBallIntaked() {
     // return !intakeSwitch.get();
@@ -68,6 +105,29 @@ public class Indexer extends SubsystemBase {
 
     @Override
     public void periodic() {
+        // if a ball is found in the first index and a ball is moving
+        if (this.ballIndexedFirst() && ballMoving) {
+            // stop moving ball
+            this.setGuide(0);
+            this.setIndexer(0);
+            ballMoving = false;
+        }
+
+        // if no ball in first index and ball in second index
+        if (!this.ballIndexedFirst() && this.ballIndexedSecond()) {
+            // move ball into first index
+            ballMoving = true;
+        }
+
+        if (ballMoving) {
+            this.setGuide(kIntakeSpeed);
+            this.setIndexer(kIndexerSpeed);
+        }
+
+        // SmartDashboard.putNumber("winch encoder", winch.getSelectedSensorPosition());
+        SmartDashboard.putBoolean("first index", ballIndexedFirst());
+        SmartDashboard.putBoolean("second index", ballIndexedSecond());
+
         // boolean ballIndexedFirst = isBallIndexedFirst();
         // boolean ballIndexedSecond = isBallindexedSecond();
         // boolean ballIntaked = isBallIntaked();

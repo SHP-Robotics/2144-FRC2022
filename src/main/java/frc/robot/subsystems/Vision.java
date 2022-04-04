@@ -21,12 +21,18 @@ import java.lang.Math;
  * @author Dan Waxman
  */
 public class Vision extends SubsystemBase implements Loggable {
-	private NetworkTableInstance table = null;
+	private final NetworkTableInstance table;
 
 	// UNITS: INCHES
 	// double reflectiveTapeLength = 5;
 	// double knownHeight = 10; // TODO: find value from top height of reflective
 	// tape - height of camera point
+
+	public Vision() {
+		table = NetworkTableInstance.getDefault();
+
+		this.setPipeline(kPipeline);
+	}
 
 	/**
 	 * Light modes for Limelight.
@@ -146,10 +152,6 @@ public class Vision extends SubsystemBase implements Loggable {
 	 * @return NetworkTableEntry of given entry.
 	 */
 	private NetworkTableEntry getValue(String key) {
-		if (table == null) {
-			table = NetworkTableInstance.getDefault();
-		}
-
 		return table.getTable("limelight").getEntry(key);
 	}
 

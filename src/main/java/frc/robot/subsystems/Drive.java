@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 
 public class Drive extends SubsystemBase {
@@ -107,8 +108,8 @@ public class Drive extends SubsystemBase {
     if (turn < 0.1 && turn > -0.1)
       turn = 0;
 
-    // if moving forward more than 30%, halve turn bias
-    if (straight > 0.3)
+    // if moving forward more than 20%, halve turn bias
+    if (straight > 0.2)
       turn /= 2;
 
     // double driftCompensation = 0;
@@ -120,8 +121,9 @@ public class Drive extends SubsystemBase {
     // SmartDashboard.putNumber("drift compensation", driftCompensation);
 
     straight = MathUtil.clamp(straight, -kForwardThreshold, kForwardThreshold);
-    turn = MathUtil.clamp(Math.pow(turn, 3) * kTurningSensitivity, -kTurnThreshold, kTurnThreshold);
-
+    boolean turnNegative = turn < 0;
+    turn = MathUtil.clamp(Math.pow(turn, 2) * kTurningSensitivity, -kTurnThreshold, kTurnThreshold);
+    if (turnNegative) turn  = -turn;
     // rightX = Math.pow(rightX, 5) / Math.abs(Math.pow(rightX, 3));
 
     double leftSpeed = straight - turn;
@@ -147,6 +149,14 @@ public class Drive extends SubsystemBase {
   public void stop() {
     leftDrive.set(0);
     rightDrive.set(0);
+  }
+
+  public boolean isStopped() {
+    return this.getChassisSpeeds().vxMetersPerSecond <= kSpeedThreshold;
+  }
+
+  public ChassisSpeeds getChassisSpeeds() {
+    return kinematics.toChassisSpeeds(this.getWheelSpeeds());
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
