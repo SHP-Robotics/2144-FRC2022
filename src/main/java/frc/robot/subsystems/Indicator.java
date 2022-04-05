@@ -5,66 +5,39 @@ import static frc.robot.Constants.Indicator.*;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.utils.BlinkinLedDriver;
-import frc.robot.utils.BlinkinLedDriver.BlinkinLedMode;
 
 public class Indicator extends SubsystemBase {
     // private final BlinkinLedDriver led = new BlinkinLedDriver(0);
 
-    public void update(boolean ballIndexed, boolean targetLocked, boolean driverOverride) {
-        // if () {
-        //     startRumble();
-        // //     // setBlue();
-        // //     return;
-        // }
-
-        if ((ballIndexed && targetLocked) || (ballIndexed && driverOverride)) {
-            startRumble();
-            // setGreenBlinking();
-            // return;
+    public void update(int numBallsIndexed, boolean targetLocked, boolean driverOverride) {
+        if ((numBallsIndexed > 0 && targetLocked) || (numBallsIndexed > 0 && driverOverride)) {
+            startRumbleLeft();
+            if (numBallsIndexed == 2) {
+                startRumbleRight();
+            } else
+                stopRumbleRight();
         } else
             stopRumble();
-
-        // if (ballIndexed && !targetLocked) {
-        //     // setGreenSolid();
-        // } else if (!ballIndexed && targetLocked) {
-        //     // setRedBlinking();
-        // } //else
-            // setRedSolid();
-
     }
 
-    private void startRumble() {
+    private void startRumbleLeft() {
         controller.setRumble(RumbleType.kLeftRumble, kRumbleValue);
+    }
+
+    private void startRumbleRight() {
         controller.setRumble(RumbleType.kRightRumble, kRumbleValue);
     }
 
-    private void stopRumble() {
+    private void stopRumbleLeft() {
         controller.setRumble(RumbleType.kLeftRumble, 0);
+    }
+
+    private void stopRumbleRight() {
         controller.setRumble(RumbleType.kRightRumble, 0);
     }
 
-    // private void setBlue() {
-    //     led.setMode(BlinkinLedMode.SOLID_BLUE);
-    // }
-
-    // private void setGreenBlinking() {
-    //     led.setMode(BlinkinLedMode.ONE_STROBE);
-    // }
-
-    // private void setGreenSolid() {
-    //     led.setMode(BlinkinLedMode.SOLID_GREEN);
-    // }
-
-    // private void setRedSolid() {
-    //     led.setMode(BlinkinLedMode.SOLID_RED);
-    // }
-
-    // private void setRedBlinking() {
-    //     led.setMode(BlinkinLedMode.TWO_STROBE);
-    // }
-
-    // @Override
-    // public void periodic() {
-    // }
+    private void stopRumble() {
+        stopRumbleLeft();
+        stopRumbleRight();
+    }
 }

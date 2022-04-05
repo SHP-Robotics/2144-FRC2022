@@ -153,16 +153,16 @@ public final class Constants {
     }
 
     public static final class Indexer {
-        public static final double kRampSeconds = 0.1;
+        public static final double kRampSeconds = 0.2;
 
         public static final double kIntakeSpeed = 0.8;
-        public static final double kIndexerSpeed = 0.4;
+        public static final double kIndexerSpeed = 0.5;
 
         public static final double kVoltageSaturation = 12;
         public static final int kVoltageMeasurementSamples = 32;
     }
 
     public static final class Indicator {
-        public static final double kRumbleValue = 0.5;
+        public static final double kRumbleValue = 0.4;
     }
 }

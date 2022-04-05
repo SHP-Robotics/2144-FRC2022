@@ -8,13 +8,10 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Log;
 
-public class Turret extends SubsystemBase implements Loggable {
+public class Turret extends SubsystemBase {
     private final WPI_TalonFX motor = new WPI_TalonFX(6);
 
-    @Log(name = "auto enabled")
     private boolean closedLoop = false;
     private double panPower = 0.1;
 
@@ -38,12 +35,10 @@ public class Turret extends SubsystemBase implements Loggable {
         motor.setInverted(true);
     }
 
-    @Log(name = "turret encoder")
     public double getEncoderPosition() {
         return motor.getSelectedSensorPosition();
     }
 
-    @Log(name = "turret degrees")
     public double getDegrees() {
         // turret positon / ticks per revolution * 360
         return this.getEncoderPosition() * ratio / kFalconTicksPerRevolution * 360;

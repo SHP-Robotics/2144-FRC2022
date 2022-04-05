@@ -1,6 +1,7 @@
 package frc.robot;
 
 import static frc.robot.Constants.Control.*;
+import static frc.robot.Constants.Indexer.kIndexerSpeed;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
@@ -18,7 +19,6 @@ import frc.robot.subsystems.MotorTest;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Vision.LightMode;
-import io.github.oblarg.oblog.Logger;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -42,7 +42,7 @@ public class RobotContainer {
     private final Drive drive = new Drive();
     private final Flywheel flywheel = new Flywheel();
     private final Vision vision = new Vision();
-    private final Turret turret = new Turret();
+    public final Turret turret = new Turret();
     private final Indexer indexer = new Indexer();
     private final Indicator indicator = new Indicator();
 
@@ -63,7 +63,8 @@ public class RobotContainer {
     private final Trigger ballIndexed = new Trigger(indexer::ballIndexedFirst);
     // private final Trigger targetLocked = new Trigger(vision::isTargetLocked);
     // private final Trigger robotStopped = new Trigger(drive::isStopped);
-    // private final Trigger driverOverrideDisabled = new Trigger(turret::isClosedLoop);
+    // private final Trigger driverOverrideDisabled = new
+    // Trigger(turret::isClosedLoop);
 
     /**
      * 
@@ -72,10 +73,8 @@ public class RobotContainer {
      * - Vision constants
      * - Interpolation table
      * - Stop command (removes all scheduled comamnds and sets all motors to 0)
-     * - Drivetrain drift compensation using navX
      * - Move controller IDs to Constants
      * - Move instantiations to constructor
-     * - Replace SmartDashboard logs with Oblog
      * 
      */
 
@@ -83,9 +82,6 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-        // configure logger
-        Logger.configureLoggingAndConfig(this, false);
-
         /**
          * DEFAULT COMMANDS
          */
@@ -97,7 +93,7 @@ public class RobotContainer {
 
         indicator.setDefaultCommand(
                 new RunCommand(
-                        () -> indicator.update(indexer.ballIndexedFirst(),
+                        () -> indicator.update(indexer.getNumBallsIndexed(),
                                 true, // vision.isTargetLocked(),
                                 /* false), */ !turret.isClosedLoop()),
                         indicator));// , indexer, vision, turret));
@@ -205,20 +201,28 @@ public class RobotContainer {
                 () -> turret.toggleLoop(), turret));
 
         // increase desired rps by 1
-        kDpadUp.whileHeld(new InstantCommand(
-                () -> flywheel.changeDesiredVelocityRPS(1), flywheel));
+        // kDpadUp.whileHeld(new InstantCommand(
+        //         () -> flywheel.changeDesiredVelocityRPS(1), flywheel));
 
-        // decrease desired rps by 1
-        kDpadDown.whileHeld(new InstantCommand(
-                () -> flywheel.changeDesiredVelocityRPS(-1), flywheel));
+        // // decrease desired rps by 1
+        // kDpadDown.whileHeld(new InstantCommand(
+        //         () -> flywheel.changeDesiredVelocityRPS(-1), flywheel));
 
-        // set desired rps to 0
+        // // set desired rps to 0
+        // kXButton.whenPressed(new InstantCommand(
+        //         () -> flywheel.setDesiredVelocityRPS(0), flywheel));
+
+        // move indexer forward
+        kDpadUp.whenPressed(new InstantCommand(
+        () -> indexer.setIndexer(0.1), indexer));
+
+        // move indexer backward
+        kDpadDown.whenPressed(new InstantCommand(
+        () -> indexer.setIndexer(-0.1), indexer));
+
+        // stop moving indexer
         kYButton.whenPressed(new InstantCommand(
-                () -> flywheel.setDesiredVelocityRPS(0), flywheel));
-
-        // // test
-        // kYButton.whenPressed(new InstantCommand(
-        // () -> turret.adjust(true, 30), turret));
+        () -> indexer.setIndexer(0), indexer));
     }
 
     public void configureTriggerBindings() {

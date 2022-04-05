@@ -10,8 +10,6 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Log;
 
 import java.lang.Math;
 
@@ -20,7 +18,7 @@ import java.lang.Math;
  * 
  * @author Dan Waxman
  */
-public class Vision extends SubsystemBase implements Loggable {
+public class Vision extends SubsystemBase {
 	private final NetworkTableInstance table;
 
 	// UNITS: INCHES
@@ -57,7 +55,6 @@ public class Vision extends SubsystemBase implements Loggable {
 	 * 
 	 * @return true if a target is detected, false otherwise.
 	 */
-	@Log
 	public boolean isTarget() {
 		return getValue("tv").getDouble(0) == 1;
 	}
@@ -67,7 +64,6 @@ public class Vision extends SubsystemBase implements Loggable {
 	 * 
 	 * @return tx as reported by the Limelight.
 	 */
-	@Log(name = "offset")
 	public double getTx() {
 		return getValue("tx").getDouble(0.00);
 	}
