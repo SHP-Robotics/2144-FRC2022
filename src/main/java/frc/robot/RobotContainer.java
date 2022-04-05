@@ -21,7 +21,10 @@ import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Vision.LightMode;
 import io.github.oblarg.oblog.Logger;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -234,6 +237,16 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         // // An ExampleCommand will run in autonomous
         // return new FollowTrajectoryForward(drive);
-        return null;
+        return new SequentialCommandGroup
+        (
+                new ParallelDeadlineGroup(
+                        new ForwardTimeBased(drive),
+                        new RunCommand(() -> {
+                                indexer.setGuide(0.8);
+                                indexer.intake();
+                        }, indexer)
+                ),
+                new CycleBall(flywheel, vision, indexer)
+        );
     }
 }

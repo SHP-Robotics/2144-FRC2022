@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drive;
 
@@ -31,23 +32,26 @@ public class ForwardTimeBased extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    drive.resetOdometry(new Pose2d(6, 5, new Rotation2d(Math.toRadians(90))));
-    timer.reset();
+    drive.resetOdometry(new Pose2d(6.25, 5.2, new Rotation2d(Math.toRadians(135))));
+    timer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    drive.openLoop(0.5, 0.5);
+    drive.openLoop(2, 2); //change to closedLoop once constants are tuned
+    SmartDashboard.putNumber("time: ", timer.get());
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
-
+  public void end(boolean interrupted) {
+    drive.openLoop(0, 0);
+    timer.stop();
+  }
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return timer.hasElapsed(0.5);
+    return timer.hasElapsed(1);
   }
 }
