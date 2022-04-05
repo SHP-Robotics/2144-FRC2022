@@ -5,7 +5,6 @@ import static frc.robot.RobotContainer.*;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.utils.InterpolatingTreeMap;
@@ -65,11 +64,16 @@ public final class Constants {
         public static final double kTrackWidthInches = 23;
         public static final double kTrackWidthMeters = Units.inchesToMeters(kTrackWidthInches);
 
-        public static final double kWheelDiameterMeters = 0; // need to get
+        public static final double kWheelDiameterInches = 6;
+        public static final double kWheelDiameterMeters = Units.inchesToMeters(kWheelDiameterInches);
         public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
 
-        public static final double kMetersPerTick = kWheelCircumferenceMeters / kFalconTicksPerRevolution;
+        public static final double kGearRatio = 10.75;
 
+        public static final double kMetersPerTick = kWheelCircumferenceMeters * kGearRatio / kFalconTicksPerRevolution;
+        public static final double kVelMetersToEnc = kFalconTicksPerRevolution / kGearRatio / kWheelCircumferenceMeters / 10;   
+        public static final double kMomentOfInertia = 7.5; //kgm^2
+        public static final double kMassKg = 100;
         public static final double kSpeedThreshold = 0.1; // m/s
 
         // imposed limits (not theoretical maximums)
