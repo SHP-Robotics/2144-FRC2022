@@ -31,6 +31,11 @@
           "open": true
         }
       },
+      "Talon FX[2]/Integrated Sensor": {
+        "header": {
+          "open": true
+        }
+      },
       "Talon FX[3]/Integrated Sensor": {
         "header": {
           "open": true
@@ -44,6 +49,7 @@
       "/LiveWindow/Drive": "Subsystem",
       "/LiveWindow/Flywheel": "Subsystem",
       "/LiveWindow/Indexer": "Subsystem",
+      "/LiveWindow/Indicator": "Subsystem",
       "/LiveWindow/Intake": "Subsystem",
       "/LiveWindow/LedIndicator": "Subsystem",
       "/LiveWindow/Turret": "Subsystem",
@@ -62,6 +68,11 @@
       "/SmartDashboard/Field": "Field2d"
     },
     "windows": {
+      "/LiveWindow/Ungrouped/Scheduler": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Field": {
         "Robot": {
           "style": "Box/Image"

@@ -186,7 +186,7 @@ public class Drive extends SubsystemBase {
 
   public void closedLoop(double leftMetersPerSecond, double rightMetersPerSecond) {
     leftDrive.setVoltage(feedforward.calculate(leftMetersPerSecond) * kNominalVoltage);
-    leftDrive.setVoltage(feedforward.calculate(rightMetersPerSecond) * kNominalVoltage);
+    rightDrive.setVoltage(feedforward.calculate(rightMetersPerSecond) * kNominalVoltage);
   }
 
   public void stop() {
@@ -254,7 +254,7 @@ public class Drive extends SubsystemBase {
 
   public void resetOdometry(Pose2d pose) {
     this.resetEncoders();
-    odometry.resetPosition(pose, navx.getRotation2d());
+    odometry.resetPosition(pose, RobotBase.isReal() ? navx.getRotation2d() : gyro.getRotation2d());
   }
 
   public void updateOdometry() {
