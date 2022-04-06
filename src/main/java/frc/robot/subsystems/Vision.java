@@ -199,13 +199,14 @@ public class Vision extends SubsystemBase {
 
 	// https://docs.limelightvision.io/en/latest/cs_estimating_distance.html#using-a-fixed-angle-camera
 	public double getDistanceInches() {
-		double angleToGoalRadians = Math.toRadians(kMountAngleDegrees + getTy());
+		double angleToGoalRadians = Math.toRadians(kMountAngleDegrees + this.getTy());
 		return kHeightDifference / Math.tan(angleToGoalRadians);
 	}
 
-	// @Override
-	// public void periodic() {
-	// SmartDashboard.putBoolean("Target found?", isTarget());
-	// SmartDashboard.putNumber("Offset", getTx());
-	// }
+	@Override
+	public void periodic() {
+		SmartDashboard.putBoolean("Target found?", isTarget());
+		SmartDashboard.putNumber("Offset", getTx());
+		SmartDashboard.putNumber("distance inches", getDistanceInches());
+	}
 }

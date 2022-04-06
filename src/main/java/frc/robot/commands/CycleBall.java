@@ -14,8 +14,8 @@ public class CycleBall extends SequentialCommandGroup {
                 new SpinFlywheel(flywheel, vision),
                 // new WaitCommand(1),
                 new ConditionalCommand(new ShootTwoBalls(indexer), new ShootBall(indexer), indexer::twoBallsIndexed),
-                new InstantCommand(() -> indexer.setIndexer(0), indexer),
-                new WaitCommand(0.5),
-                new InstantCommand(() -> flywheel.setDesiredVelocityRPS(0), flywheel));
+                new InstantCommand(() -> indexer.setIndexer(0), indexer));
+                // new WaitCommand(0.5),
+                // new InstantCommand(() -> flywheel.setDesiredVelocityRPS(0), flywheel));
     }
 }

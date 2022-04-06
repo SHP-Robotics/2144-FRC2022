@@ -32,11 +32,7 @@ public class Indexer extends SubsystemBase {
         indexMotor.configVoltageCompSaturation(kVoltageSaturation);
         indexMotor.configVoltageMeasurementFilter(kVoltageMeasurementSamples);
         indexMotor.enableVoltageCompensation(true);
-        indexMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(
-                true,
-                kFalconContinuousCurrentLimit,
-                kFalconPeakCurrentLimit,
-                kFalconPeakCurrentDuration));
+        indexMotor.configSupplyCurrentLimit(kFalconSupplyCurrentConfig);
         indexMotor.setNeutralMode(NeutralMode.Brake);
 
         TalonSRXConfiguration talonConfig = new TalonSRXConfiguration();
@@ -123,7 +119,7 @@ public class Indexer extends SubsystemBase {
         }
 
         // if no ball in first index and ball in second index and indexer is not moving
-        if (!this.ballIndexedFirst() && this.ballIndexedSecond() && indexMotor.getSelectedSensorVelocity() == 0) {
+        if (!this.ballIndexedFirst() && this.ballIndexedSecond()) {
             // move ball into first index
             ballMoving = true;
         }
@@ -133,8 +129,10 @@ public class Indexer extends SubsystemBase {
             this.setIndexer(kIndexerSpeed);
         }
 
-        SmartDashboard.putNumber("index velocity", indexMotor.getSelectedSensorVelocity());
-        // SmartDashboard.putNumber("winch encoder", winch.getSelectedSensorPosition());
+        // SmartDashboard.putNumber("index velocity", indexMotor.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("winch encoder", winch.getSelectedSensorPosition());
+        // SmartDashboard.putNumber("guide encoder", guide.getSelectedSensorPosition());
+
         SmartDashboard.putBoolean("first index", ballIndexedFirst());
         SmartDashboard.putBoolean("second index", ballIndexedSecond());
 

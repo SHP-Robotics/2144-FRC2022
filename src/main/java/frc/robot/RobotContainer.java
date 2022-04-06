@@ -1,7 +1,6 @@
 package frc.robot;
 
 import static frc.robot.Constants.Control.*;
-import static frc.robot.Constants.Indexer.kIndexerSpeed;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
@@ -71,7 +70,6 @@ public class RobotContainer {
      * 
      * TODO
      * 
-     * - Vision constants
      * - Interpolation table
      * - Stop command (removes all scheduled comamnds and sets all motors to 0)
      * - Move controller IDs to Constants
@@ -112,7 +110,8 @@ public class RobotContainer {
                             // indexer.setIndexer(0);
                             indexer.setGuide(0);
                             indexer.setIntake(0);
-                            indexer.setWinch(controller.getRightTriggerAxis() - controller.getLeftTriggerAxis());
+                            indexer.setWinch(controller.getRightTriggerAxis()
+                                    - controller.getLeftTriggerAxis());
                         }, indexer));
 
         turret.setDefaultCommand(
@@ -202,28 +201,28 @@ public class RobotContainer {
                 () -> turret.toggleLoop(), turret));
 
         // increase desired rps by 1
-        // kDpadUp.whileHeld(new InstantCommand(
-        //         () -> flywheel.changeDesiredVelocityRPS(1), flywheel));
+        kDpadUp.whileHeld(new InstantCommand(
+                () -> flywheel.changeDesiredVelocityRPS(1), flywheel));
 
-        // // decrease desired rps by 1
-        // kDpadDown.whileHeld(new InstantCommand(
-        //         () -> flywheel.changeDesiredVelocityRPS(-1), flywheel));
+        // decrease desired rps by 1
+        kDpadDown.whileHeld(new InstantCommand(
+                () -> flywheel.changeDesiredVelocityRPS(-1), flywheel));
 
-        // // set desired rps to 0
-        // kXButton.whenPressed(new InstantCommand(
-        //         () -> flywheel.setDesiredVelocityRPS(0), flywheel));
+        // set desired rps to 0
+        kYButton.whenPressed(new InstantCommand(
+                () -> flywheel.setDesiredVelocityRPS(0), flywheel));
 
         // move indexer forward
-        kDpadUp.whenPressed(new InstantCommand(
-        () -> indexer.setIndexer(0.1), indexer));
+        // kDpadUp.whenPressed(new InstantCommand(
+        // () -> indexer.setIndexer(0.1), indexer));
 
-        // move indexer backward
-        kDpadDown.whenPressed(new InstantCommand(
-        () -> indexer.setIndexer(-0.1), indexer));
+        // // move indexer backward
+        // kDpadDown.whenPressed(new InstantCommand(
+        // () -> indexer.setIndexer(-0.1), indexer));
 
-        // stop moving indexer
-        kYButton.whenPressed(new InstantCommand(
-        () -> indexer.setIndexer(0), indexer));
+        // // stop moving indexer
+        // kYButton.whenPressed(new InstantCommand(
+        // () -> indexer.setIndexer(0), indexer));
     }
 
     public void configureTriggerBindings() {

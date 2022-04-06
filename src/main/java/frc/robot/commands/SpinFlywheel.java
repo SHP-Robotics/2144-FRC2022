@@ -27,7 +27,7 @@ public class SpinFlywheel extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        flywheel.setDesiredVelocityRPS(25);
+        // flywheel.setDesiredVelocityRPS(22);
                 // vision.isTargetLocked() ? Interpolation.table.get(vision.getDistanceInches())
                 //         : kDefaultRPS);
     }
