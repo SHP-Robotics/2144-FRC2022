@@ -1,34 +1,36 @@
 package frc.robot;
 
-import static frc.robot.Constants.Control.*;
-import static frc.robot.Constants.Indexer.kIndexerSpeed;
+import static frc.robot.Constants.Control.kAButton;
+import static frc.robot.Constants.Control.kBButton;
+import static frc.robot.Constants.Control.kDpadDown;
+import static frc.robot.Constants.Control.kDpadLeft;
+import static frc.robot.Constants.Control.kDpadRight;
+import static frc.robot.Constants.Control.kDpadUp;
+import static frc.robot.Constants.Control.kLBumper;
+import static frc.robot.Constants.Control.kRBumper;
+import static frc.robot.Constants.Control.kSelectButton;
+import static frc.robot.Constants.Control.kStartButton;
+import static frc.robot.Constants.Control.kXButton;
+import static frc.robot.Constants.Control.kYButton;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.CycleBall;
-import frc.robot.commands.FollowTrajectoryForward;
 import frc.robot.commands.ForwardTimeBased;
-import frc.robot.commands.ShootBall;
-import frc.robot.commands.SpinFlywheel;
+import frc.robot.commands.SimpleAuto;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Flywheel;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Indicator;
-import frc.robot.subsystems.MotorTest;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Vision.LightMode;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -241,16 +243,6 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         // // An ExampleCommand will run in autonomous
         // return new FollowTrajectoryForward(drive);
-        return new SequentialCommandGroup
-        (
-                new ParallelDeadlineGroup(
-                        new ForwardTimeBased(drive),
-                        new RunCommand(() -> {
-                                indexer.setGuide(0.8);
-                                indexer.intake();
-                        }, indexer)
-                ),
-                new CycleBall(flywheel, vision, indexer)
-        );
+       return new SimpleAuto(drive, indexer, flywheel, vision);
     }
 }
