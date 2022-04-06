@@ -31,6 +31,11 @@
           "open": true
         }
       },
+      "Talon FX[2]/Integrated Sensor": {
+        "header": {
+          "open": true
+        }
+      },
       "Talon FX[3]/Integrated Sensor": {
         "header": {
           "open": true
@@ -63,6 +68,11 @@
       "/SmartDashboard/Field": "Field2d"
     },
     "windows": {
+      "/LiveWindow/Ungrouped/Scheduler": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Field": {
         "Robot": {
           "style": "Box/Image"

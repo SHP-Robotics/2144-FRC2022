@@ -2,29 +2,24 @@ package frc.robot;
 
 import static frc.robot.Constants.Control.*;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.CycleBall;
-import frc.robot.commands.FollowTrajectoryForward;
 import frc.robot.commands.ForwardTimeBased;
-import frc.robot.commands.ShootBall;
-import frc.robot.commands.SpinFlywheel;
+import frc.robot.commands.SimpleAuto;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Flywheel;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Indicator;
-import frc.robot.subsystems.MotorTest;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Vision.LightMode;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -237,6 +232,6 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         // // An ExampleCommand will run in autonomous
         // return new FollowTrajectoryForward(drive);
-        return null;
+       return new SimpleAuto(drive, indexer, flywheel, vision);
     }
 }
