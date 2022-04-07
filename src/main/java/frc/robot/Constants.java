@@ -2,6 +2,7 @@ package frc.robot;
 
 import static frc.robot.RobotContainer.*;
 
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -34,6 +35,12 @@ public final class Constants {
     public static final int kTalonContinuousCurrentLimit = 30;
     public static final int kTalonPeakCurrentLimit = 40;
     public static final int kTalonPeakCurrentDuration = 100;
+
+    public static final SupplyCurrentLimitConfiguration kFalconSupplyCurrentConfig = new SupplyCurrentLimitConfiguration(
+            true,
+            kFalconContinuousCurrentLimit,
+            kFalconPeakCurrentLimit,
+            kFalconPeakCurrentDuration);
 
     public static final class Control {
         public static JoystickButton kAButton = new JoystickButton(controller, 1);
@@ -73,8 +80,9 @@ public final class Constants {
         public static final double kGearRatio = 10.75;
 
         public static final double kMetersPerTick = kWheelCircumferenceMeters * kGearRatio / kFalconTicksPerRevolution;
-        public static final double kVelMetersToEnc = kFalconTicksPerRevolution / kGearRatio / kWheelCircumferenceMeters / 10;   
-        public static final double kMomentOfInertia = 7.5; //kgm^2
+        public static final double kVelMetersToEnc = kFalconTicksPerRevolution / kGearRatio / kWheelCircumferenceMeters
+                / 10;
+        public static final double kMomentOfInertia = 7.5; // kgm^2
         public static final double kMassKg = 100;
         public static final double kSpeedThreshold = 0.1; // m/s
 
@@ -96,7 +104,7 @@ public final class Constants {
         public static final int kVelocityMeasurementWindow = 32;
 
         public static final double kMaxRPS = 30;
-        public static final double kDefaultRPS = 10;
+        public static final double kDefaultRPS = 15;
         public static final double kRPSDeadzone = 5; // need to change
 
         public static final double kRotationsPerTick = 1.0 / kFalconTicksPerRevolution;
@@ -109,10 +117,6 @@ public final class Constants {
         // public static final double kA = 0.013781;
 
         // 1.0 : 2.5
-        // public static final double kS = 0.65454;
-        // public static final double kV = 0.13604;
-        // public static final double kA = 0.023556;
-
         public static final double kS = 0.58276;
         public static final double kV = 0.13622;
         public static final double kA = 0.025538;
@@ -122,21 +126,28 @@ public final class Constants {
         public static final double kFlywheelDiameterMeters = 0.102;
 
         public static final class Interpolation {
-            public static final InterpolatingTreeMap<Number, Number> table = new InterpolatingTreeMap<>();
+            public static final InterpolatingTreeMap<Double, Double> table = new InterpolatingTreeMap<>();
 
             static {
                 // Distance (Inches) : Rotations Per Second
-                table.put(0, 0);
+                // table.put(0.0, 0.0);
+                table.put(100.0, 23.0);
+                table.put(160.0, 25.0);
+                table.put(200.0, 27.0);
+                // table.put(100.0, 23.0);
+                // table.put(150.0, 25.0);
+                // table.put(200.0, 35.0);
+                // table.put(250.0, 37.0);
             }
         }
     }
 
     public static final class Vision {
-        public static final double kDeadzone = 5; // margin of acceptance for error
+        // public static final double kDeadzone = 5; // margin of acceptance for error
 
-        public static final double kMountAngleDegrees = 0; // need to find (degrees rotated on mount)
+        public static final double kMountAngleDegrees = 30; // need to find (degrees rotated on mount)
 
-        public static final double kCameraHeightInches = 0; // need to find (center of lens to floor)
+        public static final double kCameraHeightInches = 38; // need to find (center of lens to floor)
         public static final double kTargetHeightInches = 104; // need to find (target to floor)
         public static final double kHeightDifference = kTargetHeightInches - kCameraHeightInches;
 
@@ -162,7 +173,7 @@ public final class Constants {
         public static final double kRampSeconds = 0.2;
 
         public static final double kIntakeSpeed = 0.8;
-        public static final double kIndexerSpeed = 0.5;
+        public static final double kIndexerSpeed = 0.4;
 
         public static final double kVoltageSaturation = 12;
         public static final int kVoltageMeasurementSamples = 32;

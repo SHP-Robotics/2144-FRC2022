@@ -8,7 +8,7 @@ public class ShootTwoBalls extends SequentialCommandGroup {
     public ShootTwoBalls(Indexer indexer) {
         addCommands(
             new ShootBall(indexer),
-            new WaitCommand(1),
+            new WaitCommand(1.5),
             new ShootBall(indexer)
         );
     }

@@ -26,27 +26,16 @@ public class Flywheel extends SubsystemBase {
      * Creates a new Flywheel controlled by a feedforward and bang-bang controller.
      */
     public Flywheel() {
-        TalonFXConfiguration talonConfig = new TalonFXConfiguration();
-        talonConfig.supplyCurrLimit = new SupplyCurrentLimitConfiguration(
-                true,
-                kFalconContinuousCurrentLimit,
-                kFalconPeakCurrentLimit,
-                kFalconPeakCurrentDuration);
-        // talonConfig.voltageCompSaturation = kVoltageSaturation;
-        // talonConfig.voltageMeasurementFilter = kVoltageMeasurementSamples;
-        talonConfig.velocityMeasurementPeriod = kVelocityMeasurementPeriod;
-        talonConfig.velocityMeasurementWindow = kVelocityMeasurementWindow;
-        talonConfig.openloopRamp = kRampSeconds;
+        TalonFXConfiguration falconConfig = new TalonFXConfiguration();
+        falconConfig.supplyCurrLimit = kFalconSupplyCurrentConfig;
+        falconConfig.velocityMeasurementPeriod = kVelocityMeasurementPeriod;
+        falconConfig.velocityMeasurementWindow = kVelocityMeasurementWindow;
+        falconConfig.openloopRamp = kRampSeconds;
 
-        leftLaunch.configAllSettings(talonConfig);
-        rightLaunch.configAllSettings(talonConfig);
-
-        // leftLaunch.enableVoltageCompensation(false);
-        // rightLaunch.enableVoltageCompensation(false);
-
+        leftLaunch.configAllSettings(falconConfig);
+        rightLaunch.configAllSettings(falconConfig);
         leftLaunch.setNeutralMode(NeutralMode.Coast);
         rightLaunch.setNeutralMode(NeutralMode.Coast);
-
         leftLaunch.setInverted(false);
         rightLaunch.setInverted(true);
     }

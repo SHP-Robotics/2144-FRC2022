@@ -21,6 +21,10 @@
     },
     "windows": {
       "/SmartDashboard/Field": {
+        "height": 8.229599952697754,
+        "image": "C:\\Users\\ayaan\\Downloads\\2022-field.png",
+        "units": "feet",
+        "width": 16.459199905395508,
         "window": {
           "visible": true
         }
