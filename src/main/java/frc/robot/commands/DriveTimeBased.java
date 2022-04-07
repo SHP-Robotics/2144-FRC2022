@@ -4,27 +4,30 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drive;
+import frc.robot.Constants.Auto;
 
 /** An example command that uses an example subsystem. */
-public class ForwardTimeBased extends CommandBase {
+public class DriveTimeBased extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Drive drive;
   private final Timer timer;
+  private double t;
+  private double v;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ForwardTimeBased(Drive drive) {
+  public DriveTimeBased(Drive drive, double v, double t) {
     this.drive = drive;
     timer = new Timer();
+    this.v = v;
+    this.t = t;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);
   }
@@ -32,14 +35,14 @@ public class ForwardTimeBased extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    drive.resetOdometry(new Pose2d(6.25, 5.2, new Rotation2d(Math.toRadians(135))));
+    drive.resetOdometry(Auto.MID_BALL_START_POSE);
     timer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    drive.openLoop(2, 2); //change to closedLoop once constants are tuned
+    drive.openLoop(v, 0); //change to closedLoop once constants are tuned
     SmartDashboard.putNumber("time: ", timer.get());
   }
 
@@ -52,6 +55,6 @@ public class ForwardTimeBased extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return timer.hasElapsed(1);
+    return timer.hasElapsed(t);
   }
 }

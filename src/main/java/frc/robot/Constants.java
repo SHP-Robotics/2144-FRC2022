@@ -4,6 +4,8 @@ import static frc.robot.RobotContainer.*;
 
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -168,5 +170,21 @@ public final class Constants {
 
     public static final class Indicator {
         public static final double kRumbleValue = 0.4;
+    }
+
+    public static final class Auto {
+        public static final Pose2d HUB_CENTER_POSE = new Pose2d(
+            Units.inchesToMeters(324.0),
+            Units.inchesToMeters(162.0),
+            Rotation2d.fromDegrees(0));
+
+        public static final Pose2d CARGO_RING_MID_OWN_BALL = new Pose2d(5.066880, 1.895581, new Rotation2d());
+        public static final Pose2d CARGO_RING_WALL_OWN_BALL = new Pose2d(7.579211, 0.298761, new Rotation2d());
+        public static final Pose2d CARGO_RING_HANGAR_OWN_BALL = new Pose2d(4.960425, 6.217642, new Rotation2d());
+        public static final Pose2d TERMINAL_OWN_BALL = new Pose2d(1.085474, 1.129107, new Rotation2d());
+
+        public static final Pose2d HANGAR_BALL_START_POSE= new Pose2d(6.25, 5.2, new Rotation2d(Math.toRadians(135)));
+        public static final Pose2d MID_BALL_START_POSE = new Pose2d(6.67436, 2.651410, Rotation2d.fromDegrees(-155.055217));
+        public static final Pose2d WALL_BALL_START_POSE = new Pose2d(7, 1, new Rotation2d(200));
     }
 }

@@ -13,8 +13,11 @@ import frc.robot.subsystems.Vision;
 public class SimpleAuto extends SequentialCommandGroup {
     public SimpleAuto(Drive drive, Indexer indexer, Flywheel flywheel, Vision vision) {
         addCommands(
+            new DriveTimeBased(drive, -0.5, 0.5),
+            new WaitCommand(1),
+            new DriveTimeBased(drive, 0.5, 0.5),
             new ParallelDeadlineGroup(
-                new ForwardTimeBased(drive),
+                new DriveTimeBased(drive, 0.5, 1),
                 new RunCommand(() -> {
                         indexer.setGuide(0.8);
                         indexer.intake();

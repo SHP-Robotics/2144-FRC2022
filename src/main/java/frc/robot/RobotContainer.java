@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.CycleBall;
-import frc.robot.commands.ForwardTimeBased;
+import frc.robot.commands.DriveTimeBased;
 import frc.robot.commands.SimpleAuto;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Flywheel;
