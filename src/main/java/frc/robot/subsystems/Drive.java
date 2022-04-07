@@ -151,8 +151,8 @@ public class Drive extends SubsystemBase {
       turn = 0;
 
     // if moving forward more than 20%, halve turn bias
-    if (straight > 0.2)
-      turn /= 2;
+    // if (straight > 0.2)
+    //   turn /= 2;
 
     // double driftCompensation = 0;
     // double angle = navx.getAngle();

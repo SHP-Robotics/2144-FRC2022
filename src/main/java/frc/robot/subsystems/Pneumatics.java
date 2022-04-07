@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Pneumatics extends SubsystemBase {
   private DoubleSolenoid doubleSolenoid;
 
-  /** Creates a new ExampleSubsystem. */
   public Pneumatics() {
     // doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
     doubleSolenoid.set(Value.kOff);

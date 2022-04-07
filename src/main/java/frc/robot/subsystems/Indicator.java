@@ -10,14 +10,15 @@ public class Indicator extends SubsystemBase {
     // private final BlinkinLedDriver led = new BlinkinLedDriver(0);
 
     public void update(int numBallsIndexed, boolean targetLocked, boolean driverOverride) {
-        if ((numBallsIndexed > 0 && targetLocked) || (numBallsIndexed > 0 && driverOverride)) {
-            startRumbleLeft();
-            if (numBallsIndexed == 2) {
-                startRumbleRight();
-            } else
-                stopRumbleRight();
-        } else
-            stopRumble();
+        // if ((numBallsIndexed > 0 && targetLocked) || (numBallsIndexed > 0 &&
+        // driverOverride)) {
+        // startRumbleLeft();
+        // if (numBallsIndexed == 2) {
+        // startRumbleRight();
+        // } else
+        // stopRumbleRight();
+        // } else
+        // stopRumble();
     }
 
     private void startRumbleLeft() {
